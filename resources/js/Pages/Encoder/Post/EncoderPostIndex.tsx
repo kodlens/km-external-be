@@ -1,5 +1,5 @@
 
-import {  PageProps, User, Status } from '@/types'
+import { PageProps, User, Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
 import {
@@ -66,12 +66,7 @@ export default function EncoderPostIndex(
 
     if (post.status === 'draft' || post.status === 'return') { //published (7)
       items.push(
-        {
-          label: 'Edit',
-          key: '1',
-          icon: <EditOutlined />,
-          onClick: () => handleEditClick(post.id),
-        },
+
         {
           label: 'Trash',
           key: '2',
@@ -117,21 +112,28 @@ export default function EncoderPostIndex(
     }
 
 
-    items.push({
-      label: 'View',
-      key: '7',
-      icon: <EyeOutlined />,
-      onClick: () => {
-        modal.info({
-          width: 1024,
-          title: 'Article',
-          content: (
-            <ArticleView post={post} className="" />
-          ),
-          onOk() { },
-        });
+    items.push(
+      {
+        label: 'Edit',
+        key: '1',
+        icon: <EditOutlined />,
+        onClick: () => handleEditClick(post.id),
       },
-    })
+      {
+        label: 'View',
+        key: '7',
+        icon: <EyeOutlined />,
+        onClick: () => {
+          modal.info({
+            width: 1024,
+            title: 'Article',
+            content: (
+              <ArticleView post={post} className="" />
+            ),
+            onOk() { },
+          });
+        },
+      })
 
     return items;
   }
@@ -141,11 +143,11 @@ export default function EncoderPostIndex(
     queryKey: ['posts', { perPage, page }],
     queryFn: async () => {
       const params = [
-      `perpage=${perPage}`,
-      `search=${search}`,
-      `page=${page}`,
-      `status=${status}`
-    ].join('&');
+        `perpage=${perPage}`,
+        `search=${search}`,
+        `page=${page}`,
+        `status=${status}`
+      ].join('&');
       const res = await axios.get(`/encoder/get-posts?${params}`);
       return res.data
     },
@@ -178,7 +180,7 @@ export default function EncoderPostIndex(
       onOk: async () => {
         const res = await axios.post('/encoder/posts-trash/' + id);
         if (res.data.status === 'trashed') {
-            refetch()
+          refetch()
 
         }
       }
@@ -191,7 +193,7 @@ export default function EncoderPostIndex(
       onOk: async () => {
         const res = await axios.post('/author/posts-soft-delete/' + id);
         if (res.data.status === 'soft_deteled') {
-            refetch()
+          refetch()
         }
       }
     })
@@ -281,14 +283,14 @@ export default function EncoderPostIndex(
                 render={(description_text) => (
                   <span>{description_text ? truncate(description_text, 50) : ''}</span>
                 )}
-                  />
+              />
 
               <Column title="Publication Date"
                 dataIndex="publish_date"
                 key="publish_date"
                 render={(publish_date) => (
                   <>
-                    { publish_date && dateFormat(publish_date)}
+                    {publish_date && dateFormat(publish_date)}
                   </>
                 )}
               />

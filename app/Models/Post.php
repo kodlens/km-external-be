@@ -45,6 +45,9 @@ class Post extends Model
         'publisher_name',
         'submittcategoryed_date',
 
+        'encoded_by',
+        'last_updated_by',
+
         'record_trail',
         'trash'
     ];

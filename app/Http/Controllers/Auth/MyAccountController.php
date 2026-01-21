@@ -21,7 +21,7 @@ class MyAccountController extends Controller
         if($user->role == 'author'){
             return Inertia::render('Author/AuthorMyAccount', []);
         }
-        
+
     }
 
     public function update(Request $req){
@@ -34,7 +34,7 @@ class MyAccountController extends Controller
             'middlename' => ['max:100'],
             'sex' => ['required', 'max:100', 'string']
         ]);
-      
+
 
         $data = User::find($user->id);
         $data->username = $req->username;
