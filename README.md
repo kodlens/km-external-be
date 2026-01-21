@@ -1,12 +1,24 @@
-## SNT POST PORTAL
+## KM EXTERNAL BACKEND
 
 ### Application Requirements (Windows)
 Install the following:
 
-<a href="https://getcomposer.org/">Composer</a>
-<a href="https://git-scm.com/">Git</a>
-<a href="https://www.apachefriends.org/download.html">XAMPP</a>
-<a href="https://nodejs.org/en">NodeJS</a>
+<ul>
+  <li>
+    <a href="https://getcomposer.org/">Composer</a>
+  </li>
+  <li>
+    <a href="https://git-scm.com/">Git</a>
+  </li>
+  <li>
+    <a href="https://www.apachefriends.org/download.html">XAMPP</a>
+  </li>
+  <li>
+    <a href="https://nodejs.org/en">NodeJS</a>
+  </li>
+</ul>
+
+
 
 ### Tech 
     Laravel
@@ -25,7 +37,7 @@ Install the following:
 
 Clone the repository or run the command (only the collaborator can clone this repo)
 ```bash    
-git clone https://github.com/etiennewayne/sntpost-tsx.git
+git clone https://github.com/kodlens/km-external-be.git
 ```
 
 Go to the repository (repo-name is publication-portal)
@@ -65,8 +77,6 @@ https://github.com/react-component/picker/pull/765
 Notes
     All status are static
 
-    Roles (Publisher, author,)
+    Roles (Publisher, Encoder,)
     (adviser, student, writer, desgner, editor)
 
-    Additional Table added, dostv banner
-    update repo

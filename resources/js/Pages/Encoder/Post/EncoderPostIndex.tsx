@@ -165,10 +165,10 @@ export default function EncoderPostIndex(
 
 
   const handClickNew = () => {
-    router.visit('/author/posts/create');
+    router.visit('/encoder/posts/create');
   }
   const handleEditClick = (id: number) => {
-    router.visit('/author/posts/' + id + '/edit');
+    router.visit('/encoder/posts/' + id + '/edit');
   }
   const handleTrashClick = (id: number) => {
 
@@ -176,7 +176,7 @@ export default function EncoderPostIndex(
       title: 'Trash?',
       content: 'Are you sure you want to move to trash this post?',
       onOk: async () => {
-        const res = await axios.post('/author/posts-trash/' + id);
+        const res = await axios.post('/encoder/posts-trash/' + id);
         if (res.data.status === 'trashed') {
             refetch()
 

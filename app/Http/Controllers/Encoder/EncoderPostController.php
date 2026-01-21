@@ -58,26 +58,10 @@ class EncoderPostController extends Controller
 
     public function create(){
 
-        $categories = Category::orderBy('title', 'asc')->get();
-        $sections = Section::where('active',1)->orderBy('order_no', 'asc')->get();
-        $authors = User::join('roles', 'roles.id', 'users.role_id')
-            ->select('users.id', 'users.lastname', 'users.firstname', 'users.middlename', 'roles.role')
-            ->where('roles.role', 'author')
-            ->get();
-
-        //$roleId = Auth::user()->role_id not use;
-
-        $quarters = Quarter::orderBy('quarter_name', 'asc')->get();
         $CK_LICENSE = env('CK_EDITOR_LICENSE_KEY');
 
-        //return $CK_LICENSE;
-
-        return Inertia::render('Author/Post/AuthorPostCreateEdit', [
+        return Inertia::render('Encoder/Post/EncoderPostCreateEdit', [
             'id', 0,
-            'categories'=> $categories,
-            'sections'=> $sections,
-            'authors'=> $authors,
-            'quarters'=> $quarters,
             'ckLicense' => $CK_LICENSE,
             'data', [],
         ]);
