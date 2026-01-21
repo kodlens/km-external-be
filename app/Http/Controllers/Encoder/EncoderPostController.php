@@ -164,7 +164,7 @@ class EncoderPostController extends Controller
 
     public function update(Request $req, $id)
     {
-
+        return $req;
         $req->validate([
             'title' => ['required', new ValidateTitle($id)],
             'author_name' => ['string', 'nullable'],

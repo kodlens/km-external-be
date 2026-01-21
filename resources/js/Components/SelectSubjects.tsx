@@ -2,6 +2,7 @@ import { Subject, SubjectHeading } from '@/types/subject';
 import { Button, Form, Select } from 'antd'
 import { FormInstance } from 'antd/es/form';
 import axios from 'axios';
+import { Trash } from 'lucide-react';
 import { useEffect, useState } from 'react'
 
 type FormSubject = {
@@ -60,73 +61,63 @@ const SelectSubjects = ({form}: {form: FormInstance}) => {
 
 
   return (
-    <div className=''>
-      { formSubjects.length > 0 && formSubjects.map((formSubject, index) => (
+    <Form.List name="subjects">
+      {(fields, { add, remove }) => (
+        <>
+          {fields.map(({ key, name }, index) => (
+            <div key={key} className="flex gap-4 w-full items-center">
 
-        <div key={index} className="flex gap-4">
-
-          <Form.Item
-              name={`subjects[${index}][subject_id]`}
-              className="w-full"
-              label="Subject"
-              validateStatus={
-                errors.subjects && errors.subjects[index] && errors.subjects[index].subject_id ? "error" : ""
-              }
-              help={errors.subjects && errors.subjects[index] && errors.subjects[index].subject_id ? errors.subjects[index].subject_id[0] : ""}
-            >
-              <Select
-                options={subjects.map((subject) => ({
-                  label: subject.subject,
-                  value: subject.id
-                }))}
-                onChange={(value) => {
-                  const selectedSubject = subjects.find(subject => subject.id === value);
-                  setSubject(selectedSubject);
-                }}
+              <Form.Item
+                name={[name, 'subject_id']}
+                label="Subject"
+                className="w-1/3 min-w-0"
               >
-              </Select>
-            </Form.Item>
+                <Select
+                  className='w-full'
+                  options={subjects.map(s => ({
+                    label: s.subject,
+                    value: s.id
+                  }))}
+                  onChange={(value) => {
+                    form.setFieldValue(
+                      ['subjects', index, 'subject_heading_id'],
+                      undefined
+                    );
+                    loadSubjectHeadings(value);
+                  }}
+                />
+              </Form.Item>
 
-            <Form.Item
-              name={`subjects[${index}][subject_heading_id]`}
-              className="w-full"
-              label="Subject Heading"
-              validateStatus={
-                errors.subjects && errors.subjects[index] && errors.subjects[index].subject_heading_id ? "error" : ""
-              }
-              help={errors.subjects && errors.subjects[index] && errors.subjects[index].subject_heading_id ? errors.subjects[index].subject_heading_id[0] : ""}
-            >
-              <Select
-                options={subjectHeadings.map((subjectHeading) => ({
-                  label: subjectHeading.subject_heading,
-                  value: subjectHeading.id
-                }))}
-                onChange={(value) => {
-                  const selectedSubjectHeading = subjectHeadings.find(subjectHeading => subjectHeading.id === value);
-                  setSubjectHeading(selectedSubjectHeading);
-                }}
+              <Form.Item
+                name={[name, 'subject_heading_id']}
+                label="Subject Heading"
+                className="w-2/3 min-w-0"
               >
-              </Select>
-            </Form.Item>
+                <Select
+                  className='w-full'
+                  options={(subjectHeadings || []).map(h => ({
+                    label: h.subject_heading,
+                    value: h.id
+                  }))}
+                />
+              </Form.Item>
 
+              <div>
+                <Button danger
+                  className=''
+                  onClick={() => remove(name)}>
+                    <Trash size={16} />
+                </Button>
+              </div>
+            </div>
+          ))}
 
-
-
-            <Button size='small' danger onClick={() => {
-              const newFormSubjects = [...formSubjects];
-              newFormSubjects.splice(index, 1);
-              setFormSubjects(newFormSubjects);
-            }}>Remove</Button>
-
-        </div>
-
-      ))}
-
-      <Button size='small' type="primary" onClick={addFormSubject}>Add Subject</Button>
-
-
-
-    </div>
+          <Button type="primary" onClick={() => add()}>
+            Add Subject
+          </Button>
+        </>
+      )}
+    </Form.List>
 
   )
 }
