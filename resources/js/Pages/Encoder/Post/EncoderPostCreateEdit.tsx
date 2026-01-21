@@ -243,6 +243,17 @@ const EncoderPostCreateEdit = ({
               </Form.Item>
 
               <Flex gap="middle">
+
+                <Form.Item
+                  name="author_name"
+                  label="Author Name"
+                  className="w-full"
+                  validateStatus={errors.author_name ? "error" : ""}
+                  help={errors.author_name ? errors.author_name[0] : ""}
+                >
+                  <Input placeholder="Author Name" />
+                </Form.Item>
+
                 <Form.Item
                   name="status"
                   className="w-full"
@@ -264,10 +275,20 @@ const EncoderPostCreateEdit = ({
                       },
                     ]}
                   >
-
                   </Select>
                 </Form.Item>
               </Flex>
+
+
+              <Form.Item
+                name="source"
+                label="Source"
+                className="w-full"
+                validateStatus={errors.source ? "error" : ""}
+                help={errors.source ? errors.source[0] : ""}
+              >
+                <Input placeholder="Source" />
+              </Form.Item>
 
               <div className="flex">
                 <ConfigProvider

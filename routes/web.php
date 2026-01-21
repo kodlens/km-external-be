@@ -214,27 +214,27 @@ Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
 /** THIS ROUTE IS FOR PUBLISHER */
 Route::prefix('publisher')->middleware('auth', 'publisher')->group(function () {
 
-    Route::get('/dashboard', [App\Http\Controllers\Publisher\PublisherDashboardController::class, 'index'])->name('dashboard-index');
+    // Route::get('/dashboard', [App\Http\Controllers\Publisher\PublisherDashboardController::class, 'index'])->name('dashboard-index');
 
-    Route::get('/posts', [App\Http\Controllers\Publisher\PublisherPostController::class, 'index'])->name('publisher.post-index');;
-    Route::patch('/posts/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'update'])->name('publisher.post-update');;
+    // Route::get('/posts', [App\Http\Controllers\Publisher\PublisherPostController::class, 'index'])->name('publisher.post-index');;
+    // Route::patch('/posts/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'update'])->name('publisher.post-update');;
 
-    Route::get('/posts-form-view/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'formView'])->name('publisher.post-form-view');
-    Route::get('/get-posts', [App\Http\Controllers\Publisher\PublisherPostController::class, 'getData'])->name('publisher.post-get-data');
+    // Route::get('/posts-form-view/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'formView'])->name('publisher.post-form-view');
+    // Route::get('/get-posts', [App\Http\Controllers\Publisher\PublisherPostController::class, 'getData'])->name('publisher.post-get-data');
 
 
-    Route::post('/posts-publish/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'postPublish'])->name('publisher.post-publish');
-    Route::post('/posts-unpublish/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'postUnpublish'])->name('publisher.post-unpublish');
-    Route::post('/posts-return-to-author/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'postReturnToAuthor'])->name('publisher.post-return-to-author');
+    // Route::post('/posts-publish/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'postPublish'])->name('publisher.post-publish');
+    // Route::post('/posts-unpublish/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'postUnpublish'])->name('publisher.post-unpublish');
+    // Route::post('/posts-return-to-author/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'postReturnToAuthor'])->name('publisher.post-return-to-author');
 
-    Route::get('/post-publish', [App\Http\Controllers\Publisher\PublisherPostPublishController::class, 'index']);
-    Route::get('/get-post-publish', [App\Http\Controllers\Publisher\PublisherPostPublishController::class, 'getData'])->name('author.post-publish-get-data');
+    // Route::get('/post-publish', [App\Http\Controllers\Publisher\PublisherPostPublishController::class, 'index']);
+    // Route::get('/get-post-publish', [App\Http\Controllers\Publisher\PublisherPostPublishController::class, 'getData'])->name('author.post-publish-get-data');
 
-    Route::get('/post-unpublish', [App\Http\Controllers\Publisher\PublisherPostUnpublishController::class, 'index']);
-    Route::get('/get-post-unpublish', [App\Http\Controllers\Publisher\PublisherPostUnpublishController::class, 'getData'])->name('author.post-unpublish-get-data');
+    // Route::get('/post-unpublish', [App\Http\Controllers\Publisher\PublisherPostUnpublishController::class, 'index']);
+    // Route::get('/get-post-unpublish', [App\Http\Controllers\Publisher\PublisherPostUnpublishController::class, 'getData'])->name('author.post-unpublish-get-data');
 
-    //Route::get('/post-set-publish-date', [App\Http\Controllers\Publisher\PublisherPostController::class, 'index']);
-    Route::post('/post-set-publish-date/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'setPublishDate'])->name('author.post-set-publish-date');
+    // //Route::get('/post-set-publish-date', [App\Http\Controllers\Publisher\PublisherPostController::class, 'index']);
+    // Route::post('/post-set-publish-date/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'setPublishDate'])->name('author.post-set-publish-date');
 });
 
 /** THIS ROUTE IS FOR ENCODER */
