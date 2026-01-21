@@ -20,6 +20,7 @@ import { Post } from "@/types/post";
 import EncoderLayout from "@/Layouts/EncoderLayout";
 import form from "antd/es/form";
 import Ckeditor from "@/Components/Ckeditor";
+import SelectSubjects from "@/Components/SelectSubjects";
 
 
 
@@ -38,7 +39,7 @@ const EncoderPostCreateEdit = ({
 
   const [form] = Form.useForm();
 
-  const [errors, setErrors] = useState<any>(false);
+  const [errors, setErrors] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
 
   const { message, modal, notification } = App.useApp();
@@ -116,9 +117,6 @@ const EncoderPostCreateEdit = ({
     }
 
   };
-
-
-  //for dynamic width
 
 
   /**truncate text and add 3 dots at the end */
@@ -270,7 +268,13 @@ const EncoderPostCreateEdit = ({
                 <Input placeholder="Source" />
               </Form.Item>
 
-              <div className="flex">
+              <div className="my-6 border-t p-6 bg-gray-50 rounded-md">
+                <div className="font-bold mb-4">Manage Subjects/Subject Headings</div>
+                <SelectSubjects form={form}/>
+
+              </div>
+
+              <div className="flex mb-4 mt-6">
                 <ConfigProvider
                   theme={{
                     components: {

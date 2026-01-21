@@ -29,6 +29,8 @@ Route::get('/', function () {
  */
 Route::get('/km/login', [App\Http\Controllers\WelcomePageController::class, 'index'])->name('welcome');
 
+Route::get('/get-subjects', [App\Http\Controllers\OpenController::class, 'getSubjects'])->name('open.subjects');
+Route::get('/get-subject-headings/{subjectId}', [App\Http\Controllers\OpenController::class, 'getSubjectHeadings'])->name('open.subject-headings');
 
 
 Route::middleware('auth')->group(function () {

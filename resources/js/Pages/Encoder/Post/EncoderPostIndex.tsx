@@ -64,76 +64,63 @@ export default function EncoderPostIndex(
 
     const items: MenuProps['items'] = [];
 
-    if (post.status === 'draft' || post.status === 'return') { //published (7)
-      items.push(
+    // if (post.status === 'draft' || post.status === 'return') { //published (7)
+    //   items.push(
 
-        {
-          label: 'Trash',
-          key: '2',
-          icon: <DeleteOutlined />,
-          onClick: () => handleTrashClick(post.id)
-        },
-        {
-          label: 'Draft',
-          key: '5',
-          icon: <PaperClipOutlined />,
-          onClick: () => {
-
-            axios.post('/author/posts-draft/' + post.id).then(res => {
-              if (res.data.status === 'draft') {
-                modal.info({
-                  title: 'Draft!',
-                  content: 'Successfully draft.'
-                })
-                refetch()
-
-              }
-            })
-          },
-        },
-        {
-          key: 'posts.submit-for-publishing',
-          icon: <ProjectOutlined />,
-          label: 'Submit for Publishing',
-          onClick: () => {
-
-            axios.post('/author/posts-submit-for-publishing/' + post.id).then(res => {
-              if (res.data.status === 'submit-for-publishing') {
-                modal.info({
-                  title: 'Submitted!',
-                  content: 'Successfully submitted.'
-                })
-
-                refetch()
-              }
-            })
-          },
-        });
-    }
+    //     );
+    // }
 
 
     items.push(
       {
-        label: 'Edit',
+        label: 'Draft',
         key: '1',
+        icon: <PaperClipOutlined />,
+        onClick: () => {
+
+          axios.post('/author/posts-draft/' + post.id).then(res => {
+            if (res.data.status === 'draft') {
+              modal.info({
+                title: 'Draft!',
+                content: 'Successfully draft.'
+              })
+              refetch()
+
+            }
+          })
+        },
+      },
+      {
+        key: 'posts.submit-for-publishing',
+        icon: <ProjectOutlined />,
+        label: 'Submit for Publishing',
+        onClick: () => {
+
+          axios.post('/author/posts-submit-for-publishing/' + post.id).then(res => {
+            if (res.data.status === 'submit-for-publishing') {
+              modal.info({
+                title: 'Submitted!',
+                content: 'Successfully submitted.'
+              })
+
+              refetch()
+            }
+          })
+        },
+      },
+      {
+        label: 'Edit',
+        key: '2',
         icon: <EditOutlined />,
         onClick: () => handleEditClick(post.id),
       },
       {
-        label: 'View',
-        key: '7',
-        icon: <EyeOutlined />,
-        onClick: () => {
-          modal.info({
-            width: 1024,
-            title: 'Article',
-            content: (
-              <ArticleView post={post} className="" />
-            ),
-            onOk() { },
-          });
-        },
-      })
+        label: 'Trash',
+        key: '3',
+        icon: <DeleteOutlined />,
+        onClick: () => handleTrashClick(post.id)
+      },
+    )
 
     return items;
   }
