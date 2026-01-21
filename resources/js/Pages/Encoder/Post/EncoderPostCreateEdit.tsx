@@ -1,7 +1,7 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Head, router, usePage } from "@inertiajs/react";
 
-import { UploadOutlined, SaveOutlined, ProjectOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { ProjectOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 
 import {
   App,
@@ -9,19 +9,12 @@ import {
   Form,
   Input,
   Select,
-  Checkbox,
-  Upload,
-  DatePicker,
   Flex,
   ConfigProvider,
 } from "antd";
 
 import { PageProps } from "@/types";
-
-
 import axios from "axios";
-
-import dayjs from "dayjs";
 
 import { Post } from "@/types/post";
 import EncoderLayout from "@/Layouts/EncoderLayout";
@@ -58,20 +51,8 @@ const EncoderPostCreateEdit = ({
     }
   }, []);
 
-  //console.log('PostCreate rerender')
-
   const getData = () => {
     try {
-      // const fileList = [
-      //     {
-      //         uid: "-1", // Unique identifier
-      //         name: article.featured_image, // File name
-      //         status: "done", // Initial status of the file
-      //         url: `/storage/featured_images/${article.featured_image}`, // URL to display the image
-      //         response: article.featured_image, // response, name from db
-      //     },
-      // ];
-
       form.setFields([
         { name: "title", value: post.title },
         { name: "slug", value: post.alias },
@@ -80,10 +61,9 @@ const EncoderPostCreateEdit = ({
         { name: "status", value: post.status },
         { name: "source", value: post.source },
         { name: "agency", value: post.agency },
+        { name: "author_name", value: post.author_name },
         { name: "is_publish", value: post.is_publish },
       ]);
-
-      // console.log(moment(article.date_published, 'YYYY-MM-DD') );
     } catch (err) { }
   };
 

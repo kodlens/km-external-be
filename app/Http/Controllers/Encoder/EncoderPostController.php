@@ -66,9 +66,10 @@ class EncoderPostController extends Controller
 
         $req->validate([
             'title' => ['required', new ValidateTitle(0)],
+            'author_name' => ['string', 'nullable'],
             'description' => ['required'],
         ], [
-            'description.required' => 'description is required.',
+            'description.required' => 'Description is required.',
         ]);
 
         try {
@@ -110,13 +111,14 @@ class EncoderPostController extends Controller
                 'title' => $req->title,
                 'slug' => Str::slug($req->title),
                 'excerpt' => $req->excerpt,
-                'source' => 'km-stii',
+                'source' => $req->source,
                 'agency' => 'stii',
                 'status' => 'draft',
                 'is_publish' => 0,
                 // 'section_id' => $req->section,
                 'description' => $modifiedHtml, // modified content, changing the base64 image src to img src="/path/folder"
                 'description_text' => $content,
+                'author_name' => $req->author_name,
                 'encoded_by' => $user->id,
                 'record_trail' => 'insert|('.$user->id.')'.$user->lname . ','. $user->fname . '|' . date('Y-m-d H:i:s') . ';',
                 /** 1 for insert, 0 for delete and 2 for update */
@@ -164,7 +166,7 @@ class EncoderPostController extends Controller
 
         $req->validate([
             'title' => ['required', new ValidateTitle($id)],
-            //'excerpt' => ['required'],
+            'author_name' => ['string', 'nullable'],
             'description' => ['required'],
         ], [
             'description.required' => 'Content is required.'
@@ -206,6 +208,7 @@ class EncoderPostController extends Controller
             $data->is_publish = 0;
             $data->description = $modifiedHtml;
             $data->description_text = $content;
+            $data->author_name = $req->author_name;
             $data->last_updated_by = $user->id;
             $data->record_trail = $data->record_trail . "update|(".$user->id.")".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
 
