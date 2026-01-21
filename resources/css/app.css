@@ -1,0 +1,72 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=UnifrakturCook:wght@700&display=swap");
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  /* background-color: var(--dark);
+  color: var(--white); */
+  scroll-behavior: smooth;
+}
+
+:root {
+  --primary-color: #bcbaff;
+  --primary_variant: #063223d8;
+  --secondary_color: #063223;
+  --tertiary_color: #a7b9b3;
+  --white: #d9dcdb;
+  --dark: #000000;
+
+  --gradient: linear-gradient(
+      to right,
+      #0c251c 0%,
+      #0c251c 25%,
+      #1a3a3d 50%,
+      #1a3a3d 100%
+  );
+
+  --danger: #d2042d;
+  --gray: #a7b9b34d;
+}
+
+::-webkit-scrollbar {
+  /* Customize the scrollbar width */
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  /* Customize the scrollbar track */
+  background: #7683ad;
+  box-shadow: inset 0 0 6px #17429e4d;
+}
+
+::-webkit-scrollbar-thumb {
+  /* Customize the scrollbar thumb */
+  background: #1d27b1;
+  /* border: 3px solid #0e0eb4; */
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ck.ck-content {
+    min-height: 300px;
+    border-radius: 15px;
+    max-width: none !important;
+    @apply prose;
+}
+
+
+
+/* overiding some antd styles */
+.primary-button {
+    background-color: #0d4928 !important;
+    border: 1px solid #0d4928 ;
+    color: white !important;
+  }
+
+  .primary-button:hover {
+    border: 1px solid #116135 !important;
+    background-color: #116135 !important;
+  }

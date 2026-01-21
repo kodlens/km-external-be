@@ -1,0 +1,32 @@
+main {
+    width: 80vw;
+    margin: 0 auto;
+}
+
+/* Write article */
+
+.writeArticle {
+    padding-top: 2rem;
+}
+
+.writeArticle form .form_group {
+    display: flex;
+    gap: 1rem;
+}
+
+.writeArticle form .form_content.btn {
+    width: 15rem;
+    margin: 0 auto;
+}
+
+/*my articles  */
+
+.myArticles {
+    padding-top: 4rem;
+}
+
+/* pending buttons*/
+.article_container form .form_group {
+    display: flex;
+    gap: 1rem;
+}

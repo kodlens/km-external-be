@@ -1,0 +1,109 @@
+/* start of Login page */
+
+.top_header.log_in {
+    justify-content: flex-start;
+}
+.line {
+    width: 3px;
+    height: 70%;
+    margin: 10px;
+    background-color: var(--primary_color);
+}
+.system_title {
+    text-align: left;
+}
+.system_title h1 {
+    font-size: 1rem;
+}
+.system_title h2 {
+    font-size: 1rem;
+}
+
+.auth_form_container {
+    margin: 7rem auto;
+    width: 350px;
+    box-shadow: 0px 0px 20px -1px rgba(12, 37, 28, 1);
+    border-radius: 10px;
+    padding: 3rem;
+}
+
+/* message */
+.message.error {
+    color: var(--danger);
+    background-color: rgba(255, 0, 0, 0.109);
+    margin: 1rem 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.register_btn {
+    color: var(--primary_color);
+    font-size: 0.8rem;
+}
+.register_btn a {
+    color: var(--primary_color);
+    font-weight: 600;
+}
+
+.note {
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+/* register */
+.auth_form_container.register {
+    width: 50vw;
+}
+
+.form_group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem; /**/
+}
+
+.uploadQR {
+    font-weight: 700;
+    color: var(--dark);
+}
+
+/* ==================================== */
+/* Main Media Queries */
+
+@media (max-width: 1300px) {
+    .freedom_container {
+        grid-template-columns: repeat(4, 1fr);
+        margin: 2rem 0;
+    }
+    .freedom_container.single {
+        width: 50vw;
+    }
+}
+
+/* Media Queries */
+@media (max-width: 1300px) {
+    .auth_form_container.register {
+        width: 60vw;
+    }
+}
+@media (max-width: 1000px) {
+    .auth_form_container.register {
+        width: 70vw;
+    }
+}
+
+@media (max-width: 800px) {
+    .auth_form_container.register {
+        width: 90vw;
+    }
+}
+/*  */
+@media (max-width: 600px) {
+    .auth_form_container.register {
+        width: 80vw;
+    }
+    .form_group {
+        flex-direction: column;
+    }
+}

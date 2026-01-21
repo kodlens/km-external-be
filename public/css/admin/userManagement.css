@@ -1,0 +1,87 @@
+main {
+    width: 80vw;
+    margin: 0 auto;
+}
+
+/* Add User */
+
+.addUser {
+    padding-top: 2rem;
+}
+
+.addUser form .form_group {
+    display: flex;
+    gap: 1rem;
+}
+
+.addUser form .form_content.btn {
+    width: 15rem;
+    margin: 0 auto;
+}
+.view_profile form .form_content.btn {
+    width: 15rem;
+    margin: 0 auto;
+}
+.view_profile {
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    gap: 1rem;
+}
+.view_profile form .form_group {
+    display: flex;
+    gap: 1rem;
+}
+.img_container.user {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    border: 2px solid var(--dark);
+}
+
+/* manage User */
+
+.manageUser {
+    padding-top: 2rem;
+}
+/* Modall */
+/* The Modal (background) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.modal h2 {
+    text-align: center;
+    padding: 1rem 0;
+}
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

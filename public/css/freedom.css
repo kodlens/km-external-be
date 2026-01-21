@@ -1,0 +1,360 @@
+.freedom_header {
+    font-size: 1rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+.freedom_header h1 {
+    /* font-family: "UnifrakturCook", cursive; */
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+.modal_btns {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    /* background-color: rgb(24, 52, 76); */
+}
+
+.write,
+.policy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.write button {
+    background: var(--gradiant);
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    color: var(--white);
+    outline: none;
+    border: none;
+    cursor: pointer;
+    transition: all 300ms ease;
+    border-radius: 3px;
+}
+.policy button {
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    background-color: var(--tertiary_color);
+    color: var(--dark);
+    outline: none;
+    border: none;
+    cursor: pointer;
+    transition: all 300ms ease;
+    border-radius: 3px;
+}
+
+.write button:hover,
+.policy button:hover {
+    transform: scale(1.01);
+}
+
+/* Modal container */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: var(--white);
+}
+
+/* Modal Policy */
+
+.title {
+    background: var(--gradiant);
+    padding: 20px 10px;
+}
+
+.title h2 {
+    font-size: 1.4rem;
+    color: var(--white);
+}
+.policy_container p {
+    padding: 1rem 0;
+    text-align: justify;
+    color: var(--dark);
+    padding: 20px;
+}
+
+/* Modal content */
+.modal_content {
+    position: relative;
+    background-color: var(--white);
+    margin: 10% auto;
+    /* padding: 20px; */
+    background-color: var(--gray);
+    width: 50%;
+}
+
+.modal_content.write_content {
+    width: 35%;
+}
+/* The Close Button */
+.close {
+    color: var(--white);
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 2rem;
+    transition: all 300ms ease;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--tertiary_color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Write Anonymously */
+.write_container {
+    padding: 0 1rem 1rem 1rem;
+}
+
+.write_something form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Start freedom card */
+.freedom_container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin: 5rem 0;
+}
+.user {
+    background-color: var(--primary_variant);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    color: var(--tertiary_color);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.user i {
+    font-size: 2.4rem;
+}
+.user_info_container {
+    width: 100%;
+    display: flex;
+    text-align: center;
+}
+.user_info {
+    font-size: 0.7rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+/* report */
+.report {
+    position: relative;
+}
+.report i {
+    font-size: 1.4rem;
+    cursor: pointer;
+    /* position: relative; */
+}
+
+.report_modal {
+    position: absolute;
+    top: 0;
+    right: 1.5rem;
+    display: none;
+}
+.report_modal input {
+    background-color: var(--danger);
+    outline: none;
+    border: none;
+    color: var(--white);
+    padding: 2px 5px;
+    z-index: 1;
+    cursor: pointer;
+}
+.report_modal.show {
+    display: block;
+}
+.card {
+    background-color: var(--tertiary_color);
+    border-radius: 3px;
+    /* overflow: hidden; */
+}
+.card_content {
+    position: relative;
+    min-height: 15rem;
+    /* border: 1px solid #ccc; */
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    transition: all 300ms ease;
+}
+/* .card:hover {
+    transform: scale(1.01);
+} */
+
+.card_content a {
+    background-color: #0c251c;
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    margin: 0;
+    font-size: 0.7rem;
+    cursor: pointer;
+
+    display: inline-block;
+    max-width: 300px; /* Adjust the width as needed */
+    word-wrap: break-word;
+    word-break: break-all;
+}
+.tts i {
+    color: var(--dark);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.card_reaction {
+    background-color: var(--primary_variant);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    color: var(--white);
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.reaction {
+    display: flex;
+    gap: 1rem;
+}
+.reaction span {
+    font-size: 0.8rem;
+}
+.like,
+.dislike {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.reaction i {
+    color: var(--tertiary_color);
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.dislike i {
+    color: var(--white);
+}
+.emoji p {
+    display: flex;
+    font-size: 0.8rem;
+    align-items: center;
+}
+.emoji span {
+    font-size: 1.6rem;
+}
+/* SINGLE */
+.freedom_container.single {
+    width: 40vw;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+    margin: 5rem auto;
+}
+.card_content p {
+    background-color: #0c251c;
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    margin: 0;
+    font-size: 0.7rem;
+
+    display: inline-block;
+    max-width: 300px; /* Adjust the width as needed */
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+/* end freedom card */
+
+/* ==================================== */
+/* Main Media Queries */
+
+@media (max-width: 1300px) {
+    .freedom_container {
+        grid-template-columns: repeat(4, 1fr);
+        margin: 2rem 0;
+    }
+    .freedom_container.single {
+        width: 50vw;
+    }
+}
+
+/* Media Queries */
+@media (max-width: 1000px) {
+    .card_content a {
+        max-width: 200px; /* Adjust the width as needed */
+    }
+    .freedom_container.single {
+        width: 60vw;
+    }
+}
+
+@media (max-width: 800px) {
+    .card_content a {
+        max-width: 300px; /* Adjust the width as needed */
+    }
+    .freedom_container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    /* .modal_btns {
+        margin-top: 5rem;
+    } */
+    .freedom_header {
+        padding-top: 7rem;
+        font-size: 0.8rem;
+    }
+    .modal_content.write_content {
+        width: 60%;
+    }
+    .modal_content {
+        width: 80%;
+    }
+    .modal_content {
+        margin-top: 20%;
+    }
+    .title h2 {
+        font-size: 1rem;
+    }
+    .freedom_container.single {
+        width: 70vw;
+    }
+}
+/*  */
+@media (max-width: 600px) {
+    .freedom_container {
+        grid-template-columns: repeat(1, 1fr);
+    }
+    .modal_btns {
+        flex-direction: column;
+    }
+    .modal_content.write_content {
+        width: 90%;
+    }
+    .freedom_container.single {
+        width: 80vw;
+    }
+}
