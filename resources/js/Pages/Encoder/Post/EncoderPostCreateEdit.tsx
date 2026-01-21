@@ -91,10 +91,10 @@ const EncoderPostCreateEdit = ({
     setLoading(true)
     setErrors({});
 
-    if(id > 0) {
+    if (id > 0) {
       axios.patch('/encoder/posts/' + id, values).then(res => {
 
-        if(res.data.status === 'updated'){
+        if (res.data.status === 'updated') {
           modal.success({
             title: "Updated!",
             content: <div>Post successfully updated.</div>,
@@ -113,9 +113,9 @@ const EncoderPostCreateEdit = ({
         setLoading(false);
       })
 
-    }else{
+    } else {
       axios.post('/encoder/posts', values).then(res => {
-        if(res.data.status === 'saved'){
+        if (res.data.status === 'saved') {
           modal.success({
             title: "Saved!",
             content: <div>Post successfully saved.</div>,
@@ -239,8 +239,35 @@ const EncoderPostCreateEdit = ({
                     : ""
                 }
               >
-                <Ckeditor post={post} form={form} ckLicense={ckLicense}  />
+                <Ckeditor post={post} form={form} ckLicense={ckLicense} />
               </Form.Item>
+
+              <Flex gap="middle">
+                <Form.Item
+                  name="status"
+                  className="w-full"
+                  label="Select Status"
+                  validateStatus={
+                    errors.status ? "error" : ""
+                  }
+                  help={errors.status ? errors.status[0] : ""}
+                >
+                  <Select
+                    options={[
+                      {
+                        label: 'Draft',
+                        value: 'draft'
+                      },
+                      {
+                        label: 'Submit for Publishing',
+                        value: 'submit'
+                      },
+                    ]}
+                  >
+
+                  </Select>
+                </Form.Item>
+              </Flex>
 
               <div className="flex">
                 <ConfigProvider

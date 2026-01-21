@@ -270,18 +270,11 @@ export default function EncoderPostIndex(
 
               <Column title="Id" dataIndex="id" />
               <Column title="Title" dataIndex="title" key="title" />
-              {/* <Column title="Excerpt"
-                dataIndex="excerpt"
-                key="excerpt"
-                render={(excerpt) => (
-                  <span>{excerpt ? truncate(excerpt, 10) : ''}</span>
-                )}
-              /> */}
               <Column title="Description"
                 dataIndex="description_text"
                 key="description_text"
                 render={(description_text) => (
-                  <span>{description_text ? truncate(description_text, 50) : ''}</span>
+                  <span>{description_text ? truncate(description_text, 20) : ''}</span>
                 )}
               />
 
@@ -295,14 +288,13 @@ export default function EncoderPostIndex(
                 )}
               />
 
-              {/* <Column title="Status" dataIndex="status" key="status" render={(status) => (
+              <Column title="Status" dataIndex="status" key="status" render={(status) => (
 
                 <div>
                   {status === 'submit' && (
                     <div className='bg-green-300 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
                       SUBMIT FOR PUBLISHING
                     </div>
-
                   )}
                   {status === 'publish' && (
                     <div className='bg-green-200 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
@@ -315,7 +307,6 @@ export default function EncoderPostIndex(
                       DRAFT
                     </div>
                   )}
-
                   {status === 'return' && (
                     <div className='bg-red-200 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
                       RETURN TO AUTHOR
@@ -325,7 +316,7 @@ export default function EncoderPostIndex(
                 </div>
 
               )}
-              /> */}
+              />
 
               <Column
                 title="Date Created"
@@ -344,7 +335,7 @@ export default function EncoderPostIndex(
                   <Space size="small">
                     <Dropdown trigger={['click']} menu={{ items: createMenuItems(data) }} >
                       <Space>
-                        <Button type='primary'>...</Button>
+                        <Button variant='outlined'>...</Button>
                       </Space>
                     </Dropdown>
                   </Space>
@@ -353,9 +344,8 @@ export default function EncoderPostIndex(
             </Table>
 
             <Pagination className='mt-4'
-              onChange={() => {
-                console.log('sample to hoy');
-                onPageChange(page)
+              onChange={(i) => {
+                onPageChange(i)
               }}
               defaultCurrent={1}
               total={data?.total} />
