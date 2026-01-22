@@ -30,7 +30,7 @@ export default function EncoderLayout(
     }
 
     type MenuItem = Required<MenuProps>['items'][number];
-    const navigationItems = (paramPermissions:string[]) => {
+    const navigationItems = () => {
         //dynamic rendering is disabled for the meantime :(
 		const items:MenuItem[] = [];
         items.push({
@@ -45,24 +45,24 @@ export default function EncoderLayout(
             label: 'Posts',
             onClick: ()=> router.visit('/encoder/posts')
         },
-        {
-            key: 'posts.publish',
-            icon: <CreditCardOutlined />,
-            label: 'Published',
-            onClick: ()=> router.visit('/encoder/post-publish')
-        },
-        {
-            key: 'trashes.index',
-            icon: <DeleteOutlined />,
-            label: 'Trashes',
-            onClick: ()=> router.visit('/encoder/post-trashes')
+        // {
+        //     key: 'posts.publish',
+        //     icon: <CreditCardOutlined />,
+        //     label: 'Published',
+        //     onClick: ()=> router.visit('/encoder/post-publish')
+        // },
+        // {
+        //     key: 'trashes.index',
+        //     icon: <DeleteOutlined />,
+        //     label: 'Trashes',
+        //     onClick: ()=> router.visit('/encoder/post-trashes')
 
-        },
+        // },
         {
             type:'divider'
         },
         {
-            key: 'my-account.index',
+            key: 'encoder.my-account.index',
                 icon: <UserOutlined />,
             label: 'My Account',
             onClick: ()=> router.visit('/my-account')
@@ -101,7 +101,7 @@ export default function EncoderLayout(
                             }}
                             defaultSelectedKeys={[`${route().current()}`]}
                             items={
-                                navigationItems(permissions)
+                                navigationItems()
                             }
                         />
 

@@ -19,11 +19,11 @@ class ChangePasswordController extends Controller
             return Inertia::render('Publisher/PublisherChangePassword');
         }
 
-        if($user->role == 'author'){
-            return Inertia::render('Author/AuthorChangePassword');
+        if($user->role == 'encoder'){
+            return Inertia::render('Encoder/EncoderChangePassword');
         }
 
-        
+
     }
 
     public function changePassword(Request $req){
@@ -33,8 +33,8 @@ class ChangePasswordController extends Controller
             'password' => 'confirmed|min:4|different:old_password',
         ]);
 
-        if (Hash::check($req->old_password, Auth::user()->password)) { 
-        
+        if (Hash::check($req->old_password, Auth::user()->password)) {
+
            $data = Auth::user();
            $data->password = Hash::make($req->password);
            $data->save();
@@ -49,6 +49,6 @@ class ChangePasswordController extends Controller
                 ]
             ], 422);
         }
-            
+
     }
 }

@@ -64,11 +64,6 @@ export default function EncoderPostIndex(
 
     const items: MenuProps['items'] = [];
 
-    items.push(
-
-
-    )
-
     if (post.status === 'draft' || post.status === 'return') { //published (7)
       items.push(
         {
@@ -168,7 +163,6 @@ export default function EncoderPostIndex(
         const res = await axios.post('/encoder/posts-trash/' + id);
         if (res.data.status === 'trashed') {
           refetch()
-
         }
       }
     })
