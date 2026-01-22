@@ -64,14 +64,14 @@ const ModalUpdatePublishDate = forwardRef<ModalUpdatePublishDateHandle, Props>((
             }}
             okText="Save"
             cancelText="Close"
-            destroyOnClose
+            destroyOnHidden
             confirmLoading={loading}
             modalRender={(dom) => (
                 <Form
                     layout="vertical"
                     className='border-b'
                     form={form}
-                    
+
                     name="form_in_modal"
                     autoComplete="off"
                     initialValues={{

@@ -72,7 +72,7 @@ export default function EncoderPostIndex(
           label: 'Submit for Publishing',
           onClick: () => {
 
-            axios.post('/author/posts-submit-for-publishing/' + post.id).then(res => {
+            axios.post('/encoder/posts-submit-for-publishing/' + post.id).then(res => {
               if (res.data.status === 'submit-for-publishing') {
                 modal.info({
                   title: 'Submitted!',

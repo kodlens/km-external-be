@@ -21,7 +21,7 @@ use App\Models\User;
 
 class PublisherPostController extends Controller
 {
-    
+
     private $uploadPath = 'storage/upfiles'; //this is the upload path
     private $fileCustomPath = 'public/upfiles/'; //this is for delete, or checking if file is exist
 
@@ -35,12 +35,13 @@ class PublisherPostController extends Controller
     public function getData(Request $req){
 
         $sort = explode('.', $req->sort_by);
-        
+
         $status = '';
-        
+
         $user = Auth::user()->load('role');
 
-        $data = Post::with(['category', 'author']);
+        $data = Post::with(['subjects'])
+            ->where('status', '!=', 'draft');
 
         if ($req->status != '' || $req->status != null) {
             $data->where('status', $status);
@@ -69,7 +70,7 @@ class PublisherPostController extends Controller
             ->select('users.id', 'users.lastname', 'users.firstname', 'users.middlename', 'roles.role')
             ->where('roles.role', 'author')
             ->get();
-       
+
         $quarters = Quarter::orderBy('quarter_name', 'asc')->get();
 
         return Inertia::render('Publisher/Post/PublisherPostFormView',[
@@ -95,10 +96,10 @@ class PublisherPostController extends Controller
             'status.required_if' => 'Status is required.',
 
         ]);
-        
+
         $data = Post::find($id);
         $user = Auth::user();
-        
+
         $data->status = $req->is_submit > 0 ? 'publish' : 'return'; //set to send-for-publishing
         $data->record_trail = $data->record_trail . 'update-('.$user->id.')'.$user->lastname . ', ' . $user->firstname . '-' . date('Y-m-d H:i:s') . ';';
         $data->save();
@@ -123,8 +124,8 @@ class PublisherPostController extends Controller
 
 
 
-    
-    /* ============================== 
+
+    /* ==============================
         this method return the content
         change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
     */
@@ -157,7 +158,7 @@ class PublisherPostController extends Controller
                 // Modify the src to point to the directory where the image is stored
                 //$imageName = $imgPath . $md5Hash . '.' . $imageFormat; // Replace with your logic for generating unique filenames
                 $imageName = $md5Hash . '.' . $imageFormat; // Replace with your logic for generating unique filenames
-                
+
                 //file_put_contents($this->uploadPath, base64_decode(str_replace('data:image/'.$imageFormat.';base64,', '', $src))); // Save the image
                 file_put_contents($this->uploadPath . '/' . $imageName, base64_decode(str_replace('data:image/'.$imageFormat.';base64,', '', $src))); // Save the image
 
@@ -200,7 +201,7 @@ class PublisherPostController extends Controller
 
 
 
-    /** ====================================== 
+    /** ======================================
      * This is delete function
     ==========================================*/
     public function destroy($id){
@@ -253,7 +254,7 @@ class PublisherPostController extends Controller
     }
 
 
-    /** ====================================== 
+    /** ======================================
      * This is soft delete function
     ==========================================*/
     public function trash($id){
@@ -287,7 +288,7 @@ class PublisherPostController extends Controller
     }
 
     public function removeUpload($fileName){
-       
+
         if(Storage::exists('public/temp/' .$fileName)) {
 
             Storage::delete('public/temp/' . $fileName);
@@ -332,20 +333,12 @@ class PublisherPostController extends Controller
 
 
     public function postPublish($id){
+        $user = Auth::user();
+
         $data = Post::find($id);
         $data->status = 'publish'; //submit-for-publishing (static)
-        //$data->publication_date = date('Y-m-d');
+        $data->record_trail = $data->record_trail . 'publish|('.$user->id.')' . $user->lname . ', ' . $user->fname . '|' . date('Y-m-d H:i:s') . ';';
         $data->save();
-
-        $user = Auth::user();
-        PostLog::create([
-            'user_id' => $user->id,
-            'post_id' => $data->id,
-            'alias' => $user->lastname . ', ' . $user->firstname,
-            'description' => 'publish post',
-            'action' => 'publish'
-        ]);
-
 
         return response()->json([
             'status' => 'publish'
@@ -354,39 +347,24 @@ class PublisherPostController extends Controller
     }
 
     public function postUnpublish($id){
+        $user = Auth::user();
         $data = Post::find($id);
         $data->status = 'unpublish';
-        $data->publication_date = null;
+        $data->record_trail = $data->record_trail . 'unpublish|('.$user->id.')' . $user->lname . ', ' . $user->fname . '|' . date('Y-m-d H:i:s') . ';';
         $data->save();
-
-        $user = Auth::user();
-        PostLog::create([
-            'user_id' => $user->id,
-            'post_id' => $data->id,
-            'alias' => $user->lastname . ', ' . $user->firstname,
-            'description' => 'unpublish post',
-            'action' => 'unpublish'
-        ]);
 
         return response()->json([
             'status' => 'unpublish'
         ], 200);
     }
 
-    public function postReturnToAuthor($id){
+    public function postReturnToEncoder($id){
+        $user = Auth::user();
         $data = Post::find($id);
         $data->status = 'return';
-        $data->save();
+        $data->record_trail = $data->record_trail . 'return to encoder|('.$user->id.')' . $user->lname . ', ' . $user->fname . '|' . date('Y-m-d H:i:s') . ';';
 
-          
-        $user = Auth::user();
-        PostLog::create([
-            'user_id' => $user->id,
-            'post_id' => $data->id,
-            'alias' => $user->lastname . ', ' . $user->firstname,
-            'description' => 'return to author',
-            'action' => 'return'
-        ]);
+        $data->save();
 
         return response()->json([
             'status' => 'return'
@@ -429,6 +407,6 @@ class PublisherPostController extends Controller
         ], 200);
     }
 
-   
+
 
 }
