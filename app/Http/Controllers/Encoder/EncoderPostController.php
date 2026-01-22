@@ -3,12 +3,8 @@
 namespace App\Http\Controllers\Encoder;
 
 use App\Http\Controllers\Controller;
-use App\Models\Author;
-use App\Models\Category;
 use App\Models\Post;
-use App\Models\PostLog;
-use App\Models\Quarter;
-use App\Models\Section;
+
 use App\Models\User;
 use App\Rules\ValidateSlug;
 use App\Rules\ValidateTitle;
@@ -17,12 +13,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Helpers\FilterDom;
 
 class EncoderPostController extends Controller
 {
-    private $uploadPath = 'storage/upfiles'; // this is the upload path
 
-    private $fileCustomPath = 'public/upfiles/'; // this is for delete, or checking if file is exist
+    private $fileCustomPath = 'public/upfiles/';
 
     public function index()
     {
@@ -36,7 +33,7 @@ class EncoderPostController extends Controller
         $status = '';
 
         $user = Auth::user()->load('role');
-        $data = Post::query();
+        $data = Post::query()->where('trash', 0);
 
         if ($req->status != '' || $req->status != null) {
             $data->where('status', $req->status);
@@ -61,14 +58,13 @@ class EncoderPostController extends Controller
         ]);
     }
 
-    public function store(Request $req)
-    {
-        return $req;
+    public function store(Request $req){
 
         $req->validate([
             'title' => ['required', new ValidateTitle(0)],
             'author_name' => ['string', 'nullable'],
             'description' => ['required'],
+            'subjects' => ['required', 'array', 'min:1'],
         ], [
             'description.required' => 'Description is required.',
         ]);
@@ -80,7 +76,7 @@ class EncoderPostController extends Controller
                 to the database in a base64 format, this will convert the base64 to a file, re render the content
                 change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
             */
-            $modifiedHtml = $this->filterDOM($req->description);
+            $modifiedHtml = (new FilterDom())->filterDOM($req->description);
             /* ============================== */
 
             /* ==============================
@@ -112,9 +108,9 @@ class EncoderPostController extends Controller
                 'title' => $req->title,
                 'slug' => Str::slug($req->title),
                 'excerpt' => $req->excerpt,
-                'source' => $req->source,
-                'agency' => 'stii',
-                'status' => 'draft',
+                'source_url' => $req->source_url,
+                'agency' => $req->agency,
+                'status' => $req->status,
                 'is_publish' => 0,
                 // 'section_id' => $req->section,
                 'description' => $modifiedHtml, // modified content, changing the base64 image src to img src="/path/folder"
@@ -125,13 +121,12 @@ class EncoderPostController extends Controller
                 /** 1 for insert, 0 for delete and 2 for update */
             ]);
 
-            // PostLog::create([
-            //     'user_id' => $user->id,
-            //     'post_id' => $data->id,
-            //     'alias' => $user->lastname.', '.$user->firstname,
-            //     'description' => $req->is_submit == 1 ? 'submit for publishing' : 'create post',
-            //     'action' => 'create',
-            // ]);
+            foreach($req->subjects as $subject){
+                DB::table('info_subject_headings')->insert([
+                    'info_id' => $data->id,
+                    'subject_heading_id' => $subject['subject_heading_id'],
+                ]);
+            }
 
             // if (Storage::exists('public/temp/'.$imgFilename)) {
             //     // Move the file
@@ -154,7 +149,7 @@ class EncoderPostController extends Controller
     {
         $CK_LICENSE = env('CK_EDITOR_LICENSE_KEY');
 
-        $post = Post::find($id);
+        $post = Post::with(['subjects'])->find($id);
 
         return Inertia::render('Encoder/Post/EncoderPostCreateEdit', [
             'id' => $id,
@@ -164,11 +159,13 @@ class EncoderPostController extends Controller
 
     public function update(Request $req, $id)
     {
-        return $req;
+        //return $req->subjects;
+
         $req->validate([
             'title' => ['required', new ValidateTitle($id)],
             'author_name' => ['string', 'nullable'],
             'description' => ['required'],
+            'subjects' => ['required', 'array', 'min:1'],
         ], [
             'description.required' => 'Content is required.'
 
@@ -181,7 +178,9 @@ class EncoderPostController extends Controller
                 to the database in a base64 format, this will convert the base64 to a file, re render the content
                 change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
             */
-            $modifiedHtml = $this->filterDOM($req->description);
+
+            $modifiedHtml = (new FilterDom())->filterDOM($req->description);
+
             /* ============================== */
 
             /* ==============================
@@ -193,8 +192,6 @@ class EncoderPostController extends Controller
             $data = Post::find($id);
             $user = Auth::user();
 
-
-
             // $imgFilename = $req->upload ? $req->upload[0]['response'] : null;
             // update data in table articles
 
@@ -203,9 +200,9 @@ class EncoderPostController extends Controller
             $data->title = $req->title;
             $data->alias = Str::slug($req->title);
             $data->excerpt = $req->excerpt ? $req->excerpt : null;
-            $data->source = 'km-stii';
-            $data->agency = 'stii';
-            $data->status = 'draft';
+            $data->source_url = $req->source_url;
+            $data->agency = $req->agency;
+            $data->status = $req->status;
             $data->is_publish = 0;
             $data->description = $modifiedHtml;
             $data->description_text = $content;
@@ -214,6 +211,15 @@ class EncoderPostController extends Controller
             $data->record_trail = $data->record_trail . "update|(".$user->id.")".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
 
             $data->save();
+
+            //delete all related subjects
+            DB::table('info_subject_headings')->where('info_id', $id)->delete();
+            foreach($req->subjects as $subject){
+                DB::table('info_subject_headings')->insert([
+                    'info_id' => $id,
+                    'subject_heading_id' => $subject['subject_heading_id'],
+                ]);
+            }
 
             // PostLog::create([
             //     'user_id' => $user->id,
@@ -240,79 +246,7 @@ class EncoderPostController extends Controller
         }
     }
 
-    /* ==============================
-        this method return the content
-        change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
-    */
-    private function filterDOM($content)
-    {
-        $modifiedHtml = '';
 
-        $doc = new \DOMDocument('1.0', 'UTF-8'); // solution add bacbkward slash
-        libxml_use_internal_errors(true);
-        libxml_clear_errors();
-        $doc->encoding = 'UTF-8';
-        $htmlContent = $content;
-        $doc->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
-        // $doc->loadHTML($htmlContent);
-
-        $images = $doc->getElementsByTagName('img');
-        // Find all img tags
-        $counter = 0;
-
-        foreach ($images as $image) {
-
-            $src = $image->getAttribute('src');
-            $currentTimestamp = time(); // Get the current Unix timestamp
-            $md5Hash = md5($currentTimestamp.$counter); // Create an MD5 hash of the timestamp
-
-            // Check if the src is a data URL (Base64)
-            if (strpos($src, 'data:image/') === 0) {
-                // Extract image format (e.g., png, jpeg) detect fileFormat
-                $imageFormat = explode(';', explode('/', $src)[1])[0];
-
-                // Modify the src to point to the directory where the image is stored
-                // $imageName = $imgPath . $md5Hash . '.' . $imageFormat; // Replace with your logic for generating unique filenames
-                $imageName = $md5Hash.'.'.$imageFormat; // Replace with your logic for generating unique filenames
-
-                // file_put_contents($this->uploadPath, base64_decode(str_replace('data:image/'.$imageFormat.';base64,', '', $src))); // Save the image
-                file_put_contents($this->uploadPath.'/'.$imageName, base64_decode(str_replace('data:image/'.$imageFormat.';base64,', '', $src))); // Save the image
-
-                // Set the new src attribute
-                // concat '/' for directory
-                $image->setAttribute('src', '/'.$this->uploadPath.'/'.$imageName);
-            }
-            // to make image name unique add counter in time and hash the time together with the counter
-            $counter++;
-        }
-        // save all changes
-        $modifiedReviseImg = $doc->saveHTML();
-
-        // removing all html,header //only tag inside the body will be saved
-        $newDocImg = new \DOMDocument('1.0', 'UTF-8'); // solution add bacbkward slash
-        libxml_use_internal_errors(true);
-        libxml_clear_errors();
-        $newDocImg->encoding = 'UTF-8';
-        // $newDocImg->loadHTML($modifiedReviseImg);
-        $newDocImg->loadHTML(mb_convert_encoding($modifiedReviseImg, 'HTML-ENTITIES', 'UTF-8'));
-
-        // Find the <body> tag
-        $bodyNode = $newDocImg->getElementsByTagName('body')->item(0);
-
-        if ($bodyNode !== null) {
-            // Create a new document for the content inside <body>
-            $newDoc = new \DOMDocument;
-            foreach ($bodyNode->childNodes as $node) {
-                $newNode = $newDoc->importNode($node, true);
-                $newDoc->appendChild($newNode);
-            }
-
-            // Output the content inside <body>
-            $modifiedHtml = $newDoc->saveHTML();
-        }
-
-        return $modifiedHtml;
-    }
 
     /** ======================================
      * This is delete function
@@ -358,7 +292,7 @@ class EncoderPostController extends Controller
         }
 
         Post::destroy($id);
-        $data->record_trail = $data->record_trail.';delete-'.$user->lastname.', '.$user->firstname.'-'.date('Y-m-d H:i:s');
+        $data->record_trail = $data->record_trail.';delete|'.'('.$user->id.')'.$user->lname.', '.$user->fname.'|'.date('Y-m-d H:i:s');
 
         return response()->json([
             'status' => 'deleted',
@@ -373,16 +307,8 @@ class EncoderPostController extends Controller
         $user = Auth::user();
         $data = Post::find($id);
         $data->trash = 1;
+        $data->record_trail = $data->record_trail.';trash|'.'('.$user->id.')'.$user->lname.', '.$user->fname.'|'.date('Y-m-d H:i:s');
         $data->save();
-
-        $user = Auth::user();
-        PostLog::create([
-            'user_id' => $user->id,
-            'post_id' => $data->id,
-            'alias' => $user->lastname.', '.$user->firstname,
-            'description' => 'trash post',
-            'action' => 'trash',
-        ]);
 
         return response()->json([
             'status' => 'trashed',
@@ -440,20 +366,12 @@ class EncoderPostController extends Controller
 
     public function postDraft($id)
     {
-
+        $user = Auth::user();
         $data = Post::find($id);
         $data->status = 'draft'; // submit-for-publishing (static)
         $data->trash = 0; // be sure to set 0 the trash if draft
+        $data->record_trail = $data->record_trail . "draft|(".$user->id.")".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
         $data->save();
-
-        $user = Auth::user();
-        PostLog::create([
-            'user_id' => $user->id,
-            'post_id' => $data->id,
-            'alias' => $user->lastname.', '.$user->firstname,
-            'description' => 'draft post',
-            'action' => 'draft',
-        ]);
 
         return response()->json([
             'status' => 'draft',
@@ -468,13 +386,6 @@ class EncoderPostController extends Controller
         $data->save();
 
         $user = Auth::user();
-        PostLog::create([
-            'user_id' => $user->id,
-            'post_id' => $data->id,
-            'alias' => $user->lastname.', '.$user->firstname,
-            'description' => 'archived post',
-            'action' => 'archive',
-        ]);
 
         return response()->json([
             'status' => 'archive',

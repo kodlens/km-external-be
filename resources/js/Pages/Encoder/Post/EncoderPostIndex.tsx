@@ -64,13 +64,6 @@ export default function EncoderPostIndex(
 
     const items: MenuProps['items'] = [];
 
-    // if (post.status === 'draft' || post.status === 'return') { //published (7)
-    //   items.push(
-
-    //     );
-    // }
-
-
     items.push(
       {
         label: 'Draft',
@@ -78,9 +71,9 @@ export default function EncoderPostIndex(
         icon: <PaperClipOutlined />,
         onClick: () => {
 
-          axios.post('/author/posts-draft/' + post.id).then(res => {
+          axios.post('/encoder/posts-draft/' + post.id).then(res => {
             if (res.data.status === 'draft') {
-              modal.info({
+              modal.success({
                 title: 'Draft!',
                 content: 'Successfully draft.'
               })
@@ -114,13 +107,18 @@ export default function EncoderPostIndex(
         icon: <EditOutlined />,
         onClick: () => handleEditClick(post.id),
       },
-      {
-        label: 'Trash',
-        key: '3',
-        icon: <DeleteOutlined />,
-        onClick: () => handleTrashClick(post.id)
-      },
     )
+
+    if (post.status === 'draft' || post.status === 'return') { //published (7)
+      items.push(
+        {
+          label: 'Trash',
+          key: '3',
+          icon: <DeleteOutlined />,
+          onClick: () => handleTrashClick(post.id)
+        },
+      );
+    }
 
     return items;
   }

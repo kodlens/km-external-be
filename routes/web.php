@@ -255,14 +255,14 @@ Route::prefix('encoder')->middleware('auth', 'encoder')->group(function () {
     //Route::resource('/posts', App\Http\Controllers\Encoder\EncoderPostController::class);
     Route::get('/get-posts', [App\Http\Controllers\Encoder\EncoderPostController::class, 'getData'])->name('encoder.post.get-data');
 
-  //   Route::post('/posts-trash/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'trash'])->name('posts.trash');
+    Route::post('/posts-trash/{id}', [App\Http\Controllers\Encoder\EncoderPostController::class, 'trash'])->name('encoder.posts.trash');
   //   Route::post('/temp-upload', [App\Http\Controllers\Author\AuthorPostController::class, 'tempUpload'])->name('posts.temp-upload');
   //   Route::post('/temp-remove/{filename}', [App\Http\Controllers\Author\AuthorPostController::class, 'removeUpload'])->name('posts.temp-remove');
   //   Route::post('/image-remove/{id}/{filename}', [App\Http\Controllers\Author\AuthorPostController::class, 'imageRemove'])->name('posts.image-remove');
 
   //   Route::post('/posts-published/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'postPublished'])->name('posts.published');
   //   Route::post('/posts-archived/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'postArchived'])->name('posts.archived');
-  //   Route::post('/posts-draft/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'postDraft'])->name('posts.draft');
+     Route::post('/posts-draft/{id}', [App\Http\Controllers\Encoder\EncoderPostController::class, 'postDraft'])->name('encoder.posts.draft');
   //   Route::post('/posts-pending/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'postPending'])->name('posts.pending');
 
   //   Route::post('/posts-submit-for-publishing/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'postSubmitForPublishing'])->name('posts.submit-for-publishing');

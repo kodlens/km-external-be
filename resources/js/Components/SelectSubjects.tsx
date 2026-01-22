@@ -1,79 +1,69 @@
 import { Subject, SubjectHeading } from '@/types/subject';
-import { Button, Form, Select } from 'antd'
+import { Button, Form, Select } from 'antd';
 import { FormInstance } from 'antd/es/form';
 import axios from 'axios';
 import { Trash } from 'lucide-react';
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react';
 
-type FormSubject = {
-  subject_id: number;
-  subject_heading_id: number;
-}
+type Props = {
+  form: FormInstance;
+};
 
-const SelectSubjects = ({form}: {form: FormInstance}) => {
-
-  const [errors, setErrors] = useState<any>({});
+const SelectSubjects = ({ form }: Props) => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [subjectHeadings, setSubjectHeadings] = useState<SubjectHeading[]>([]);
+  const [headingsByIndex, setHeadingsByIndex] = useState<
+    Record<number, SubjectHeading[]>
+  >({});
+  const [loadingIndex, setLoadingIndex] = useState<Record<number, boolean>>({});
 
-  const [formSubjects, setFormSubjects] = useState<FormSubject[]>([]);
-
-  const [subject, setSubject] = useState<Subject>();
-  const [subjectHeading, setSubjectHeading] = useState<SubjectHeading>();
-
-  const loadSubjects = () => {
-    //axios call to load subjects
-    axios.get('/get-subjects').then(res => {
-      setSubjects(res.data)
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-
-  const loadSubjectHeadings = (subjectId: number) => {
-    axios.get(`/get-subject-headings/${subjectId}`).then(res => {
-      setSubjectHeadings(res.data);
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-
+  const loadedRef = useRef<Record<number, boolean>>({});
 
   useEffect(() => {
-    loadSubjects();
+    axios.get('/get-subjects').then(res => setSubjects(res.data));
   }, []);
 
+  const loadSubjectHeadings = async (subjectId: number, index: number) => {
+    setLoadingIndex(prev => ({ ...prev, [index]: true }));
+
+    const res = await axios.get(`/get-subject-headings/${subjectId}`);
+
+    setHeadingsByIndex(prev => ({
+      ...prev,
+      [index]: res.data
+    }));
+
+    setLoadingIndex(prev => ({ ...prev, [index]: false }));
+  };
+
+  // ✅ SAFE preload for edit mode
   useEffect(() => {
+    const rows = form.getFieldValue('subjects') || [];
 
-    form.setFieldsValue({
-      subject: subject?.id,
-      subject_heading: subjectHeading?.id
+    rows.forEach((row: any, index: number) => {
+      if (row?.subject_id && !loadedRef.current[index]) {
+        loadedRef.current[index] = true;
+        loadSubjectHeadings(row.subject_id, index);
+      }
     });
-
-
-    loadSubjectHeadings(subject?.id || 1);
-  }, [subject]);
-
-
-  const addFormSubject = () => {
-    setFormSubjects([...formSubjects, { subject_id: 0, subject_heading_id: 0 }]);
-  }
-
+  }, [form]);
 
   return (
     <Form.List name="subjects">
       {(fields, { add, remove }) => (
         <>
           {fields.map(({ key, name }, index) => (
-            <div key={key} className="flex gap-4 w-full items-center">
-
+            <div
+              key={key}
+              className="grid grid-cols-12 gap-4 w-full items-start"
+            >
               <Form.Item
                 name={[name, 'subject_id']}
                 label="Subject"
-                className="w-1/3 min-w-0"
+                className="col-span-4 min-w-0"
+
               >
                 <Select
-                  className='w-full'
+                  className="w-full"
                   options={subjects.map(s => ({
                     label: s.subject,
                     value: s.id
@@ -83,7 +73,8 @@ const SelectSubjects = ({form}: {form: FormInstance}) => {
                       ['subjects', index, 'subject_heading_id'],
                       undefined
                     );
-                    loadSubjectHeadings(value);
+                    loadedRef.current[index] = true;
+                    loadSubjectHeadings(value, index);
                   }}
                 />
               </Form.Item>
@@ -91,35 +82,35 @@ const SelectSubjects = ({form}: {form: FormInstance}) => {
               <Form.Item
                 name={[name, 'subject_heading_id']}
                 label="Subject Heading"
-                className="w-2/3 min-w-0"
+                className="col-span-7 min-w-0"
               >
                 <Select
-                  className='w-full'
-                  options={(subjectHeadings || []).map(h => ({
+                  className="w-full"
+                  loading={loadingIndex[index]}
+                  options={(headingsByIndex[index] || []).map(h => ({
                     label: h.subject_heading,
                     value: h.id
                   }))}
                 />
               </Form.Item>
 
-              <div>
-                <Button danger
-                  className=''
-                  onClick={() => remove(name)}>
-                    <Trash size={16} />
-                </Button>
+              <div className="col-span-1 flex items-center mt-7">
+                <Button
+                  danger
+                  onClick={() => remove(name)}
+                  icon={<Trash size={16} />}
+                />
               </div>
             </div>
           ))}
 
-          <Button type="primary" onClick={() => add()}>
+          <Button type="primary" onClick={() => add()} className="mt-2">
             Add Subject
           </Button>
         </>
       )}
     </Form.List>
+  );
+};
 
-  )
-}
-
-export default SelectSubjects
+export default SelectSubjects;

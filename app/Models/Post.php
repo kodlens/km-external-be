@@ -53,26 +53,13 @@ class Post extends Model
     ];
 
 
-    public function category(){
-        return $this->belongsTo(Category::class);
-    }
 
-    public function author(){
-        return $this->belongsTo(User::class, 'author_id')
-            ->select('id', 'lastname', 'firstname', 'middlename', 'bio');
-    }
 
-    public function quarter(){
-        return $this->belongsTo(Quarter::class);
-    }
-
-    public function status(){
-        return $this->belongsTo(Status::class);
-    }
-
-    public function postlogs(){
-        return $this->hasMany(PostLog::class)
-            ->orderBy('id', 'desc');
+    public function subjects(){
+        return $this->hasMany(InfoSubjectHeading::class, 'info_id', 'id')
+          ->join('subject_headings', 'info_subject_headings.subject_heading_id', '=', 'subject_headings.id')
+          ->join('subjects', 'subject_headings.subject_id', '=', 'subjects.id')
+          ->select('info_subject_headings.*', 'subject_heading', 'subject', 'subject_id');
     }
 
 }

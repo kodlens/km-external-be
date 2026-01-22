@@ -60,10 +60,11 @@ const EncoderPostCreateEdit = ({
         { name: "description", value: post.description },
         { name: "excerpt", value: post.excerpt },
         { name: "status", value: post.status },
-        { name: "source", value: post.source },
+        { name: "source_url", value: post.source_url },
         { name: "agency", value: post.agency },
         { name: "author_name", value: post.author_name },
         { name: "is_publish", value: post.is_publish },
+        { name: "subjects", value: post.subjects },
       ]);
     } catch (err) { }
   };
@@ -80,11 +81,12 @@ const EncoderPostCreateEdit = ({
             title: "Updated!",
             content: <div>Post successfully updated.</div>,
             onOk() {
-              setLoading(false)
               router.visit("/encoder/posts");
             },
           });
         }
+        setLoading(false)
+
       }).catch(err => {
         if (err.response.status === 422) {
           setErrors(err.response.data.errors);
@@ -101,11 +103,12 @@ const EncoderPostCreateEdit = ({
             title: "Saved!",
             content: <div>Post successfully saved.</div>,
             onOk() {
-              setLoading(false)
+
               router.visit("/encoder/posts");
             },
           });
         }
+        setLoading(false)
       }).catch(err => {
         if (err.response.status === 422) {
           setErrors(err.response.data.errors);
@@ -115,7 +118,6 @@ const EncoderPostCreateEdit = ({
         setLoading(false);
       })
     }
-
   };
 
 
@@ -167,7 +169,7 @@ const EncoderPostCreateEdit = ({
                 description: "",
                 status: 'draft',
                 is_publish: 0,
-                source: 'km-stii',
+                source_url: '',
                 agency: '',
               }}
             >
@@ -257,19 +259,33 @@ const EncoderPostCreateEdit = ({
                 </Form.Item>
               </Flex>
 
+              <Flex gap={`middle`}>
+                <Form.Item
+                  name="source_url"
+                  label="Source"
+                  className="w-full"
+                  validateStatus={errors.source_url ? "error" : ""}
+                  help={errors.source_url ? errors.source_url[0] : ""}
+                >
+                  <Input placeholder="Source" />
+                </Form.Item>
 
-              <Form.Item
-                name="source"
-                label="Source"
-                className="w-full"
-                validateStatus={errors.source ? "error" : ""}
-                help={errors.source ? errors.source[0] : ""}
-              >
-                <Input placeholder="Source" />
-              </Form.Item>
+                <Form.Item
+                  name="agency"
+                  label="Agency"
+                  className="w-full"
+                  validateStatus={errors.agency ? "error" : ""}
+                  help={errors.agency ? errors.agency[0] : ""}
+                >
+                  <Input placeholder="Agency" />
+                </Form.Item>
+              </Flex>
 
               <div className="my-6 border-t p-6 bg-gray-50 rounded-md">
                 <div className="font-bold mb-4">Manage Subjects/Subject Headings</div>
+                { errors && errors.subjects ? (
+                  <div className="mb-4 text-red-600">{errors.subjects[0]}</div>
+                ) : null }
                 <SelectSubjects form={form}/>
 
               </div>

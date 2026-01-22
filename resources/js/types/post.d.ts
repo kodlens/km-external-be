@@ -7,6 +7,7 @@ export interface Post {
     description?: string;
     description_text?: string;
     alias?: string;
+    subjects: InfoSubjectHeading[]
     url?: string;
     agency_code?: string;
     thumbnail?: string;
@@ -29,3 +30,16 @@ export interface Post {
     record_trail?: string;
     trash?: string | number;
 }
+
+
+export interface InfoSubjectHeading  {
+    id: number;
+    info_id: number;
+    subject_id: number;
+    subject_heading_id: number;
+    score?: number;
+    analysis?: string;
+    subject?: string;
+    subject_heading?: string;
+}
+
