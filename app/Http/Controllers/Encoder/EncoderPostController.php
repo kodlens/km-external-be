@@ -87,23 +87,6 @@ class EncoderPostController extends Controller
 
             $user = Auth::user();
 
-            // convert tags to string
-            // $tagsString = '';
-            // foreach($req->tags as $key => $tag){
-            //     if($key == 0){
-            //         $tagsString = $tag;
-            //     }else{
-            //         $tagsString = $tagsString . ',' .$tag;
-            //     }
-            // }
-
-            // $publicationDate = null;
-            // if($req->publication_date != null || $req->publication_date != ''){
-            //     $publicationDate = date('Y-m-d', strtotime($req->publication_date));
-            // }
-
-            //$imgFilename = $req->upload[0]['response']; // get the filename of the file uploaded
-
             $data = Post::create([
                 'title' => $req->title,
                 'slug' => Str::slug($req->title),
@@ -112,7 +95,6 @@ class EncoderPostController extends Controller
                 'agency' => $req->agency,
                 'status' => $req->status,
                 'is_publish' => 0,
-                // 'section_id' => $req->section,
                 'description' => $modifiedHtml, // modified content, changing the base64 image src to img src="/path/folder"
                 'description_text' => $content,
                 'author_name' => $req->author_name,
@@ -127,12 +109,6 @@ class EncoderPostController extends Controller
                     'subject_heading_id' => $subject['subject_heading_id'],
                 ]);
             }
-
-            // if (Storage::exists('public/temp/'.$imgFilename)) {
-            //     // Move the file
-            //     Storage::move('public/temp/'.$imgFilename, 'public/featured_images/'.$imgFilename);
-            //     Storage::delete('public/temp/'.$imgFilename);
-            // }
 
             return response()->json([
                 'status' => 'saved',
@@ -159,8 +135,6 @@ class EncoderPostController extends Controller
 
     public function update(Request $req, $id)
     {
-        //return $req->subjects;
-
         $req->validate([
             'title' => ['required', new ValidateTitle($id)],
             'author_name' => ['string', 'nullable'],

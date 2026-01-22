@@ -65,52 +65,54 @@ export default function EncoderPostIndex(
     const items: MenuProps['items'] = [];
 
     items.push(
-      {
-        label: 'Draft',
-        key: '1',
-        icon: <PaperClipOutlined />,
-        onClick: () => {
 
-          axios.post('/encoder/posts-draft/' + post.id).then(res => {
-            if (res.data.status === 'draft') {
-              modal.success({
-                title: 'Draft!',
-                content: 'Successfully draft.'
-              })
-              refetch()
 
-            }
-          })
-        },
-      },
-      {
-        key: 'posts.submit-for-publishing',
-        icon: <ProjectOutlined />,
-        label: 'Submit for Publishing',
-        onClick: () => {
-
-          axios.post('/author/posts-submit-for-publishing/' + post.id).then(res => {
-            if (res.data.status === 'submit-for-publishing') {
-              modal.info({
-                title: 'Submitted!',
-                content: 'Successfully submitted.'
-              })
-
-              refetch()
-            }
-          })
-        },
-      },
-      {
-        label: 'Edit',
-        key: '2',
-        icon: <EditOutlined />,
-        onClick: () => handleEditClick(post.id),
-      },
     )
 
     if (post.status === 'draft' || post.status === 'return') { //published (7)
       items.push(
+        {
+          key: 'posts.submit-for-publishing',
+          icon: <ProjectOutlined />,
+          label: 'Submit for Publishing',
+          onClick: () => {
+
+            axios.post('/author/posts-submit-for-publishing/' + post.id).then(res => {
+              if (res.data.status === 'submit-for-publishing') {
+                modal.info({
+                  title: 'Submitted!',
+                  content: 'Successfully submitted.'
+                })
+
+                refetch()
+              }
+            })
+          },
+        },
+        {
+          label: 'Edit',
+          key: '2',
+          icon: <EditOutlined />,
+          onClick: () => handleEditClick(post.id),
+        },
+        {
+          label: 'Draft',
+          key: '1',
+          icon: <PaperClipOutlined />,
+          onClick: () => {
+
+            axios.post('/encoder/posts-draft/' + post.id).then(res => {
+              if (res.data.status === 'draft') {
+                modal.success({
+                  title: 'Draft!',
+                  content: 'Successfully draft.'
+                })
+                refetch()
+
+              }
+            })
+          },
+        },
         {
           label: 'Trash',
           key: '3',
