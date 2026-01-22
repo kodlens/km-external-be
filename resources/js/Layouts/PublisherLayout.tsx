@@ -48,18 +48,18 @@ export default function PublisherLayout(
         label: 'Posts',
         onClick: () => router.visit('/publisher/posts')
       },
-      {
-        key: 'publisher.posts-publish',
-        icon: <CreditCardOutlined />,
-        label: 'Publish',
-        onClick: () => router.visit('/publisher/post-publish')
-      },
-      {
-        key: 'publisher.posts-unpublish',
-        icon: <MinusSquareOutlined />,
-        label: 'Unpublish',
-        onClick: () => router.visit('/publisher/post-unpublish')
-      },
+      // {
+      //   key: 'publisher.posts-publish',
+      //   icon: <CreditCardOutlined />,
+      //   label: 'Publish',
+      //   onClick: () => router.visit('/publisher/post-publish')
+      // },
+      // {
+      //   key: 'publisher.posts-unpublish',
+      //   icon: <MinusSquareOutlined />,
+      //   label: 'Unpublish',
+      //   onClick: () => router.visit('/publisher/post-unpublish')
+      // },
       {
         type: 'divider'
       },

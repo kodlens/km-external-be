@@ -69,7 +69,8 @@ export default function PublisherPostIndex({
 
       const res = await axios.get(`/publisher/get-posts?${params}`);
       return res.data
-    }
+    },
+    refetchOnWindowFocus: false,
   })
 
   const createMenuItems = (post: Post) => {
