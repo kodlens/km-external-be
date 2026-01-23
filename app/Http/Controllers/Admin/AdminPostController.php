@@ -9,11 +9,13 @@ use Inertia\Response;
 use Auth;
 use App\Models\Post;
 use App\Http\Controllers\Helpers\FilterDom;
+use App\Http\Controllers\Helpers\RecordTrail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\User;
-use App\Models\RecordTrail;
-
+use App\Rules\ValidateSlug;
+use App\Rules\ValidateTitle;
+use Illuminate\Support\Facades\DB;
 
 class AdminPostController extends Controller
 {
@@ -67,58 +69,62 @@ class AdminPostController extends Controller
             'description.required' => 'Description is required.',
         ]);
 
+
         try {
+            DB::transaction(function () use ($req) {
+                // Database operations here
+                /* ==============================
+                    convert base64 images → files and rewrite HTML
+                */
+                $modifiedHtml = (new FilterDom())->filterDOM($req->description);
+                /* ============================== */
 
-            /* ==============================
-                this method detects and convert the content containing <img src=(base64 img), since it's not a good practice saving image
-                to the database in a base64 format, this will convert the base64 to a file, re render the content
-                change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
-            */
-            $modifiedHtml = (new FilterDom())->filterDOM($req->description);
-            /* ============================== */
+                /* ==============================
+                    this will clean all html tags, leaving the content, this data may use to train AI models,
+                */
+                $content = trim(strip_tags($req->description)); // cleaning all tags
+                /* ============================== */
+                $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
 
-            /* ==============================
-                this will clean all html tags, leaving the content, this data may use to train AI models,
-            */
-            $content = trim(strip_tags($req->description)); // cleaning all tags
-            /* ============================== */
-            $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
+                $user = Auth::user();
+                $name = $user->lname . ',' . $user->fname;
 
-            $user = Auth::user();
-            $name = $user->lname . ',' . $user->fname;
-
-            $data = Post::create([
-                'title' => $req->title,
-                'slug' => Str::slug($req->title),
-                'excerpt' => $req->excerpt,
-                'source_url' => $req->source_url,
-                'agency' => $req->agency,
-                'status' => $req->status,
-                'is_publish' => 0,
-                'description' => $modifiedHtml, // modified content, changing the base64 image src to img src="/path/folder"
-                'description_text' => $content,
-                'author_name' => $req->author_name,
-                'encoded_by' => $user->id,
-                'publish_date' => $dateFormated,
-                'record_trail' => (new RecordTrail())->recordTrail('', 'insert', $user->id, $name),
-            ]);
-
-            foreach($req->subjects as $subject){
-                DB::table('info_subject_headings')->insert([
-                    'info_id' => $data->id,
-                    'subject_heading_id' => $subject['subject_heading_id'],
+                $data = Post::create([
+                    'title' => $req->title,
+                    'alias' => Str::slug($req->title),
+                    'excerpt' => $req->excerpt,
+                    'source_url' => $req->source_url,
+                    'agency' => $req->agency,
+                    'status' => $req->status,
+                    'is_publish' => 0,
+                    'description' => $modifiedHtml, // modified content, changing the base64 image src to img src="/path/folder"
+                    'description_text' => $content,
+                    'author_name' => $req->author_name,
+                    'encoded_by' => $user->id,
+                    'publish_date' => $dateFormated,
+                    'record_trail' => (new RecordTrail())->recordTrail('', 'insert', $user->id, $name),
                 ]);
-            }
+
+                foreach($req->subjects as $subject){
+                    if(!empty($subject['subject_heading_id'])){
+                        DB::table('info_subject_headings')->insert([
+                            'info_id' => $data->id,
+                            'subject_heading_id' => $subject['subject_heading_id'],
+                        ]);
+                    }
+                }
+            });
 
             return response()->json([
-                'status' => 'saved',
+                'status' => 'saved'
             ], 200);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
-                'error' => $e->getMessage(),
+                'error' => $e->getMessage()
             ], 500);
         }
+
     }
 
 
@@ -127,7 +133,7 @@ class AdminPostController extends Controller
 
         $post = Post::with('subjects')->find($id);
 
-        return Inertia::render('Panel/Post/PostCreateEdit',[
+        return Inertia::render('Admin/Post/AdminPostCreateEdit',[
             'id' => $id,
             'ckLicense' => $CK_LICENSE,
             'post' => $post]);

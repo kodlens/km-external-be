@@ -78,14 +78,14 @@ const AdminPostCreateEdit = ({
     setErrors({});
 
     if (id > 0) {
-      axios.patch('/encoder/posts/' + id, values).then(res => {
+      axios.patch('/admin/posts/' + id, values).then(res => {
 
         if (res.data.status === 'updated') {
           modal.success({
             title: "Updated!",
             content: <div>Post successfully updated.</div>,
             onOk() {
-              router.visit("/encoder/posts");
+              router.visit("/admin/posts");
             },
           });
         }
@@ -101,14 +101,14 @@ const AdminPostCreateEdit = ({
       })
 
     } else {
-      axios.post('/encoder/posts', values).then(res => {
+      axios.post('/admin/posts', values).then(res => {
         if (res.data.status === 'saved') {
           modal.success({
             title: "Saved!",
             content: <div>Post successfully saved.</div>,
             onOk() {
 
-              router.visit("/encoder/posts");
+              router.visit("/admin/posts");
             },
           });
         }
