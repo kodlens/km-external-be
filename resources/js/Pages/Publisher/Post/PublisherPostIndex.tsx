@@ -143,12 +143,12 @@ export default function PublisherPostIndex({
               });
           }
         },
-        {
-          key: "posts.set-publish-date",
-          icon: <ProjectOutlined />,
-          label: "Set Publish Date",
-          onClick: () => modalRef.current?.openModal(post.id)
-        },
+        // {
+        //   key: "posts.set-publish-date",
+        //   icon: <ProjectOutlined />,
+        //   label: "Set Publish Date",
+        //   onClick: () => modalRef.current?.openModal(post.id)
+        // },
       );
     }
 

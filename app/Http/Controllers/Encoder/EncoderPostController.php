@@ -84,6 +84,7 @@ class EncoderPostController extends Controller
             */
             $content = trim(strip_tags($req->description)); // cleaning all tags
             /* ============================== */
+            $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
 
             $user = Auth::user();
 
@@ -99,6 +100,7 @@ class EncoderPostController extends Controller
                 'description_text' => $content,
                 'author_name' => $req->author_name,
                 'encoded_by' => $user->id,
+                'publish_date' => $dateFormated,
                 'record_trail' => 'insert|('.$user->id.')'.$user->lname . ','. $user->fname . '|' . date('Y-m-d H:i:s') . ';',
                 /** 1 for insert, 0 for delete and 2 for update */
             ]);
@@ -163,6 +165,8 @@ class EncoderPostController extends Controller
             $content = trim(strip_tags($req->description)); // cleaning all tags
             /* ============================== */
 
+            $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
+
             $data = Post::find($id);
             $user = Auth::user();
 
@@ -182,6 +186,7 @@ class EncoderPostController extends Controller
             $data->description_text = $content;
             $data->author_name = $req->author_name;
             $data->last_updated_by = $user->id;
+            $data->publish_date = $dateFormated;
             $data->record_trail = $data->record_trail . "update|(".$user->id.")".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
 
             $data->save();
@@ -374,13 +379,6 @@ class EncoderPostController extends Controller
         $data->save();
 
         $user = Auth::user();
-        PostLog::create([
-            'user_id' => $user->id,
-            'post_id' => $data->id,
-            'alias' => $user->lastname.', '.$user->firstname,
-            'description' => 'submit for publishing',
-            'action' => 'submit',
-        ]);
 
         return response()->json([
             'status' => 'submit-for-publishing',

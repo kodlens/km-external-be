@@ -10,7 +10,7 @@ import { ReactNode } from "react";
 export default function PublisherDashboard({ auth }: PageProps) {
   console.log(auth);
 
-  //const fullName = `${auth.user.lname} ${auth.user.mname ?? ''} ${auth.user.lname}`.trim();
+  const fullName = `${auth.user.lname} ${auth.user.mname ?? ''} ${auth.user.lname}`.trim();
 
 
   return (
@@ -20,7 +20,7 @@ export default function PublisherDashboard({ auth }: PageProps) {
       <div className="py-6 px-4 sm:px-6 lg:px-8 space-y-6">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800">Publisher Dashboard</h1>
-          <p className="text-gray-600">Welcome, {`fullName`}</p>
+          <p className="text-gray-600">Welcome, {fullName}</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow p-6">

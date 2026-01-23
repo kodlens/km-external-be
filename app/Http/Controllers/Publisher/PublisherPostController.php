@@ -6,18 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Post;
-use App\Models\Category;
-use App\Models\Section;
-use App\Models\Author;
-use App\Models\Quarter;
-use App\Models\PostLog;
-
+use App\Rules\ValidateSlug;
+use App\Rules\ValidateTitle;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Helpers\FilterDom;
 
 class PublisherPostController extends Controller
 {
@@ -34,171 +31,113 @@ class PublisherPostController extends Controller
 
     public function getData(Request $req){
 
-        $sort = explode('.', $req->sort_by);
+        //$sort = explode('.', $req->sort_by);
 
         $status = '';
 
         $user = Auth::user()->load('role');
 
         $data = Post::with(['subjects'])
-            ->where('status', '!=', 'draft');
-
-        if ($req->status != '' || $req->status != null) {
-            $data->where('status', $status);
-        }
-        $data->where('title', 'like', '%'. $req->search . '%')
-            ->orWhere('id', 'like', '%'. $req->search . '%');
-
-        return $data->where('trash', 0)
-            ->where(function($q){
-                $q->where('status', '!=', 'draft')
-                    ->where('status','!=', 'publish');
+            ->where('trash', 0)
+            ->whereIn('status', ['publish', 'submit', 'unpublish'])
+            ->when($req->search, function ($q) use ($req) {
+                $q->where(function ($qq) use ($req) {
+                    $qq->where('title', 'like', '%' . $req->search . '%')
+                    ->orWhere('id', 'like', '%' . $req->search . '%');
+                });
             })
-            ->orderBy('id', 'desc')
-            ->paginate($req->perpage);
+        ->orderBy('id', 'desc')
+        ->paginate($req->perpage);
 
+        return response()->json($data, 200);
     }
 
     public function formView($id){
+
+        $CK_LICENSE = env('CK_EDITOR_LICENSE_KEY');
         $roleId = Auth::user()->role_id;
 
-        $article = Post::with('category', 'author', 'quarter', 'postlogs')->find($id);
-
-        $categories = Category::orderBy('title', 'asc')->get();
-        $sections = Section::orderBy('order_no', 'asc')->get();
-        $authors = User::join('roles', 'roles.id', 'users.role_id')
-            ->select('users.id', 'users.lastname', 'users.firstname', 'users.middlename', 'roles.role')
-            ->where('roles.role', 'author')
-            ->get();
-
-        $quarters = Quarter::orderBy('quarter_name', 'asc')->get();
+        $post = Post::with(['subjects'])->find($id);
 
         return Inertia::render('Publisher/Post/PublisherPostFormView',[
             'id' => $id,
-            'categories' => $categories,
-            'sections' => $sections,
-            'authors' => $authors,
-            'quarters' => $quarters,
-            'article' => $article]);
+            'ckLicense' => $CK_LICENSE,
+            'post' => $post
+        ]);
     }
 
-    public function update(Request $req, $id){
-
+    public function update(Request $req, $id)
+    {
         $req->validate([
-            'title' => ['required', 'unique:posts,title,' . $id . ',id'],
-            'excerpt' => ['required'],
+            'title' => ['required', new ValidateTitle($id)],
+            'author_name' => ['string', 'nullable'],
             'description' => ['required'],
-            'category' => ['required'],
-            'status' => ['required_if:is_submit,0'],
-            //'author' => ['required'],
-        ],[
-            'description.required' => 'Content is required.',
-            'status.required_if' => 'Status is required.',
+            'subjects' => ['required', 'array', 'min:1'],
+        ], [
+            'description.required' => 'Content is required.'
 
         ]);
 
-        $data = Post::find($id);
-        $user = Auth::user();
+        try {
 
-        $data->status = $req->is_submit > 0 ? 'publish' : 'return'; //set to send-for-publishing
-        $data->record_trail = $data->record_trail . 'update-('.$user->id.')'.$user->lastname . ', ' . $user->firstname . '-' . date('Y-m-d H:i:s') . ';';
-        $data->save();
+            /* ==============================
+                this method detects and convert the content containing <img src=(base64 img), since it's not a good practice saving image
+                to the database in a base64 format, this will convert the base64 to a file, re render the content
+                change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
+            */
 
-        PostLog::create([
-            'user_id' => $user->id,
-            'post_id' => $data->id,
-            'alias' => $user->lastname . ', ' . $user->firstname,
-            'description' => $req->is_submit > 0 ? 'post publish' : 'return to author',
-            'action' => 'update'
-        ]);
+            $modifiedHtml = (new FilterDom())->filterDOM($req->description);
 
-        return response()->json([
-            'status' => 'updated'
-        ], 200);
-    }
+            /* ============================== */
+
+            /* ==============================
+                this will clean all html tags, leaving the content, this data may use to train AI models,
+            */
+            $content = trim(strip_tags($req->description)); // cleaning all tags
+            /* ============================== */
 
 
+            //format publish date
+            $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
 
+            $data = Post::find($id);
+            $user = Auth::user();
 
+            $data->title = $req->title;
+            $data->alias = Str::slug($req->title);
+            $data->excerpt = $req->excerpt ? $req->excerpt : null;
+            $data->source_url = $req->source_url;
+            $data->agency = $req->agency;
+            $data->status = $req->status;
+            $data->is_publish = 0;
+            $data->description = $modifiedHtml;
+            $data->description_text = $content;
+            $data->author_name = $req->author_name;
+            $data->last_updated_by = $user->id;
+            $data->publish_date = $dateFormated;
+            $data->record_trail = $data->record_trail . "update|".$user->id."|".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
 
+            $data->save();
 
-
-
-
-    /* ==============================
-        this method return the content
-        change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
-    */
-   private function filterDOM($content){
-        $modifiedHtml = '';
-
-        $doc = new \DOMDocument('1.0', 'UTF-8'); //solution add bacbkward slash
-        libxml_use_internal_errors(true);
-        libxml_clear_errors();
-        $doc->encoding = 'UTF-8';
-        $htmlContent = $content;
-        $doc->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
-        //$doc->loadHTML($htmlContent);
-
-        $images = $doc->getElementsByTagName('img');
-        // Find all img tags
-        $counter = 0;
-
-        foreach ($images as $image) {
-
-            $src = $image->getAttribute('src');
-            $currentTimestamp = time(); // Get the current Unix timestamp
-            $md5Hash = md5($currentTimestamp . $counter); // Create an MD5 hash of the timestamp
-
-            // Check if the src is a data URL (Base64)
-            if (strpos($src, 'data:image/') === 0) {
-                // Extract image format (e.g., png, jpeg) detect fileFormat
-                $imageFormat = explode(';', explode('/', $src)[1])[0];
-
-                // Modify the src to point to the directory where the image is stored
-                //$imageName = $imgPath . $md5Hash . '.' . $imageFormat; // Replace with your logic for generating unique filenames
-                $imageName = $md5Hash . '.' . $imageFormat; // Replace with your logic for generating unique filenames
-
-                //file_put_contents($this->uploadPath, base64_decode(str_replace('data:image/'.$imageFormat.';base64,', '', $src))); // Save the image
-                file_put_contents($this->uploadPath . '/' . $imageName, base64_decode(str_replace('data:image/'.$imageFormat.';base64,', '', $src))); // Save the image
-
-                // Set the new src attribute
-                //concat '/' for directory
-                $image->setAttribute('src', '/'.$this->uploadPath.'/' . $imageName);
-            }
-            //to make image name unique add counter in time and hash the time together with the counter
-            $counter++;
-        }
-        //save all changes
-        $modifiedReviseImg = $doc->saveHTML();
-
-        //removing all html,header //only tag inside the body will be saved
-        $newDocImg =  new \DOMDocument('1.0', 'UTF-8'); //solution add bacbkward slash
-        libxml_use_internal_errors(true);
-        libxml_clear_errors();
-        $newDocImg->encoding = 'UTF-8';
-        //$newDocImg->loadHTML($modifiedReviseImg);
-        $newDocImg->loadHTML(mb_convert_encoding($modifiedReviseImg, 'HTML-ENTITIES', 'UTF-8'));
-
-        // Find the <body> tag
-        $bodyNode = $newDocImg->getElementsByTagName('body')->item(0);
-
-        if ($bodyNode !== null) {
-            // Create a new document for the content inside <body>
-            $newDoc = new \DOMDocument();
-            foreach ($bodyNode->childNodes as $node) {
-                $newNode = $newDoc->importNode($node, true);
-                $newDoc->appendChild($newNode);
+            //delete all related subjects
+            DB::table('info_subject_headings')->where('info_id', $id)->delete();
+            foreach($req->subjects as $subject){
+                DB::table('info_subject_headings')->insert([
+                    'info_id' => $id,
+                    'subject_heading_id' => $subject['subject_heading_id'],
+                ]);
             }
 
-            // Output the content inside <body>
-            $modifiedHtml = $newDoc->saveHTML();
+            return response()->json([
+                'status' => 'updated',
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 200);
         }
-
-        return $modifiedHtml;
     }
-
-
 
 
     /** ======================================
@@ -245,7 +184,8 @@ class PublisherPostController extends Controller
         }
 
         Post::destroy($id);
-        $data->record_trail = $data->record_trail . ';delete-'.$user->lastname . ', '. $user->firstname . '-' . date('Y-m-d H:i:s');
+        $data->record_trail = $data->record_trail . "delete|".$user->id."|".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
+
 
 
         return response()->json([
@@ -262,7 +202,8 @@ class PublisherPostController extends Controller
         $data = Post::find($id);
         $data->trash = 1;
         $data->save();
-        $data->record_trail = $data->record_trail . ';trash-'.$user->lastname . ', '. $user->firstname . '-' . date('Y-m-d H:i:s');
+        $data->record_trail = $data->record_trail . "trashed|".$user->id."|".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
+
 
 
         return response()->json([

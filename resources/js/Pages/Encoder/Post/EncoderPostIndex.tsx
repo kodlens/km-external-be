@@ -74,7 +74,7 @@ export default function EncoderPostIndex(
 
             axios.post('/encoder/posts-submit-for-publishing/' + post.id).then(res => {
               if (res.data.status === 'submit-for-publishing') {
-                modal.info({
+                modal.success({
                   title: 'Submitted!',
                   content: 'Successfully submitted.'
                 })

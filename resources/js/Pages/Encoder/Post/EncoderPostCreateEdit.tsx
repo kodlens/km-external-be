@@ -11,6 +11,7 @@ import {
   Select,
   Flex,
   ConfigProvider,
+  DatePicker,
 } from "antd";
 
 import { PageProps } from "@/types";
@@ -65,6 +66,7 @@ const EncoderPostCreateEdit = ({
         { name: "author_name", value: post.author_name },
         { name: "is_publish", value: post.is_publish },
         { name: "subjects", value: post.subjects },
+        { name: "publish_date", value: post.publish_date ?  post.publish_date : null },
       ]);
     } catch (err) { }
   };
@@ -171,6 +173,8 @@ const EncoderPostCreateEdit = ({
                 is_publish: 0,
                 source_url: '',
                 agency: '',
+                author_name: '',
+                publish_date: null,
               }}
             >
               <Form.Item
@@ -278,6 +282,16 @@ const EncoderPostCreateEdit = ({
                   help={errors.agency ? errors.agency[0] : ""}
                 >
                   <Input placeholder="Agency" />
+                </Form.Item>
+
+                <Form.Item
+                  name="publish_date"
+                  label="Publish Date"
+                  className="w-full"
+                  validateStatus={errors.publish_date ? "error" : ""}
+                  help={errors.publish_date ? errors.publish_date[0] : ""}
+                >
+                  <DatePicker className="w-full" placeholder="Publish Date" />
                 </Form.Item>
               </Flex>
 
