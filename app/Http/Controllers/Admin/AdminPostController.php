@@ -17,7 +17,7 @@ use App\Models\RecordTrail;
 
 class AdminPostController extends Controller
 {
-    
+
     private $fileCustomPath = 'public/upfiles/'; //this is for delete, or checking if file is exist
 
     public function index()
@@ -44,20 +44,20 @@ class AdminPostController extends Controller
 
 
     public function create(){
-         
+
         $CK_LICENSE = env('CK_EDITOR_LICENSE_KEY');
 
         return Inertia::render('Admin/Post/AdminPostCreateEdit', [
             'id' => 0,
             'ckLicense' => $CK_LICENSE,
-            'post' => [],
+            'post' => null,
         ]);
     }
 
 
     public function store(Request $req){
 
-        
+
         $req->validate([
             'title' => ['required', new ValidateTitle(0)],
             'author_name' => ['string', 'nullable'],
@@ -150,8 +150,8 @@ class AdminPostController extends Controller
             'status.required_if' => 'Status is required.',
 
         ]);
-        
-        /* ============================== 
+
+        /* ==============================
             this method detects and convert the content containing <img src=(base64 img), since it's not a good practice saving image
             to the database in a base64 format, this will convert the base64 to a file, re render the content
             change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
@@ -160,13 +160,13 @@ class AdminPostController extends Controller
         /* ==============================*/
 
 
-        /* ============================== 
+        /* ==============================
             this will clean all html tags, leaving the content, this data may use to train AI models,
         */
             $content = trim(strip_tags($req->description)); //cleaning all tags
         /* ==============================*/
 
-        
+
         $data = Post::find($id);
         $user = Auth::user();
 
@@ -175,7 +175,7 @@ class AdminPostController extends Controller
         $data->title = $req->title;
         $data->slug = Str::slug($req->title);
         $data->excerpt = $req->excerpt;
-    
+
         $data->description = $modifiedHtml;
         $data->description_text = $content;
         $data->status = $req->$status;
@@ -185,7 +185,7 @@ class AdminPostController extends Controller
 
         if (Storage::exists('public/temp/' . $imgFilename)) {
             // Move the file
-            Storage::move('public/temp/' . $imgFilename, 'public/featured_images/' . $imgFilename); 
+            Storage::move('public/temp/' . $imgFilename, 'public/featured_images/' . $imgFilename);
             Storage::delete('public/temp/' . $imgFilename);
         }
 
@@ -195,7 +195,7 @@ class AdminPostController extends Controller
     }
 
 
-    /** ====================================== 
+    /** ======================================
      * This is delete function
     */
     public function destroy($id){
@@ -243,7 +243,7 @@ class AdminPostController extends Controller
             Storage::delete('public/featured_images/' . $data->featured_image);
         }
 
-        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'delete', $user->id, $name);            
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'delete', $user->id, $name);
         $data->save();
 
         Post::destroy($id);
@@ -254,7 +254,7 @@ class AdminPostController extends Controller
     }
 
 
-    /* ====================================== 
+    /* ======================================
       This is soft delete function
     */
     public function trash($id){
@@ -264,8 +264,8 @@ class AdminPostController extends Controller
         $data = Post::find($id);
         $data->trash = 1;
         $data->save();
-        
-        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'trash', $user->id, $name);            
+
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'trash', $user->id, $name);
 
         return response()->json([
             'status' => 'trashed'
@@ -293,7 +293,7 @@ class AdminPostController extends Controller
     }
 
     public function removeUpload($fileName){
-       
+
         if(Storage::exists('public/temp/' .$fileName)) {
             Storage::delete('public/temp/' . $fileName);
             return response()->json([
@@ -448,7 +448,7 @@ class AdminPostController extends Controller
         ], 200);
 
     }
-    
+
 
     public function getComments($id){
 

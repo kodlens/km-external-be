@@ -1,7 +1,6 @@
 export interface User {
 	  data(data: any): unknown;
     id: number;
-    user_id: number;
     username: string,
     sex: string,
     name: string;

@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Head, router, usePage } from "@inertiajs/react";
+
 import { ProjectOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 
 import {
@@ -12,19 +13,21 @@ import {
   ConfigProvider,
   DatePicker,
 } from "antd";
-import dayjs from 'dayjs';
-import { PageProps } from "@/types";
+
+import { PageProps, User } from "@/types";
 import axios from "axios";
 
 import { Post } from "@/types/post";
-import form from "antd/es/form";
 import Ckeditor from "@/Components/Ckeditor";
 import SelectSubjects from "@/Components/SelectSubjects";
+import dayjs from "dayjs";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { statusDropdownMenu } from "@/helper/statusMenu";
 
 
-const PublisherPostFormView = ({
+const PublisherFormView = ({
   id,
+  auth,
   post,
   ckLicense
 }: {
@@ -45,10 +48,9 @@ const PublisherPostFormView = ({
 
 
   useEffect(() => {
-    //loadCategories()
     if (id > 0) {
       getData();
-  }
+    }
   }, []);
 
   const getData = () => {
@@ -64,8 +66,10 @@ const PublisherPostFormView = ({
         { name: "author_name", value: post.author_name },
         { name: "is_publish", value: post.is_publish },
         { name: "subjects", value: post.subjects },
-        { name: "publish_date", value: post.publish_date ?  dayjs(post.publish_date) : null },
+        { name: "publish_date", value: post.publish_date ? dayjs(post.publish_date) : null },
       ]);
+      console.log(post);
+
     } catch (err) { }
   };
 
@@ -150,10 +154,10 @@ const PublisherPostFormView = ({
         {/* card container */}
         <div
           className="flex justify-center flex-col
-          lg:flex-row"
+					lg:flex-row"
         >
           {/* card input */}
-          <div className="bg-white p-6 mx-2 md:max-w-4xl w-full" >
+          <div className="bg-white p-6 mx-2 md:max-w-7xl w-full" >
             <div className="font-bold text-lg pb-2 mb-2 border-b">
               ADD/EDIT POST
             </div>
@@ -175,130 +179,137 @@ const PublisherPostFormView = ({
                 publish_date: null,
               }}
             >
-              <Form.Item
-                name="title"
-                label="Title"
-                validateStatus={errors.title ? "error" : ""}
-                help={errors.title ? errors.title[0] : ""}
-              >
-                <Input placeholder="Title" />
-              </Form.Item>
 
-              <Form.Item
-                name="slug"
-                label="Slug (Read Only)"
-                validateStatus={errors.slug ? "error" : ""}
-                help={errors.slug ? errors.slug[0] : ""}
-              >
-                <Input disabled placeholder="Slug" />
-              </Form.Item>
+              <div className="flex lg:flex-row-reverse flex-col-reverse gap-4">
 
-
-
-              <Form.Item
-                name="excerpt"
-                label="Excerpt"
-                validateStatus={errors.excerpt ? "error" : ""}
-                help={errors.excerpt ? errors.excerpt[0] : ""}
-              >
-                <Input.TextArea
-                  rows={4}
-                  placeholder="Excerpt"
-                />
-              </Form.Item>
-
-              {/* EDITOR CK WYSIWYG */}
-              <Form.Item
-                label="Body"
-                name="description"
-                className="prose-lg !max-w-none"
-                validateStatus={
-                  errors.description ? "error" : ""
-                }
-                help={
-                  errors.description
-                    ? errors.description[0]
-                    : ""
-                }
-              >
-                <Ckeditor post={post} form={form} ckLicense={ckLicense} />
-              </Form.Item>
-
-              <Flex gap="middle">
-
-                <Form.Item
-                  name="author_name"
-                  label="Author Name"
-                  className="w-full"
-                  validateStatus={errors.author_name ? "error" : ""}
-                  help={errors.author_name ? errors.author_name[0] : ""}
-                >
-                  <Input placeholder="Author Name" />
-                </Form.Item>
-
-                <Form.Item
-                  name="status"
-                  className="w-full"
-                  label="Select Status"
-                  validateStatus={
-                    errors.status ? "error" : ""
-                  }
-                  help={errors.status ? errors.status[0] : ""}
-                >
-                  <Select
-                    options={[
-                      {
-                        label: 'Draft',
-                        value: 'draft'
-                      },
-                      {
-                        label: 'Submit for Publishing',
-                        value: 'submit'
-                      },
-                    ]}
+                <div className="w-full lg:w-1/3">
+                  <Form.Item
+                    name="title"
+                    label="Title"
+                    validateStatus={errors.title ? "error" : ""}
+                    help={errors.title ? errors.title[0] : ""}
                   >
-                  </Select>
-                </Form.Item>
-              </Flex>
+                    <Input placeholder="Title" />
+                  </Form.Item>
 
-              <Flex gap={`middle`}>
-                <Form.Item
-                  name="source_url"
-                  label="Source"
-                  className="w-full"
-                  validateStatus={errors.source_url ? "error" : ""}
-                  help={errors.source_url ? errors.source_url[0] : ""}
-                >
-                  <Input placeholder="Source" />
-                </Form.Item>
+                  <Form.Item
+                    name="slug"
+                    label="Slug (Read Only)"
+                    validateStatus={errors.slug ? "error" : ""}
+                    help={errors.slug ? errors.slug[0] : ""}
+                  >
+                    <Input disabled placeholder="Slug" />
+                  </Form.Item>
 
-                <Form.Item
-                  name="agency"
-                  label="Agency"
-                  className="w-full"
-                  validateStatus={errors.agency ? "error" : ""}
-                  help={errors.agency ? errors.agency[0] : ""}
-                >
-                  <Input placeholder="Agency" />
-                </Form.Item>
 
-                <Form.Item
-                  name="publish_date"
-                  label="Publish Date"
-                  className="w-full"
-                  validateStatus={errors.publish_date ? "error" : ""}
-                  help={errors.publish_date ? errors.publish_date[0] : ""}
-                >
-                  <DatePicker className="w-full" placeholder="Publish Date" />
-                </Form.Item>
-              </Flex>
+
+                  <Form.Item
+                    name="excerpt"
+                    label="Excerpt"
+                    validateStatus={errors.excerpt ? "error" : ""}
+                    help={errors.excerpt ? errors.excerpt[0] : ""}
+                  >
+                    <Input.TextArea
+                      rows={4}
+                      placeholder="Excerpt"
+                    />
+                  </Form.Item>
+
+
+                  <div className="flex gap-4">
+
+                    <Form.Item
+                      name="author_name"
+                      label="Author Name"
+                      className="w-1/2"
+                      validateStatus={errors.author_name ? "error" : ""}
+                      help={errors.author_name ? errors.author_name[0] : ""}
+                    >
+                      <Input placeholder="Author Name" />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="status"
+                      className="w-1/2"
+                      label="Select Status"
+                      validateStatus={
+                        errors.status ? "error" : ""
+                      }
+                      help={errors.status ? errors.status[0] : ""}
+                    >
+                       <Select
+                        className="w-full"
+                        options={statusDropdownMenu((auth.user as User).role)}
+                        >
+                        </Select>
+                    </Form.Item>
+                  </div>
+
+                  <Flex gap={`middle`}>
+                    <Form.Item
+                      name="source_url"
+                      label="Source"
+                      className="w-full"
+                      validateStatus={errors.source_url ? "error" : ""}
+                      help={errors.source_url ? errors.source_url[0] : ""}
+                    >
+                      <Input placeholder="Source" />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="agency"
+                      label="Agency"
+                      className="w-full"
+                      validateStatus={errors.agency ? "error" : ""}
+                      help={errors.agency ? errors.agency[0] : ""}
+                    >
+                      <Input placeholder="Agency" />
+                    </Form.Item>
+                  </Flex>
+
+                  <Form.Item
+                    name="publish_date"
+                    label="Publish Date"
+                    className="w-full"
+                    validateStatus={errors.publish_date ? "error" : ""}
+                    help={errors.publish_date ? errors.publish_date[0] : ""}
+                  >
+                    <DatePicker className="w-full" placeholder="Publish Date" />
+                  </Form.Item>
+
+                </div>
+
+                {/* CKEditor */}
+                <div className="w-full lg:w-2/3">
+
+                  {/* EDITOR CK WYSIWYG */}
+                  <Form.Item
+                    label="Body"
+                    name="description"
+                    className="prose-lg !max-w-none"
+                    validateStatus={
+                      errors.description ? "error" : ""
+                    }
+                    help={
+                      errors.description
+                        ? errors.description[0]
+                        : ""
+                    }
+                  >
+                    <Ckeditor post={post || undefined} form={form} ckLicense={ckLicense} />
+                  </Form.Item>
+
+                </div>
+
+              </div>
+              {/* flex contaner */}
 
               <div className="my-6 border-t p-6 bg-gray-50 rounded-md">
                 <div className="font-bold mb-4">Manage Subjects/Subject Headings</div>
-                { errors && errors.subjects ? (
+                {errors && errors.subjects ? (
                   <div className="mb-4 text-red-600">{errors.subjects[0]}</div>
-                ) : null }
-                <SelectSubjects form={form}/>
+                ) : null}
+                <SelectSubjects form={form} />
 
               </div>
 
@@ -341,7 +352,6 @@ const PublisherPostFormView = ({
                   BACK
                 </Button>
               </div>
-
             </Form>
           </div>
           {/* end input card */}
@@ -353,12 +363,10 @@ const PublisherPostFormView = ({
   );
 }
 
-export default PublisherPostFormView;
+export default PublisherFormView;
 
-PublisherPostFormView.layout = (page: ReactNode) => (
+PublisherFormView.layout = (page: ReactNode) => (
   <AuthenticatedLayout user={(page as any).props.auth.user}>
     {page}
   </AuthenticatedLayout>
 );
-
-

@@ -161,7 +161,7 @@ Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
 
 
     Route::resource('/posts', App\Http\Controllers\Admin\AdminPostController::class);
-    Route::get('/get-posts', [App\Http\Controllers\Admin\AdminPostController::class, 'getData'])->name('admin.posts-getdata');
+    Route::get('/get-posts', [App\Http\Controllers\Admin\AdminPostController::class, 'getData'])->name('admin.posts.getdata');
 
     Route::post('/temp-upload', [App\Http\Controllers\Admin\AdminPostController::class, 'tempUpload'])->name('posts.temp-upload');
     Route::post('/temp-remove/{filename}', [App\Http\Controllers\Admin\AdminPostController::class, 'removeUpload'])->name('posts.temp-remove');

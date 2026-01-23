@@ -58,8 +58,8 @@ class EncoderPostController extends Controller
         ]);
     }
 
-    public function store(Request $req){
-
+    public function store(Request $req)
+    {
         $req->validate([
             'title' => ['required', new ValidateTitle(0)],
             'author_name' => ['string', 'nullable'],
@@ -71,57 +71,64 @@ class EncoderPostController extends Controller
 
         try {
 
-            /* ==============================
-                this method detects and convert the content containing <img src=(base64 img), since it's not a good practice saving image
-                to the database in a base64 format, this will convert the base64 to a file, re render the content
-                change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
-            */
-            $modifiedHtml = (new FilterDom())->filterDOM($req->description);
-            /* ============================== */
+            DB::transaction(function () use ($req) {
 
-            /* ==============================
-                this will clean all html tags, leaving the content, this data may use to train AI models,
-            */
-            $content = trim(strip_tags($req->description)); // cleaning all tags
-            /* ============================== */
-            $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
+                /* ==============================
+                    Convert base64 images → files and rewrite HTML
+                ============================== */
+                $filterDom = new FilterDom();
+                $modifiedHtml = $filterDom->filterDOM($req->description);
 
-            $user = Auth::user();
-            $name = $user->lname . ',' . $user->fname;
+                /* ==============================
+                    Clean HTML → plain text
+                ============================== */
+                $content = $filterDom->htmlToPlainText($req->description);
 
-            $data = Post::create([
-                'title' => $req->title,
-                'slug' => Str::slug($req->title),
-                'excerpt' => $req->excerpt,
-                'source_url' => $req->source_url,
-                'agency' => $req->agency,
-                'status' => $req->status,
-                'is_publish' => 0,
-                'description' => $modifiedHtml, // modified content, changing the base64 image src to img src="/path/folder"
-                'description_text' => $content,
-                'author_name' => $req->author_name,
-                'encoded_by' => $user->id,
-                'publish_date' => $dateFormated,
-                'record_trail' => (new RecordTrail())->recordTrail('', 'insert', $user->id, $name),
-            ]);
+                $dateFormated = $req->publish_date
+                    ? date('Y-m-d', strtotime($req->publish_date))
+                    : null;
 
-            foreach($req->subjects as $subject){
-                DB::table('info_subject_headings')->insert([
-                    'info_id' => $data->id,
-                    'subject_heading_id' => $subject['subject_heading_id'],
+                $user = Auth::user();
+                $name = $user->lname . ',' . $user->fname;
+
+                $post = Post::create([
+                    'title' => $req->title,
+                    'alias' => Str::slug($req->title),
+                    'excerpt' => $req->excerpt,
+                    'source_url' => $req->source_url,
+                    'agency' => $req->agency,
+                    'status' => $req->status,
+                    'is_publish' => 0,
+                    'description' => $modifiedHtml,
+                    'description_text' => $content,
+                    'author_name' => $req->author_name,
+                    'encoded_by' => $user->id,
+                    'publish_date' => $dateFormated,
+                    'record_trail' => (new RecordTrail())
+                        ->recordTrail('', 'insert', $user->id, $name),
                 ]);
-            }
+
+                foreach ($req->subjects as $subject) {
+                    if (!empty($subject['subject_heading_id'])) {
+                        DB::table('info_subject_headings')->insert([
+                            'info_id' => $post->id,
+                            'subject_heading_id' => $subject['subject_heading_id'],
+                        ]);
+                    }
+                }
+            });
 
             return response()->json([
                 'status' => 'saved',
             ], 200);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
+
 
     public function edit($id)
     {
@@ -144,67 +151,67 @@ class EncoderPostController extends Controller
             'subjects' => ['required', 'array', 'min:1'],
         ], [
             'description.required' => 'Content is required.'
-
         ]);
 
         try {
+            DB::transaction(function () use ($req, $id) {
+                /* ==============================
+                    this will convert all base64 images to files and rewrite the html,
+                */
+                $modifiedHtml = (new FilterDom())->filterDOM($req->description);
 
-            /* ==============================
-                this method detects and convert the content containing <img src=(base64 img), since it's not a good practice saving image
-                to the database in a base64 format, this will convert the base64 to a file, re render the content
-                change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
-            */
+                /* ============================== */
 
-            $modifiedHtml = (new FilterDom())->filterDOM($req->description);
+                /* ==============================
+                    this will clean all html tags, leaving the content, this data may use to train AI models,
+                */
+                $content = trim(strip_tags($req->description)); // cleaning all tags
+                /* ============================== */
 
-            /* ============================== */
+                $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
 
-            /* ==============================
-                this will clean all html tags, leaving the content, this data may use to train AI models,
-            */
-            $content = trim(strip_tags($req->description)); // cleaning all tags
-            /* ============================== */
+                $user = Auth::user();
 
-            $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
+                $data = Post::find($id);
 
-            $user = Auth::user();
+                $data->title = $req->title;
+                $data->alias = Str::slug($req->title);
+                $data->excerpt = $req->excerpt ? $req->excerpt : null;
+                $data->source_url = $req->source_url;
+                $data->agency = $req->agency;
+                $data->status = $req->status;
+                $data->is_publish = 0;
+                $data->description = $modifiedHtml;
+                $data->description_text = $content;
+                $data->author_name = $req->author_name;
+                $data->last_updated_by = $user->id;
+                $data->publish_date = $dateFormated;
+                $name = $user->lname . ',' . $user->fname;
+                $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'update', $user->id, $name);
+                $data->save();
 
-            $data = Post::find($id);
-
-            $data->title = $req->title;
-            $data->alias = Str::slug($req->title);
-            $data->excerpt = $req->excerpt ? $req->excerpt : null;
-            $data->source_url = $req->source_url;
-            $data->agency = $req->agency;
-            $data->status = $req->status;
-            $data->is_publish = 0;
-            $data->description = $modifiedHtml;
-            $data->description_text = $content;
-            $data->author_name = $req->author_name;
-            $data->last_updated_by = $user->id;
-            $data->publish_date = $dateFormated;
-            $name = $user->lname . ',' . $user->fname;
-            $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'update', $user->id, $name);
-            $data->save();
-
-            //delete all related subjects
-            DB::table('info_subject_headings')->where('info_id', $id)->delete();
-            foreach($req->subjects as $subject){
-                DB::table('info_subject_headings')->insert([
-                    'info_id' => $id,
-                    'subject_heading_id' => $subject['subject_heading_id'],
-                ]);
-            }
+                //delete all related subjects
+                DB::table('info_subject_headings')->where('info_id', $id)->delete();
+                foreach($req->subjects as $subject){
+                    if(!empty($subject['subject_heading_id'])){
+                        DB::table('info_subject_headings')->insert([
+                            'info_id' => $id,
+                            'subject_heading_id' => $subject['subject_heading_id'],
+                        ]);
+                    }
+                }
+            });
 
             return response()->json([
                 'status' => 'updated',
             ], 200);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
-                'error' => $e->getMessage(),
-            ], 200);
+                'error' => $e->getMessage()
+            ], 500);
         }
+
     }
 
 
@@ -221,9 +228,9 @@ class EncoderPostController extends Controller
         if (! $data->description) {
             return response()->json([
                 'errors' => [
-                    'empty_description' => 'No Content.',
+                    'description' => 'No Content.',
                 ],
-                'message' => 'Error',
+                'message' => 'No image to remove from the content.',
             ], 422);
         }
         /*------------------------------------------------------

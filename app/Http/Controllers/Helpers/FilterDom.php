@@ -113,4 +113,17 @@ class FilterDom
     }
 
 
+    public function htmlToPlainText(string $html): string
+    {
+        libxml_use_internal_errors(true);
+
+        $dom = new \DOMDocument();
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $html);
+
+        $text = $dom->textContent ?? '';
+
+        return trim(preg_replace('/\s+/u', ' ', $text));
+    }
+
+
 }

@@ -34,16 +34,28 @@ export default function EncoderLayout(
     //dynamic rendering is disabled for the meantime :(
     const items: MenuItem[] = [];
     items.push({
-      key: 'encoder.dashboard.index',
-      icon: <HomeOutlined />,
-      label: 'Dashboard',
-      onClick: () => router.visit('/encoder/dashboard')
-    },
+        key: 'encoder.dashboard.index',
+        icon: <HomeOutlined />,
+        label: 'Dashboard',
+        onClick: () => router.visit('/encoder/dashboard')
+      },
       {
-        key: 'encoder.posts.index',
+        key: 'encoder.posts',
         icon: <FormOutlined />,
         label: 'Posts',
-        onClick: () => router.visit('/encoder/posts')
+        children: [
+          {
+            key: 'encoder.posts.index',
+            label: 'Posts/Articles',
+            onClick: () => router.visit('/encoder/posts'),
+          },
+          {
+            key: 'encoder.posts.create',
+            label: 'New Post/Article',
+            onClick: () => router.visit('/encoder/posts/create'),
+          },
+
+        ],
       },
       // {
       //     key: 'posts.publish',
@@ -100,6 +112,7 @@ export default function EncoderLayout(
                 background: "#084c7f",
                 color: 'white',
               }}
+              defaultOpenKeys={['encoder.posts']}
               defaultSelectedKeys={[`${route().current()}`]}
               items={
                 navigationItems()
