@@ -4,7 +4,7 @@ export interface Post {
     source_id?: number;
     title?: string;
     excerpt?: string;
-    description?: string | TrustedHTML;
+    description?: string;
     description_text?: string;
     alias?: string;
     subjects: InfoSubjectHeading[]

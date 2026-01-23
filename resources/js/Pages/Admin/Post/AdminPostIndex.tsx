@@ -1,21 +1,25 @@
 import { PageProps, User, Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
-import {  DropboxOutlined,
-    DeleteOutlined, EditOutlined,
-	EyeOutlined,UserOutlined,
-    ProjectOutlined, PaperClipOutlined,
+import {
+	DropboxOutlined,
+	DeleteOutlined, EditOutlined,
+	EyeOutlined, UserOutlined,
+	ProjectOutlined, PaperClipOutlined,
 	PicRightOutlined,
-	CalendarOutlined} from '@ant-design/icons';
+	CalendarOutlined
+} from '@ant-design/icons';
 
-import { Space, Table,
-    Pagination, Button, Modal,
-    Form, Input, Select,
-    notification,
+import {
+	Space, Table,
+	Pagination, Button, Modal,
+	Form, Input, Select,
+	notification,
 	Dropdown,
 	MenuProps,
 	App,
-	DatePicker} from 'antd';
+	DatePicker
+} from 'antd';
 
 
 import React, { KeyboardEvent, useEffect, useState } from 'react'
@@ -25,7 +29,7 @@ import axios from 'axios';
 const { Column } = Table;
 
 interface PostResponse {
-	data:any[]
+	data: any[]
 	//data: Post[];
 	total: number;
 }
@@ -41,135 +45,134 @@ import ArticleView from '@/Components/Post/ArticleView';
 import AdminLayout from '@/Layouts/AdminLayout';
 import CardTitle from '@/Components/CardTitle';
 import { Post } from '@/types/post';
-import { dateFormat } from '@/helper/helperFunctions';
+import { dateFormat, truncate } from '@/helper/helperFunctions';
+import { useQuery } from '@tanstack/react-query';
 
 
 const AdminPostIndex = (
-	{  auth, statuses, permissions } :
-	PageProps) => {
+	{ auth, statuses, permissions }:
+		PageProps) => {
 
 	const { modal } = App.useApp();
 
 	const [form] = Form.useForm();
 
-    const [data, setData] = useState<Post[]>([]);
-
-    const [loading, setLoading] = useState(false);
-    const [total, setTotal] = useState(0);
+	const [loading, setLoading] = useState(false);
+	const [total, setTotal] = useState(0);
 
 	const [perPage, setPerPage] = useState(10);
-    const [page, setPage] = useState(1);
-    const [search, setSearch] = useState('');
+	const [page, setPage] = useState(1);
+	const [search, setSearch] = useState('');
 
-    const [errors, setErrors] = useState<any>({});
+	const [errors, setErrors] = useState<any>({});
 	const [open, setOpen] = useState(false);
 	const [id, setId] = useState(0);
 
-	const createMenuItems = (data:Post) => {
+	const createMenuItems = (data: Post) => {
 
 		const items: MenuProps['items'] = [];
 
 		items.push({
 			label: 'Edit',
-			key: 'admin.posts-edit',
+			key: 'admin.posts.edit',
 			icon: <EditOutlined />,
 			onClick: () => handleEditClick(data.id),
-		},{
+		}, {
 			label: 'Trash',
-			key: 'admin.posts-trash',
+			key: 'admin.posts.trash',
 			icon: <DeleteOutlined />,
 			onClick: () => handleTrashClick(data.id),
-		},{
+		}, {
 			label: 'Archive',
-			key: 'admin.posts-archive',
+			key: 'admin.posts.archive',
 			icon: <DropboxOutlined />,
 			onClick: () => {
 				axios.post('/admin/posts-archive/' + data.id).then(res => {
-					if(res.data.status === 'archived'){
+					if (res.data.status === 'archived') {
 						modal.info({
 							title: 'Archived!',
 							content: 'Successfully archived.'
 						})
-						loadAsync(search, perPage, page)
+						refetch()
 					}
 				})
 			},
-		},{
+		}, {
 			label: 'Draft',
 			key: 'admin.posts-draft',
 			icon: <PaperClipOutlined />,
 			onClick: () => {
-				axios.post('/admin/posts-draft/' + data.id).then(res=>{
-					if(res.data.status === 'draft'){
+				axios.post('/admin/posts.draft/' + data.id).then(res => {
+					if (res.data.status === 'draft') {
 						modal.info({
 							title: 'Draft!',
 							content: 'Successfully draft.'
 						})
-						loadAsync(search, perPage, page)
+						refetch()
 					}
 				})
 			},
-		},{
+		}, {
 			label: 'Publish',
 			key: 'admin.posts-publish',
 			icon: <PicRightOutlined />,
 			onClick: () => {
-				axios.post('/admin/posts-publish/' + data.id).then(res=>{
-					if(res.data.status === 'publish'){
+				axios.post('/admin/posts.publish/' + data.id).then(res => {
+					if (res.data.status === 'publish') {
 						modal.info({
 							title: 'Published!',
 							content: 'Successfully published.'
 						})
-						loadAsync(search, perPage, page)
+						refetch()
 					}
 				})
 			},
-		},{
+		}, {
 			key: 'admin.posts-submit',
 			icon: <ProjectOutlined />,
 			label: 'Submit for Publishing',
 			onClick: () => {
-				axios.post('/admin/posts-submit-for-publishing/' + data.id).then(res=>{
-					if(res.data.status === 'submit-for-publishing'){
+				axios.post('/admin/posts-submit-for-publishing/' + data.id).then(res => {
+					if (res.data.status === 'submit-for-publishing') {
 						modal.info({
 							title: 'Submitted!',
 							content: 'Successfully submitted.'
 						})
-						loadAsync(search, perPage, page)
+						refetch()
 					}
 				})
 			},
-		},{
+		}, {
 			label: 'Featured',
-			key: 'admin.posts-featured',
+			key: 'admin.posts.featured',
 			icon: <PicRightOutlined />,
 			onClick: () => {
-				axios.post('/admin/posts-featured/' + data.id).then(res=>{
-					if(res.data.status === 'featured'){
+				axios.post('/admin/posts-featured/' + data.id).then(res => {
+					if (res.data.status === 'featured') {
 						modal.info({
 							title: 'Featured!',
 							content: 'Successfully added to featured articles.'
 						})
-						loadAsync(search, perPage, page)
+						refetch()
 					}
 				})
 			},
-		},{
+		}, {
 			label: 'Unfeatured',
 			key: 'admin.posts-unfeatured',
 			icon: <PicRightOutlined />,
 			onClick: () => {
-				axios.post('/admin/posts-unfeatured/' + data.id).then(res=>{
-					if(res.data.status === 'unfeatured'){
+				axios.post('/admin/posts-unfeatured/' + data.id).then(res => {
+					if (res.data.status === 'unfeatured') {
 						modal.info({
 							title: 'Unfeatured!',
 							content: 'Remove from featured articles.'
 						})
-						loadAsync(search, perPage, page)
+						refetch()
 					}
 				})
 			},
-		},{
+		}, {
 			label: 'View',
 			key: 'admin.posts-view',
 			icon: <EyeOutlined />,
@@ -178,26 +181,26 @@ const AdminPostIndex = (
 					width: 1024,
 					title: 'Article Display',
 					content: (
-						<ArticleView post={data} className=''/>
+						<ArticleView post={data} className='' />
 					),
-				onOk() {},
+					onOk() { },
 				});
 			},
-		},{
+		}, {
 			type: 'divider'
 		},
-		{
-			label: 'Delete',
-			key: 'admin.posts-destroy',
-			icon: <DeleteOutlined />,
-			onClick: () => handleDeleteClick(data.id),
-		},
-		{
-			label: 'Set Publish Date',
-			key: 'admin.posts-set-publish-date',
-			icon: <CalendarOutlined />,
-			onClick: () => openModalSetPublishDate(data.id),
-		});
+			{
+				label: 'Delete',
+				key: 'admin.posts-destroy',
+				icon: <DeleteOutlined />,
+				onClick: () => handleDeleteClick(data.id),
+			},
+			{
+				label: 'Set Publish Date',
+				key: 'admin.posts-set-publish-date',
+				icon: <CalendarOutlined />,
+				onClick: () => openModalSetPublishDate(data.id),
+			});
 
 		// Add 'Edit' if the user has edit permission
 		// if (paramPermissions.includes('posts.edit')) {
@@ -228,7 +231,7 @@ const AdminPostIndex = (
 
 		// if (paramPermissions.includes('posts.submit-for-publishing')) {
 		// 	items.push(
-        //     );
+		//     );
 		// }
 
 		//open for all
@@ -242,81 +245,58 @@ const AdminPostIndex = (
 		setOpen(true);
 	}
 
-	const loadAsync = async (
-		search:string,
-		perPage: number,
-		page:number
-	) => {
-
-		const params = [
-			`perpage=${perPage}`,
-			`search=${search}`,
-			`page=${page}`,
-			`status=${status}`
-		].join('&');
-		try{
-			const res = await axios.get<PostResponse>(`/admin/get-posts?${params}`);
-			setData(res.data.data)
-			setTotal(res.data.total)
-		}catch(err){
-
-		}
-	}
-
-    useEffect(()=>{
-
-		loadAsync('', perPage, page);
 
 
-    },[page])
+	const { data, isFetching, refetch } = useQuery({
+		queryKey: ['posts', page, perPage],
+		queryFn: async () => {
+			const params = [
+				`perpage=${perPage}`,
+				`search=${search}`,
+				`page=${page}`,
+				`status=${status}`
+			].join('&');
 
-    const onPageChange = (index:number, perPage:number) => {
-        setPage(index)
-        setPerPage(perPage)
-    }
+			const res = await axios.get(`/admin/get-posts?perpage=${perPage}&page=${page}&status=${status}`);
+			return res.data;
+		},
+	});
 
-	//truncate display content on table
-	const truncate = (text: string, limit: number) => {
-		if(text.length > 0){
-			const words = text.split(' ');
-			if (words.length > limit) {
-				return words.slice(0, limit).join(' ') + '...';
-			}
-			return text;
-		}else{
-			return ''
-		}
+
+	const onPageChange = (index: number, perPage: number) => {
+		setPage(index)
+		setPerPage(perPage)
 	}
 
 
 	const handClickNew = () => {
 		router.visit('/admin/posts/create');
-    }
-	const handleEditClick = (id:number) => {
+	}
+	const handleEditClick = (id: number) => {
 		router.visit('/admin/posts/' + id + '/edit');
 	}
-	const handleTrashClick = (id:number) => {
+	const handleTrashClick = (id: number) => {
 		modal.confirm({
 			title: 'Trash?',
 			content: 'Are you sure you want to move to trash this post?',
-			onOk: async ()=>{
+			onOk: async () => {
 				const res = await axios.post('/admin/posts-trash/' + id);
-				if(res.data.status === 'trashed'){
-					loadAsync(search, perPage, page);
+				if (res.data.status === 'trashed') {
+					refetch();
 				}
 			}
 		})
 	}
 
-	const handleDeleteClick = (id:number) => {
+	const handleDeleteClick = (id: number) => {
 		modal.confirm({
 			title: 'Delete?',
 			content: 'Are you sure you want to delete this post?',
-			onOk: async ()=>{
+			onOk: async () => {
 				setLoading(true)
 				const res = await axios.delete('/admin/posts/' + id);
-				if(res.data.status === 'deleted'){
-					loadAsync(search, perPage, page);
+				if (res.data.status === 'deleted') {
+					refetch();
 					setLoading(false)
 				}
 			}
@@ -324,11 +304,11 @@ const AdminPostIndex = (
 	}
 
 	const handSearchClick = () => {
-		loadAsync(search, perPage, page);
+		refetch()
 	}
 
 	const handleKeyDown = (e: KeyboardEvent) => {
-		if(e.key === 'Enter')
+		if (e.key === 'Enter')
 			handSearchClick()
 	}
 
@@ -343,34 +323,34 @@ const AdminPostIndex = (
 		axios.post(`/admin/post-set-publish-date/${values.post_id}`, {
 			publication_date: values.publish_date
 		})
-		.then((response) => {
-			if (response.data.status === 'success') {
-				notification.success({
-					message: 'Success',
-					description: 'Publish date updated successfully.',
-				});
-				loadAsync(search, perPage, page);
-				setOpen(false);
-				form.resetFields();
-			} else {
+			.then((response) => {
+				if (response.data.status === 'success') {
+					notification.success({
+						message: 'Success',
+						description: 'Publish date updated successfully.',
+					});
+					refetch();
+					setOpen(false);
+					form.resetFields();
+				} else {
+					notification.error({
+						message: 'Error',
+						description: 'Failed to update publish date.',
+					});
+				}
+			})
+			.catch((error) => {
 				notification.error({
 					message: 'Error',
-					description: 'Failed to update publish date.',
+					description: 'An error occurred while updating the publish date.',
 				});
-			}
-		})
-		.catch((error) => {
-			notification.error({
-				message: 'Error',
-				description: 'An error occurred while updating the publish date.',
+				if (error.response && error.response.data.errors) {
+					setErrors(error.response.data.errors);
+				}
+			})
+			.finally(() => {
+				setLoading(false);
 			});
-			if (error.response && error.response.data.errors) {
-				setErrors(error.response.data.errors);
-			}
-		})
-		.finally(() => {
-			setLoading(false);
-		});
 	}
 	return (
 
@@ -383,7 +363,7 @@ const AdminPostIndex = (
 					sm:w-[740px]
 					md:w-[1200px]'>
 					{/* card header */}
-          			<CardTitle title="LIST OF ARTICLES" />
+					<CardTitle title="LIST OF POST/ARTICLES" />
 
 					{/* card body */}
 
@@ -406,7 +386,7 @@ const AdminPostIndex = (
 
 						<Input placeholder="Search Title"
 							onKeyDown={handleKeyDown}
-							value={search} onChange={ (e) => setSearch(e.target.value)}/>
+							value={search} onChange={(e) => setSearch(e.target.value)} />
 						<Button type='primary' onClick={handSearchClick}>SEARCH</Button>
 					</div>
 
@@ -420,53 +400,25 @@ const AdminPostIndex = (
 
 					<div>
 
-						<Table dataSource={data}
+						<Table dataSource={data?.data || []}
 							loading={loading}
 							rowKey={(data) => data.id}
 							pagination={false}>
 
-							<Column title="Img" dataIndex="featured_image"
-								render={(featured_image) => (
-									(
-										<div className="h-[40px] w-[40px]">
-											<img src={`/storage/featured_images/${featured_image}`}
-                            					onError={ handleImageError } />
-										</div>
-									)
-
-								)} />
-
-							<Column title="Id" dataIndex="id"/>
-							<Column title="Title" dataIndex="title" key="title"/>
-							<Column title="Excerpt"
-								dataIndex="excerpt"
-								key="excerpt"
-								render={(excerpt) => (
-									<span>{ excerpt ? truncate(excerpt, 10) : '' }</span>
-								)}
-							/>
-
-							{/* <Column title="Author" dataIndex="author" key="author"
-								render={(author:{author:string}) => {
-									return (
-										<>
-											{author?.author}
-										</>
-									)
-								}}
-							/> */}
+							<Column title="Id" dataIndex="id" />
+							<Column title="Title" dataIndex="title" key="title" />
 
 							<Column title="Publication Date" dataIndex="publication_date" key="publication_date"
-								render={(publication_date) => {
+								render={(publish_date) => {
 									return (
 										<>
-											{publication_date && dateFormat(publication_date)}
+											{publish_date && dateFormat(publish_date)}
 										</>
 									)
 								}}
 							/>
 
-							<Column title="Status" dataIndex="status" key="status" render={ (status) => {
+							<Column title="Status" dataIndex="status" key="status" render={(status) => {
 								return (
 									<div>
 										{status === 'submit' && (
@@ -503,7 +455,7 @@ const AdminPostIndex = (
 							}}
 							/>
 
-							<Column title="Featured" dataIndex="is_featured" key="is_featured" render={(is_featured)=>(
+							<Column title="Featured" dataIndex="is_featured" key="is_featured" render={(is_featured) => (
 
 								is_featured ? (
 									<span className='bg-green-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>YES</span>
@@ -512,9 +464,9 @@ const AdminPostIndex = (
 									<span className='bg-red-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>NO</span>
 								)
 
-							)}/>
+							)} />
 
-							<Column title="Trash" dataIndex="trash" key="trash" render={(trash)=>(
+							<Column title="Trash" dataIndex="trash" key="trash" render={(trash) => (
 
 								trash > 0 ? (
 									<span className='bg-green-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>YES</span>
@@ -523,17 +475,17 @@ const AdminPostIndex = (
 									<span className='bg-red-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>NO</span>
 								)
 
-							)}/>
+							)} />
 
 
 							<Column title="Action" key="action"
 								render={(_, data: Post) => (
 									<Space size="small">
-										<Dropdown  trigger={['click']}
-											menu={{items: createMenuItems(data) }} >
-											<Button type='primary'>
+										<Dropdown trigger={['click']}
+											menu={{ items: createMenuItems(data) }} >
+											<Button>
 												<Space>
-												...
+													...
 												</Space>
 											</Button>
 
@@ -546,59 +498,59 @@ const AdminPostIndex = (
 						<Pagination className='mt-4'
 							onChange={onPageChange}
 							defaultCurrent={1}
-							total={total} />
+							total={data?.total || 0} />
 					</div>
 				</div>
 				{/* card */}
 
 				<Modal
-                    title="Update Publish Date"
-                    open={open}
-                    onCancel={()=>{
-                        setOpen(false);
-                        setId(0);
-                        setErrors({});
-                    }}
-                    okButtonProps={{
-                        autoFocus: true,
-                        htmlType: "submit",
-                    }}
-                    okText="Save"
-                    cancelText="Close"
-                    destroyOnClose
-                    modalRender={(dom) => (
-                        <Form
-                            layout="vertical"
-                            form={form}
-                            name="form_in_modal"
-                            autoComplete="off"
-                            initialValues={{
-                                publish_date: null,
-                                post_id: id
-                            }}
-                            clearOnDestroy
-                            onFinish={(values) => onFinishSetPublishDate(values)}
-                        >
-                            {dom}
-                        </Form>
-                    )}
-                >
-                    <Form.Item
-                        name="publish_date"
-                        className="w-full"
-                        label="Publish Date"
-                        validateStatus={errors.publish_date ? "error" : ""}
-                        help={errors.publish_date ? errors.publish_date[0]: ''}>
-                        <DatePicker placeholder="Select date" className="w-full" format="YYYY-MM-DD" />
-                    </Form.Item>
-                    <Form.Item
-                        name="post_id"
-                        className="w-full"
-                        label="Publish Date"
-                        hidden>
-                            <Input hidden></Input>
-                    </Form.Item>
-                </Modal>
+					title="Update Publish Date"
+					open={open}
+					onCancel={() => {
+						setOpen(false);
+						setId(0);
+						setErrors({});
+					}}
+					okButtonProps={{
+						autoFocus: true,
+						htmlType: "submit",
+					}}
+					okText="Save"
+					cancelText="Close"
+					destroyOnClose
+					modalRender={(dom) => (
+						<Form
+							layout="vertical"
+							form={form}
+							name="form_in_modal"
+							autoComplete="off"
+							initialValues={{
+								publish_date: null,
+								post_id: id
+							}}
+							clearOnDestroy
+							onFinish={(values) => onFinishSetPublishDate(values)}
+						>
+							{dom}
+						</Form>
+					)}
+				>
+					<Form.Item
+						name="publish_date"
+						className="w-full"
+						label="Publish Date"
+						validateStatus={errors.publish_date ? "error" : ""}
+						help={errors.publish_date ? errors.publish_date[0] : ''}>
+						<DatePicker placeholder="Select date" className="w-full" format="YYYY-MM-DD" />
+					</Form.Item>
+					<Form.Item
+						name="post_id"
+						className="w-full"
+						label="Publish Date"
+						hidden>
+						<Input hidden></Input>
+					</Form.Item>
+				</Modal>
 
 			</div>
 
@@ -606,7 +558,7 @@ const AdminPostIndex = (
 	)
 }
 
-AdminPostIndex.layout = (page:any) => <AdminLayout user={page.props.auth.user}>{page}</AdminLayout>
+AdminPostIndex.layout = (page: any) => <AdminLayout user={page.props.auth.user}>{page}</AdminLayout>
 export default AdminPostIndex;
 
 

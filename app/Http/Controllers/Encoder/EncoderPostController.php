@@ -15,11 +15,12 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Helpers\FilterDom;
+use App\Http\Controllers\Helpers\RecordTrail;
+
 
 class EncoderPostController extends Controller
 {
 
-    private $fileCustomPath = 'public/upfiles/';
 
     public function index()
     {
@@ -48,13 +49,12 @@ class EncoderPostController extends Controller
 
     public function create()
     {
-
         $CK_LICENSE = env('CK_EDITOR_LICENSE_KEY');
 
         return Inertia::render('Encoder/Post/EncoderPostCreateEdit', [
             'id', 0,
             'ckLicense' => $CK_LICENSE,
-            'data', [],
+            'post' => null,
         ]);
     }
 
@@ -87,6 +87,7 @@ class EncoderPostController extends Controller
             $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
 
             $user = Auth::user();
+            $name = $user->lname . ',' . $user->fname;
 
             $data = Post::create([
                 'title' => $req->title,
@@ -101,8 +102,7 @@ class EncoderPostController extends Controller
                 'author_name' => $req->author_name,
                 'encoded_by' => $user->id,
                 'publish_date' => $dateFormated,
-                'record_trail' => 'insert|('.$user->id.')'.$user->lname . ','. $user->fname . '|' . date('Y-m-d H:i:s') . ';',
-                /** 1 for insert, 0 for delete and 2 for update */
+                'record_trail' => (new RecordTrail())->recordTrail('', 'insert', $user->id, $name),
             ]);
 
             foreach($req->subjects as $subject){
@@ -167,13 +167,9 @@ class EncoderPostController extends Controller
 
             $dateFormated = $req->publish_date ? date('Y-m-d', strtotime($req->publish_date)) : null;
 
-            $data = Post::find($id);
             $user = Auth::user();
 
-            // $imgFilename = $req->upload ? $req->upload[0]['response'] : null;
-            // update data in table articles
-
-            // return $imgFilename;
+            $data = Post::find($id);
 
             $data->title = $req->title;
             $data->alias = Str::slug($req->title);
@@ -187,8 +183,8 @@ class EncoderPostController extends Controller
             $data->author_name = $req->author_name;
             $data->last_updated_by = $user->id;
             $data->publish_date = $dateFormated;
-            $data->record_trail = $data->record_trail . "update|(".$user->id.")".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
-
+            $name = $user->lname . ',' . $user->fname;
+            $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'update', $user->id, $name);
             $data->save();
 
             //delete all related subjects
@@ -199,20 +195,6 @@ class EncoderPostController extends Controller
                     'subject_heading_id' => $subject['subject_heading_id'],
                 ]);
             }
-
-            // PostLog::create([
-            //     'user_id' => $user->id,
-            //     'post_id' => $data->id,
-            //     'alias' => $user->lastname.', '.$user->firstname,
-            //     'description' => $req->is_submit == 1 ? 'update and submit for publishing' : 'update post',
-            //     'action' => 'update',
-            // ]);
-
-            // if (Storage::exists('public/temp/'.$imgFilename)) {
-            //     // Move the file
-            //     Storage::move('public/temp/'.$imgFilename, 'public/featured_images/'.$imgFilename);
-            //     Storage::delete('public/temp/'.$imgFilename);
-            // }
 
             return response()->json([
                 'status' => 'updated',
@@ -229,7 +211,7 @@ class EncoderPostController extends Controller
 
     /** ======================================
      * This is delete function
-    ==========================================*/
+    */
     public function destroy($id)
     {
         $user = Auth::user();
@@ -248,30 +230,16 @@ class EncoderPostController extends Controller
             Before executing delete, image must remove from the storage
             to free some memory.
         ------------------------------------------------------*/
+        $filterDom = new FilterDom();
+        $filterDom->removeImagesFromDOM($data->description);
 
-        $doc = new \DOMDocument('1.0', 'UTF-8'); // solution add backward slash
-        libxml_use_internal_errors(true);
-        libxml_clear_errors();
-        $doc->encoding = 'UTF-8';
-        $htmlContent = $data->description ? $data->description : '';
-        $doc->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
-        $images = $doc->getElementsByTagName('img');
 
-        foreach ($images as $image) {
-            $src = $image->getAttribute('src');
-            // output --> storage/upload_files/130098028b5a1f88aa110e1146ce8375.jpeg
-            // sample output of $src
-
-            $imgName = explode('/', $src); // this will explode separate using / character
-            $fileImageName = $imgName[3]; // get the 4th index, this is the filename -> 130098028b5a1f88aa110e1146ce8375.jpeg
-
-            if (Storage::exists($this->fileCustomPath.$fileImageName)) {
-                Storage::delete($this->fileCustomPath.$fileImageName);
-            }
-        }
+        $name = $user->lname . ',' . $user->fname;
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'delete', $user->id, $name);
+        $data->save();
 
         Post::destroy($id);
-        $data->record_trail = $data->record_trail.';delete|'.'('.$user->id.')'.$user->lname.', '.$user->fname.'|'.date('Y-m-d H:i:s');
+
 
         return response()->json([
             'status' => 'deleted',
@@ -279,14 +247,15 @@ class EncoderPostController extends Controller
     }
 
     /** ======================================
-     * This is soft delete function
-    ==========================================*/
+     * This is soft trash/soft delete function
+*/
     public function trash($id)
     {
         $user = Auth::user();
         $data = Post::find($id);
         $data->trash = 1;
-        $data->record_trail = $data->record_trail.';trash|'.'('.$user->id.')'.$user->lname.', '.$user->fname.'|'.date('Y-m-d H:i:s');
+        $name = $user->lname . ',' . $user->fname;
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'trash', $user->id, $name);
         $data->save();
 
         return response()->json([
@@ -349,7 +318,8 @@ class EncoderPostController extends Controller
         $data = Post::find($id);
         $data->status = 'draft'; // submit-for-publishing (static)
         $data->trash = 0; // be sure to set 0 the trash if draft
-        $data->record_trail = $data->record_trail . "draft|(".$user->id.")".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
+        $name = $user->lname . ',' . $user->fname;
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'draft', $user->id, $name);
         $data->save();
 
         return response()->json([
@@ -359,12 +329,14 @@ class EncoderPostController extends Controller
 
     public function postArchived($id)
     {
+        $user = Auth::user();
+        $name = $user->lname . ',' . $user->fname;
+
         $data = Post::find($id);
         // $data->status_id = 3; //submit-for-publishing (static)
         $data->status = 'archive'; // submit-for-publishing (static)
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'archive', $user->id, $name);
         $data->save();
-
-        $user = Auth::user();
 
         return response()->json([
             'status' => 'archive',
@@ -373,12 +345,14 @@ class EncoderPostController extends Controller
 
     public function postSubmitForPublishing($id)
     {
+        $user = Auth::user();
+        $name = $user->lname . ',' . $user->fname;
+
         $data = Post::find($id);
         $data->status = 'submit'; // submit-for-publishing (static)
         // $data->status_id = 7; //submit-for-publishing (static)
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'submit', $user->id, $name);
         $data->save();
-
-        $user = Auth::user();
 
         return response()->json([
             'status' => 'submit-for-publishing',

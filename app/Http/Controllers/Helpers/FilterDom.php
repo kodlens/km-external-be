@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Storage;
 
 class FilterDom
 {
+    private $fileCustomPath = 'public/upfiles/'; // <--filepath for remove images from content
 
     private $uploadPath = 'storage/upfiles'; // this is the upload path
 
@@ -85,6 +86,30 @@ class FilterDom
         }
 
         return $modifiedHtml;
+    }
+
+    public function removeImagesFromDOM($content) {
+
+        $doc = new \DOMDocument('1.0', 'UTF-8'); // solution add backward slash
+        libxml_use_internal_errors(true);
+        libxml_clear_errors();
+        $doc->encoding = 'UTF-8';
+        $htmlContent = $content ? $content : '';
+        $doc->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
+        $images = $doc->getElementsByTagName('img');
+
+        foreach ($images as $image) {
+            $src = $image->getAttribute('src');
+            // output --> storage/upload_files/130098028b5a1f88aa110e1146ce8375.jpeg
+            // sample output of $src
+
+            $imgName = explode('/', $src); // this will explode separate using / character
+            $fileImageName = $imgName[3]; // get the 4th index, this is the filename -> 130098028b5a1f88aa110e1146ce8375.jpeg
+
+            if (Storage::exists($this->fileCustomPath.$fileImageName)) {
+                Storage::delete($this->fileCustomPath.$fileImageName);
+            }
+        }
     }
 
 

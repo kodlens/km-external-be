@@ -22,7 +22,7 @@ import EncoderLayout from "@/Layouts/EncoderLayout";
 import form from "antd/es/form";
 import Ckeditor from "@/Components/Ckeditor";
 import SelectSubjects from "@/Components/SelectSubjects";
-
+import dayjs from "dayjs";
 
 
 const EncoderPostCreateEdit = ({
@@ -47,7 +47,6 @@ const EncoderPostCreateEdit = ({
 
 
   useEffect(() => {
-    //loadCategories()
     if (id > 0) {
       getData();
     }
@@ -66,7 +65,7 @@ const EncoderPostCreateEdit = ({
         { name: "author_name", value: post.author_name },
         { name: "is_publish", value: post.is_publish },
         { name: "subjects", value: post.subjects },
-        { name: "publish_date", value: post.publish_date ?  post.publish_date : null },
+        { name: "publish_date", value: post.publish_date ? dayjs(post.publish_date) : null },
       ]);
     } catch (err) { }
   };
@@ -223,7 +222,7 @@ const EncoderPostCreateEdit = ({
                     : ""
                 }
               >
-                <Ckeditor post={post} form={form} ckLicense={ckLicense} />
+                <Ckeditor post={post || undefined} form={form} ckLicense={ckLicense} />
               </Form.Item>
 
               <Flex gap="middle">

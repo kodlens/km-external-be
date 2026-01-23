@@ -65,11 +65,11 @@ import { Post } from '@/types/post';
 import { FormInstance } from 'antd';
 
 
-const Ckeditor = ({ post, form, ckLicense }: { post: Post, form: FormInstance, ckLicense: string }) => {
+const Ckeditor = ({ post, form, ckLicense }: { post?: Post, form: FormInstance, ckLicense: string }) => {
   return (
     <>
       <CKEditor
-        data={typeof post.description === 'string' ? post.description : ''}
+        data={ post?.description ?? ''}
         editor={ClassicEditor}
         onChange={(event, editor) => {
           const data = editor.getData();

@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Head, router, usePage } from "@inertiajs/react";
-
 import { ProjectOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 
 import {
@@ -14,16 +13,15 @@ import {
   DatePicker,
 } from "antd";
 
+import dayjs from 'dayjs';
 import { PageProps } from "@/types";
 import axios from "axios";
 
 import { Post } from "@/types/post";
-import EncoderLayout from "@/Layouts/EncoderLayout";
 import form from "antd/es/form";
 import Ckeditor from "@/Components/Ckeditor";
 import SelectSubjects from "@/Components/SelectSubjects";
-import AdminLayout from "@/Layouts/AdminLayout";
-
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 
 const AdminPostCreateEdit = ({
@@ -51,7 +49,7 @@ const AdminPostCreateEdit = ({
     //loadCategories()
     if (id > 0) {
       getData();
-    }
+  }
   }, []);
 
   const getData = () => {
@@ -67,7 +65,7 @@ const AdminPostCreateEdit = ({
         { name: "author_name", value: post.author_name },
         { name: "is_publish", value: post.is_publish },
         { name: "subjects", value: post.subjects },
-        { name: "publish_date", value: post.publish_date ?  post.publish_date : null },
+        { name: "publish_date", value: post.publish_date ?  dayjs(post.publish_date) : null },
       ]);
     } catch (err) { }
   };
@@ -77,14 +75,14 @@ const AdminPostCreateEdit = ({
     setErrors({});
 
     if (id > 0) {
-      axios.patch('/encoder/posts/' + id, values).then(res => {
+      axios.patch('/publisher/posts/' + id, values).then(res => {
 
         if (res.data.status === 'updated') {
           modal.success({
             title: "Updated!",
             content: <div>Post successfully updated.</div>,
             onOk() {
-              router.visit("/encoder/posts");
+              router.visit("/publisher/posts");
             },
           });
         }
@@ -100,14 +98,14 @@ const AdminPostCreateEdit = ({
       })
 
     } else {
-      axios.post('/encoder/posts', values).then(res => {
+      axios.post('/publisher/posts', values).then(res => {
         if (res.data.status === 'saved') {
           modal.success({
             title: "Saved!",
             content: <div>Post successfully saved.</div>,
             onOk() {
 
-              router.visit("/encoder/posts");
+              router.visit("/publisher/posts");
             },
           });
         }
@@ -123,19 +121,6 @@ const AdminPostCreateEdit = ({
     }
   };
 
-
-  /**truncate text and add 3 dots at the end */
-  const truncate = (text: string, limit: number) => {
-    if (text.length > 0) {
-      const words = text.split(" ");
-      if (words.length > limit) {
-        return words.slice(0, limit).join(" ") + "...";
-      }
-      return text;
-    } else {
-      return "";
-    }
-  };
 
   const handleClickSubmit = (n: number) => {
     setLoading(true)
@@ -153,7 +138,7 @@ const AdminPostCreateEdit = ({
         {/* card container */}
         <div
           className="flex justify-center flex-col
-					lg:flex-row"
+          lg:flex-row"
         >
           {/* card input */}
           <div className="bg-white p-6 mx-2 md:max-w-4xl w-full" >
@@ -359,7 +344,9 @@ const AdminPostCreateEdit = ({
 export default AdminPostCreateEdit;
 
 AdminPostCreateEdit.layout = (page: ReactNode) => (
-  <AdminLayout user={(page as any).props.auth.user}>
+  <AuthenticatedLayout user={(page as any).props.auth.user}>
     {page}
-  </AdminLayout>
+  </AuthenticatedLayout>
 );
+
+

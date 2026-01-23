@@ -46,72 +46,45 @@ export default function AdminLayout(
             onClick: () => router.visit('/admin/dashboard')
         },
             {
-                key: 'admin.sections',
+                key: 'admin.subjects',
                 icon: <ProfileOutlined />,
-                label: 'Sections',
-                onClick: () => router.visit('/admin/sections')
+                label: 'Subjects',
+                onClick: () => router.visit('/admin/subjects')
 
             },
             {
-                key: 'admin.categories',
+                key: 'admin.subject-headings',
                 icon: <BarsOutlined />,
-                label: 'Categories',
-                onClick: () => router.visit('/admin/categories')
+                label: 'Subject Headings',
+                onClick: () => router.visit('/admin/subject-headings')
             },
             {
                 type: 'divider',
             },
-            {
-                key: 'page-sections',
-                icon: <FilePptOutlined />,
-                label: 'Page Sections',
-                // onClick: () => router.visit('/admin/pages')
-                children: [
-                    {
-                        key: 'admin.page-sections.banners',
-                        label: 'Banners',
-                        onClick: () => router.visit('/admin/page-sections/banners'),
-                    },
-                    {
-                        key: 'admin.page-sections.magazines',
-                        label: 'Magazines',
-                        onClick: () => router.visit('/admin/page-sections/magazines'),
-                    },
-                    {
-                        key: 'admin.page-sections.dostvs',
-                        label: 'DOSTv',
-                        onClick: () => router.visit('/admin/page-sections/dostvs'),
-                    },
-                    {
-                        key: 'admin.page-sections.videos',
-                        label: 'Videos',
-                        onClick: () => router.visit('/admin/page-sections/videos'),
-                    },
-                ],
-            },
+            
             {
                 type: 'divider',
             },
 
             {
-                key: 'posts',
+                key: 'admin.posts',
                 icon: <FormOutlined />,
                 label: 'Posts',
                 children: [
                     {
-                        key: 'admin.posts.articles',
-                        label: 'Article',
+                        key: 'admin.posts.index',
+                        label: 'Posts/Articles',
                         onClick: () => router.visit('/admin/posts'),
                     },
                     {
-                        key: 'admin.posts.featureds',
-                        label: 'Featured Post',
-                        onClick: () => router.visit('/admin/post-featured'),
+                        key: 'admin.posts.create',
+                        label: 'New Post/Article',
+                        onClick: () => router.visit('/admin/posts/create'),
                     },
                     {
-                        key: 'admin.posts.archives',
+                        key: 'admin.posts.trash',
                         label: 'Archive',
-                        onClick: () => router.visit('/admin/post-archives'),
+                        onClick: () => router.visit('/admin/post-trash'),
                     },
 
                 ],

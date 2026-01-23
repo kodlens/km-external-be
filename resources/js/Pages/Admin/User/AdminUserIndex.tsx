@@ -230,6 +230,9 @@ const AdminUserIndex = ({ auth }: PageProps) => {
                         autoComplete="off"
                         initialValues={{
                             username: "",
+                            lname: '',
+                            fname: '',
+                            mname: '',
                             password: "",
                             email: "",
                             name: "",
@@ -362,7 +365,7 @@ const AdminUserIndex = ({ auth }: PageProps) => {
                     >
                         <Select
                             options={[
-                                { value: "author", label: "AUTHOR" },
+                                { value: "encoder", label: "ENCODER" },
                                 { value: "publisher", label: "PUBLISHER" },
                                 { value: "admin", label: "ADMINISTRATOR" },
                             ]}
