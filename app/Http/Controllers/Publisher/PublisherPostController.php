@@ -75,20 +75,12 @@ class PublisherPostController extends Controller
             'subjects' => ['required', 'array', 'min:1'],
         ], [
             'description.required' => 'Content is required.'
-
         ]);
 
         try {
 
-            /* ==============================
-                this method detects and convert the content containing <img src=(base64 img), since it's not a good practice saving image
-                to the database in a base64 format, this will convert the base64 to a file, re render the content
-                change the <img src=(base64) /> to <img src="/storage_path/your_dir" />
-            */
-
+            // convert base64 images → files and rewrite HTML
             $modifiedHtml = (new FilterDom())->filterDOM($req->description);
-
-            /* ============================== */
 
             /* ==============================
                 this will clean all html tags, leaving the content, this data may use to train AI models,
@@ -109,13 +101,12 @@ class PublisherPostController extends Controller
             $data->source_url = $req->source_url;
             $data->agency = $req->agency;
             $data->status = $req->status;
-            $data->is_publish = 0;
             $data->description = $modifiedHtml;
             $data->description_text = $content;
             $data->author_name = $req->author_name;
             $data->last_updated_by = $user->id;
             $data->publish_date = $dateFormated;
-            $data->record_trail = $data->record_trail . "update|".$user->id."|".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
+            $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'update', $user->id, $user->fname . ' ' . $user->lname);
 
             $data->save();
 
@@ -160,32 +151,12 @@ class PublisherPostController extends Controller
             Before executing delete, image must remove from the storage
             to free some memory.
         ------------------------------------------------------*/
+        $filterDom = new FilterDom();
+        $filterDom->removeImagesFromDOM($data->description);
 
-        $doc = new \DOMDocument('1.0', 'UTF-8'); //solution add backward slash
-        libxml_use_internal_errors(true);
-        libxml_clear_errors();
-        $doc->encoding = 'UTF-8';
-        $htmlContent = $data->description ? $data->description : '';
-        $doc->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
-        $images = $doc->getElementsByTagName('img');
-
-
-        foreach ($images as $image) {
-            $src = $image->getAttribute('src');
-            //output --> storage/upload_files/130098028b5a1f88aa110e1146ce8375.jpeg
-            //sample output of $src
-
-            $imgName = explode('/', $src); //this will explode separate using / character
-            $fileImageName = $imgName[3]; //get the 4th index, this is the filename -> 130098028b5a1f88aa110e1146ce8375.jpeg
-
-            if(Storage::exists($this->fileCustomPath .$fileImageName)) {
-                Storage::delete($this->fileCustomPath . $fileImageName);
-            }
-        }
-
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'delete', $user->id, $user->fname . ' ' . $user->lname);
+        $data->save();
         Post::destroy($id);
-        $data->record_trail = $data->record_trail . "delete|".$user->id."|".$user->lname . ",". $user->fname . "|" . date('Y-m-d H:i:s') . ";";
-
 
 
         return response()->json([
