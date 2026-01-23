@@ -1,14 +1,14 @@
-import { Post, PageProps, User, Status } from '@/types'
+import { PageProps, User, Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
-import {  DropboxOutlined, 
-    DeleteOutlined, EditOutlined, 
+import {  DropboxOutlined,
+    DeleteOutlined, EditOutlined,
 	EyeOutlined,UserOutlined,
     ProjectOutlined, PaperClipOutlined,
-	PicRightOutlined, 
+	PicRightOutlined,
 	CalendarOutlined} from '@ant-design/icons';
 
-import { Space, Table, 
+import { Space, Table,
     Pagination, Button, Modal,
     Form, Input, Select,
     notification,
@@ -33,20 +33,18 @@ interface PostResponse {
 interface Option {
 	label: string;
 	value: string;
-  }
+}
 
 
 import dayjs from 'dayjs';
 import ArticleView from '@/Components/Post/ArticleView';
 import AdminLayout from '@/Layouts/AdminLayout';
 import CardTitle from '@/Components/CardTitle';
+import { Post } from '@/types/post';
 
-const dateFormat = (item:Date):string=> {
-	return dayjs(item).format('MMM-DD-YYYY')
-}
 
 const AdminPostIndex = (
-	{  auth, statuses, permissions } : 
+	{  auth, statuses, permissions } :
 	PageProps) => {
 
 	const { modal } = App.useApp();
@@ -61,11 +59,11 @@ const AdminPostIndex = (
 	const [perPage, setPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
-    
+
     const [errors, setErrors] = useState<any>({});
 	const [open, setOpen] = useState(false);
 	const [id, setId] = useState(0);
-	
+
 	const createMenuItems = (paramPermissions:string[], data:Post) => {
 
 		const items: MenuProps['items'] = [];
@@ -199,12 +197,12 @@ const AdminPostIndex = (
 			icon: <CalendarOutlined />,
 			onClick: () => openModalSetPublishDate(data.id),
 		});
-	  
+
 		// Add 'Edit' if the user has edit permission
 		// if (paramPermissions.includes('posts.edit')) {
-			
+
 		// }
-	  
+
 		// // Add 'Trash' if the user has trash permission
 		// if (paramPermissions.includes('posts.trash')) {
 		// 	items.push();
@@ -214,7 +212,7 @@ const AdminPostIndex = (
 		// 	items.push();
 		// }
 
-		
+
 		// if (paramPermissions.includes('posts.pending')) {
 		// 	items.push();
 		// }
@@ -242,7 +240,7 @@ const AdminPostIndex = (
 		setId(id);
 		setOpen(true);
 	}
-	
+
 	const loadAsync = async (
 		search:string,
 		perPage: number,
@@ -260,15 +258,15 @@ const AdminPostIndex = (
 			setData(res.data.data)
 			setTotal(res.data.total)
 		}catch(err){
-			
+
 		}
 	}
 
     useEffect(()=>{
-		
+
 		loadAsync('', perPage, page);
 
-	
+
     },[page])
 
     const onPageChange = (index:number, perPage:number) => {
@@ -288,7 +286,7 @@ const AdminPostIndex = (
 			return ''
 		}
 	}
-	
+
 
 	const handClickNew = () => {
 		router.visit('/admin/posts/create');
@@ -337,7 +335,7 @@ const AdminPostIndex = (
 	const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
 		e.currentTarget.src = '/img/no-img.png';
 	}
-	
+
 	function onFinishSetPublishDate(values: any): void {
 
 		setLoading(true);
@@ -393,30 +391,30 @@ const AdminPostIndex = (
 							style={{
 								width: '200px'
 							}}
-							
+
 							defaultValue=""
 							options={[
-								{ label: 'All', value: '' }, 
-								{ label: 'Draft', value: 'draft' }, 
-								{ label: 'Return to Author', value: 'draft' }, 
-								{ label: 'Submit for Publishing', value: 'submit' }, 
-								{ label: 'Publish', value: 'publish' }, 
-								{ label: 'Unpublish', value: 'unpublish' }, 
+								{ label: 'All', value: '' },
+								{ label: 'Draft', value: 'draft' },
+								{ label: 'Return to Author', value: 'draft' },
+								{ label: 'Submit for Publishing', value: 'submit' },
+								{ label: 'Publish', value: 'publish' },
+								{ label: 'Unpublish', value: 'unpublish' },
 							]}
 						/>
-						
-						<Input placeholder="Search Title" 
+
+						<Input placeholder="Search Title"
 							onKeyDown={handleKeyDown}
 							value={search} onChange={ (e) => setSearch(e.target.value)}/>
 						<Button type='primary' onClick={handSearchClick}>SEARCH</Button>
 					</div>
 
 					{/* <div className='flex flex-end my-2'>
-						<Button className='ml-auto' 
-							icon={<FileAddOutlined />} 
+						<Button className='ml-auto'
+							icon={<FileAddOutlined />}
 							type="primary" onClick={handClickNew}>
 							NEW
-						</Button>     
+						</Button>
 					</div> */}
 
 					<div>
@@ -434,19 +432,19 @@ const AdminPostIndex = (
                             					onError={ handleImageError } />
 										</div>
 									)
-									
+
 								)} />
 
 							<Column title="Id" dataIndex="id"/>
 							<Column title="Title" dataIndex="title" key="title"/>
-							<Column title="Excerpt" 
+							<Column title="Excerpt"
 								dataIndex="excerpt"
 								key="excerpt"
 								render={(excerpt) => (
 									<span>{ excerpt ? truncate(excerpt, 10) : '' }</span>
-								)} 
+								)}
 							/>
-							
+
 							{/* <Column title="Author" dataIndex="author" key="author"
 								render={(author:{author:string}) => {
 									return (
@@ -466,7 +464,7 @@ const AdminPostIndex = (
 									)
 								}}
 							/>
-						
+
 							<Column title="Status" dataIndex="status" key="status" render={ (status) => {
 								return (
 									<div>
@@ -474,7 +472,7 @@ const AdminPostIndex = (
 											<div className='bg-green-300 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
 												SUMIT FOR PUBLISHING
 											</div>
-										
+
 										)}
 										{status === 'publish' && (
 											<div className='bg-green-200 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
@@ -503,31 +501,31 @@ const AdminPostIndex = (
 								)
 							}}
 							/>
-							
+
 							<Column title="Featured" dataIndex="is_featured" key="is_featured" render={(is_featured)=>(
-								
+
 								is_featured ? (
 									<span className='bg-green-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>YES</span>
-									
+
 								) : (
 									<span className='bg-red-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>NO</span>
 								)
-								
+
 							)}/>
 
 							<Column title="Trash" dataIndex="trash" key="trash" render={(trash)=>(
-								
+
 								trash > 0 ? (
 									<span className='bg-green-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>YES</span>
-									
+
 								) : (
 									<span className='bg-red-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>NO</span>
 								)
-								
+
 							)}/>
 
-				
-							<Column title="Action" key="action" 
+
+							<Column title="Action" key="action"
 								render={(_, data: Post) => (
 									<Space size="small">
 										<Dropdown  trigger={['click']}
@@ -537,21 +535,21 @@ const AdminPostIndex = (
 												...
 												</Space>
 											</Button>
-											
+
 										</Dropdown>
 									</Space>
 								)}
 							/>
 						</Table>
 
-						<Pagination className='mt-4' 
+						<Pagination className='mt-4'
 							onChange={onPageChange}
 							defaultCurrent={1}
 							total={total} />
 					</div>
 				</div>
 				{/* card */}
-				
+
 				<Modal
                     title="Update Publish Date"
                     open={open}
@@ -584,23 +582,23 @@ const AdminPostIndex = (
                         </Form>
                     )}
                 >
-                    <Form.Item 
-                        name="publish_date" 
-                        className="w-full" 
-                        label="Publish Date" 
+                    <Form.Item
+                        name="publish_date"
+                        className="w-full"
+                        label="Publish Date"
                         validateStatus={errors.publish_date ? "error" : ""}
                         help={errors.publish_date ? errors.publish_date[0]: ''}>
                         <DatePicker placeholder="Select date" className="w-full" format="YYYY-MM-DD" />
                     </Form.Item>
-                    <Form.Item 
+                    <Form.Item
                         name="post_id"
-                        className="w-full" 
+                        className="w-full"
                         label="Publish Date"
                         hidden>
                             <Input hidden></Input>
                     </Form.Item>
                 </Modal>
-				
+
 			</div>
 
 		</>

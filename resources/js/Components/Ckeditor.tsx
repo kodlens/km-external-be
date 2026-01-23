@@ -69,7 +69,7 @@ const Ckeditor = ({ post, form, ckLicense }: { post: Post, form: FormInstance, c
   return (
     <>
       <CKEditor
-        data={post?.description}
+        data={typeof post.description === 'string' ? post.description : ''}
         editor={ClassicEditor}
         onChange={(event, editor) => {
           const data = editor.getData();

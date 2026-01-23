@@ -12,12 +12,12 @@ const AdminDashboard = ({ auth }: PageProps)  =>{
    // const fullName = `${auth.user.fname} ${auth.user.mname ?? ''} ${auth.user.lname}`.trim();
     return (
         <>
-            
+
             <Head title="Dashboard"/>
             <div className="py-6 px-4 sm:px-6 lg:px-8 space-y-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-gray-800">Publisher Dashboard</h1>
-                    <p className="text-gray-600">Welcome, { auth.user?.lastname }, { auth.user?.firstname }</p>
+                    <p className="text-gray-600">Welcome, { auth.user?.lname }, { auth.user?.fname }</p>
                 </div>
 
                 <div className="bg-white rounded-2xl shadow p-6">
