@@ -1,8 +1,8 @@
-import { Post, PageProps, User, Status } from '@/types'
+import { PageProps, User, Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
 import {
- 
+
   DeleteOutlined,
   EyeOutlined, PaperClipOutlined,
 } from '@ant-design/icons';
@@ -33,6 +33,7 @@ import dayjs from 'dayjs';
 import ArticleView from '@/Components/Post/ArticleView';
 import AdminLayout from '@/Layouts/AdminLayout';
 import CardTitle from '@/Components/CardTitle';
+import { Post } from '@/types/post';
 
 const dateFormat = (item: Date): string => {
   return dayjs(item).format('MMM-DD-YYYY')
@@ -272,11 +273,11 @@ const AdminPostArchiveIndex = (
           </div>
 
           {/* <div className='flex flex-end my-2'>
-						<Button className='ml-auto' 
-							icon={<FileAddOutlined />} 
+						<Button className='ml-auto'
+							icon={<FileAddOutlined />}
 							type="primary" onClick={handClickNew}>
 							NEW
-						</Button>     
+						</Button>
 					</div> */}
 
           <div>

@@ -1,5 +1,5 @@
 import Authenticated from '@/Layouts/AuthenticatedLayout'
-import { Post, PageProps, User, Status } from '@/types'
+import { PageProps, User, Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
 import { 
@@ -18,6 +18,7 @@ import React, { KeyboardEvent, useEffect, useState } from 'react'
 import axios from 'axios';
 import dayjs from 'dayjs';
 import ArticleView from '@/Components/Post/ArticleView';
+import { Post } from '@/types/post';
 
 
 const { Column } = Table;

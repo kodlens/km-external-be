@@ -1,5 +1,5 @@
 import Authenticated from '@/Layouts/AuthenticatedLayout'
-import { Post, PageProps, User, Status } from '@/types'
+import { PageProps, User, Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
 import { MinusSquareOutlined, EnterOutlined,
@@ -33,6 +33,7 @@ interface Option {
 
 import dayjs from 'dayjs';
 import ArticleView from '@/Components/Post/ArticleView';
+import { Post } from '@/types/post';
 
 const dateFormat = (item:Date):string=> {
 	return dayjs(item).format('MMM-DD-YYYY')

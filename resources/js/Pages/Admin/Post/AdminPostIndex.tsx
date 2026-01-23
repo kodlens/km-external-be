@@ -41,6 +41,7 @@ import ArticleView from '@/Components/Post/ArticleView';
 import AdminLayout from '@/Layouts/AdminLayout';
 import CardTitle from '@/Components/CardTitle';
 import { Post } from '@/types/post';
+import { dateFormat } from '@/helper/helperFunctions';
 
 
 const AdminPostIndex = (
@@ -64,7 +65,7 @@ const AdminPostIndex = (
 	const [open, setOpen] = useState(false);
 	const [id, setId] = useState(0);
 
-	const createMenuItems = (paramPermissions:string[], data:Post) => {
+	const createMenuItems = (data:Post) => {
 
 		const items: MenuProps['items'] = [];
 
@@ -529,7 +530,7 @@ const AdminPostIndex = (
 								render={(_, data: Post) => (
 									<Space size="small">
 										<Dropdown  trigger={['click']}
-											menu={{items: createMenuItems(permissions, data) }} >
+											menu={{items: createMenuItems(data) }} >
 											<Button type='primary'>
 												<Space>
 												...

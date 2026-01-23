@@ -7,8 +7,8 @@ import dayjs from 'dayjs';
 import { usePage } from '@inertiajs/react';
 
 
-export default function PostComment( 
-    { id, className } : 
+export default function PostComment(
+    { id, className } :
     { id:number,
         className: string
      }
@@ -26,7 +26,7 @@ export default function PostComment(
     useEffect(()=>{
         loadAsync()
     },[])
-    
+
     const submit = (values:object) => {
         setLoading(true)
         axios.post('/panel/posts-comments/' + id, values).then(res=>{
@@ -64,15 +64,15 @@ export default function PostComment(
         <div className="font-bold text-lg pb-2 mb-2 border-b">COMMENTS</div>
 
         <div className="h-[450px] overflow-auto">
-            {data.map((item:Comments) => 
+            {data.map((item:Comments) =>
                 (
                     <div key={item.id}
                         className='mb-2 mx-1'>
-                       
+
                         {auth.user.role?.toUpperCase() === item.role.toUpperCase() ? (
                             <div className='flex flex-col items-end'>
-                               
-                                <div className="font-bold font-secondary text-[14px]">{item.lastname?.toUpperCase()} {item.firstname[0]}.</div>
+
+                                <div className="font-bold font-secondary text-[14px]">{item.lname?.toUpperCase()} {item.fname[0]}.</div>
                                 <div className="text-[12px]">{item.role?.toUpperCase()}</div>
                                 <div className='text-gray-800 font-bold text-[10px]'>
                                     {
@@ -83,7 +83,7 @@ export default function PostComment(
                             </div>
                         ) : (
                             <div className='flex flex-col items-start'>
-                                <div className="font-bold font-secondary text-[14px]">{item.lastname?.toUpperCase()} {item.firstname[0]}.</div>
+                                <div className="font-bold font-secondary text-[14px]">{item.lname?.toUpperCase()} {item.fname[0]}.</div>
                                 <div className="text-[12px]">{item.role?.toUpperCase()}</div>
                                 <div className='text-gray-800 font-bold text-[10px]'>
                                     {
@@ -98,7 +98,7 @@ export default function PostComment(
                 )
             )}
         </div>
-       
+
         <div className='border-t mt-2'>
 
             <Form onFinish={submit}
@@ -117,7 +117,7 @@ export default function PostComment(
                     <Input.TextArea placeholder="Comments"></Input.TextArea>
                 </Form.Item>
 
-                <Button 
+                <Button
                     className=''
                     loading={loading}
                     htmlType='submit'

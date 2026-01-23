@@ -2,15 +2,19 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { PageProps, User } from '@/types'
 import { Head } from '@inertiajs/react'
 
-import { FileAddOutlined, LikeOutlined, 
-    DeleteOutlined, EditOutlined, 
-	EyeInvisibleOutlined,EyeTwoTone,
-    QuestionCircleOutlined } from '@ant-design/icons';
+import {
+    FileAddOutlined, LikeOutlined,
+    DeleteOutlined, EditOutlined,
+    EyeInvisibleOutlined, EyeTwoTone,
+    QuestionCircleOutlined
+} from '@ant-design/icons';
 
-import { Space, Table, 
+import {
+    Space, Table,
     Pagination, Button, Modal,
     Form, Input, Select, Checkbox,
-	App } from 'antd';
+    App
+} from 'antd';
 
 
 import React, { useEffect, useState } from 'react'
@@ -23,32 +27,32 @@ const { Column } = Table;
 
 
 const AdminUserIndex = ({ auth }: PageProps) => {
-	
-	const [form] = Form.useForm();
 
-	const  { notification } = App.useApp();
+    const [form] = Form.useForm();
+
+    const { notification } = App.useApp();
 
     const [data, setData] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [total, setTotal] = useState(0);
 
     const [open, setOpen] = useState(false); //for modal
-	const [passwordVisible, setPasswordVisible] = React.useState(false);
+    const [passwordVisible, setPasswordVisible] = React.useState(false);
 
-	const [perPage, setPerPage] = useState(10);
+    const [perPage, setPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
     const [errors, setErrors] = useState<any>({});
 
     const [id, setId] = useState(0);
-	
 
-	interface PaginateResponse {
-		data: User[],
-		total: number;
-	}
 
-	const loadDataAsync = async () => {
+    interface PaginateResponse {
+        data: User[],
+        total: number;
+    }
+
+    const loadDataAsync = async () => {
 
         setLoading(true)
         const params = [
@@ -56,158 +60,157 @@ const AdminUserIndex = ({ auth }: PageProps) => {
             `page=${page}`
         ].join('&');
 
-		try{
-			const res = await axios.get<PaginateResponse>(`/admin/get-users?${params}`);
-			setData(res.data.data)
-			setTotal(res.data.total)
-			setLoading(false)
-		}catch(err){
-			console.log(err)
-		}
+        try {
+            const res = await axios.get<PaginateResponse>(`/admin/get-users?${params}`);
+            setData(res.data.data)
+            setTotal(res.data.total)
+            setLoading(false)
+        } catch (err) {
+            console.log(err)
+        }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         loadDataAsync()
-    },[perPage, search, page])
+    }, [perPage, search, page])
 
 
-    const onPageChange = (index:number, perPage:number) => {
+    const onPageChange = (index: number, perPage: number) => {
         setPage(index)
         setPerPage(perPage)
     }
 
 
-	const getUser = async (dataId:number) => {
-		try{
-			const response = await axios.get<User>(`/admin/users/${dataId}`);
-			form.setFields([
-				{ name: 'username', value: response.data.username },
-				{ name: 'lastname', value: response.data.lastname },
-				{ name: 'firstname', value: response.data.firstname },
-				{ name: 'middlename', value: response.data.middlename },
-				{ name: 'email', value: response.data.email },
-				{ name: 'sex', value: response.data.sex },
-				{ name: 'bio', value: response.data.bio },
-				{ name: 'role', value: response.data.role }
-			]);
-		}catch(err){
-		}
+    const getUser = async (dataId: number) => {
+        try {
+            const response = await axios.get<User>(`/admin/users/${dataId}`);
+            form.setFields([
+                { name: 'username', value: response.data.username },
+                { name: 'lname', value: response.data.lname },
+                { name: 'fname', value: response.data.fname },
+                { name: 'mname', value: response.data.mname },
+                { name: 'email', value: response.data.email },
+                { name: 'sex', value: response.data.sex },
+                { name: 'role', value: response.data.role }
+            ]);
+        } catch (err) {
+        }
     }
 
-	const handClickNew = () => {
+    const handClickNew = () => {
         //router.visit('/');
-		setId(0)
+        setId(0)
         setOpen(true)
     }
 
-	const handleEditClick = (id:number) => {
-		setId(id);
+    const handleEditClick = (id: number) => {
+        setId(id);
         setOpen(true);
         getUser(id);
-	}
+    }
 
-	const handleDeleteClick = async (id:number) => {
-		const res = await axios.delete('/admin/users/{id}');
-		if(res.data.status === 'deleted'){
-			loadDataAsync()
-		}
-	}
-	
+    const handleDeleteClick = async (id: number) => {
+        const res = await axios.delete('/admin/users/{id}');
+        if (res.data.status === 'deleted') {
+            loadDataAsync()
+        }
+    }
 
-	const onFinish = async (values:User) =>{
 
-		if(id > 0){
-			try{
-				const res = await axios.put('/admin/users/' + id, values)
-				if(res.data.status === 'updated'){
-					notification.info({ placement: 'bottomRight', message: 'Updated!', description: 'User successfully updated.'})
-					setOpen(false)
-					loadDataAsync()
-				}
-			}catch(err:any){
-				if(err.response.status === 422){
-	
-				}
-			}
-		}else{
-			try{
-				const res = await axios.post('/admin/users', values)
-				if(res.data.status === 'saved'){
-					notification.info({ placement: 'bottomRight', message: 'Saved!', description: 'User successfully saved.'})
-					setOpen(false)
-					loadDataAsync()
-				}
-			}catch(err:any){
-				if(err.response.status === 422){
-	
-				}
-			}
-		}
-	}
+    const onFinish = async (values: User) => {
 
-	return (
-		<>
-			<Head title="User Management"></Head>
+        if (id > 0) {
+            try {
+                const res = await axios.put('/admin/users/' + id, values)
+                if (res.data.status === 'updated') {
+                    notification.success({ placement: 'bottomRight', message: 'Updated!', description: 'User successfully updated.' })
+                    setOpen(false)
+                    loadDataAsync()
+                }
+            } catch (err: any) {
+                if (err.response.status === 422) {
 
-			<div className='flex mt-10 justify-center items-center'>
-				{/* card */}
-				<div className='p-6 w-full mx-2 bg-white shadow-sm rounded-md
+                }
+            }
+        } else {
+            try {
+                const res = await axios.post('/admin/users', values)
+                if (res.data.status === 'saved') {
+                    notification.success({ placement: 'bottomRight', message: 'Saved!', description: 'User successfully saved.' })
+                    setOpen(false)
+                    loadDataAsync()
+                }
+            } catch (err: any) {
+                if (err.response.status === 422) {
+
+                }
+            }
+        }
+    }
+
+    return (
+        <>
+            <Head title="User Management"></Head>
+
+            <div className='flex mt-10 justify-center items-center'>
+                {/* card */}
+                <div className='p-6 w-full mx-2 bg-white shadow-sm rounded-md
 					sm:w-[640px]
 					md:w-[990px]'>
-					{/* card header */}
-          <CardTitle title="LIST OF USERS" />
+                    {/* card header */}
+                    <CardTitle title="LIST OF USERS" />
 
-					{/* card body */}
-					<div>
-						<Table dataSource={data}
-							loading={loading}
-							rowKey={(data) => data.id}
-							pagination={false}>
+                    {/* card body */}
+                    <div>
+                        <Table dataSource={data}
+                            loading={loading}
+                            rowKey={(data) => data.id}
+                            pagination={false}>
 
-							<Column title="Id" dataIndex="id" key="id"/>
-							<Column title="Username" dataIndex="username" key="username"/>
-							<Column title="Last Name" key="lastname" dataIndex="lastname"/>
-							<Column title="First Name" key="firstname" dataIndex="firstname"/>
-							<Column title="Middle Name" key="middlename" dataIndex="middlename"/>
-							<Column title="Email" dataIndex="email" key="email"/>
-							<Column title="Role" dataIndex="role" key="role"/>
-							{/* <Column title="Active" dataIndex="active" key="active" render={(_, active)=>(
+                            <Column title="Id" dataIndex="id" key="id" />
+                            <Column title="Username" dataIndex="username" key="username" />
+                            <Column title="Last Name" key="lname" dataIndex="lname" />
+                            <Column title="First Name" key="fname" dataIndex="fname" />
+                            <Column title="Middle Name" key="mname" dataIndex="mname" />
+                            <Column title="Email" dataIndex="email" key="email" />
+                            <Column title="Role" dataIndex="role" key="role" />
+                            {/* <Column title="Active" dataIndex="active" key="active" render={(_, active)=>(
 								active ? (
 									<span className='bg-green-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>YES</span>
 								) : (
 									<span className='bg-red-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>NO</span>
 								)
 							)}/> */}
-							<Column title="Action" key="action" 
-								render={(_, data:User) => (
-									<Space size="small">
-										<Button shape="circle" icon={<EditOutlined/>} 
-											onClick={ ()=> handleEditClick(data.id) } />
-										<ChangePassword data={data} onSuccess={loadDataAsync}/>
-									</Space>
-								)}
-							/>
-						</Table>
+                            <Column title="Action" key="action"
+                                render={(_, data: User) => (
+                                    <Space size="small">
+                                        <Button shape="circle" icon={<EditOutlined />}
+                                            onClick={() => handleEditClick(data.id)} />
+                                        <ChangePassword data={data} onSuccess={loadDataAsync} />
+                                    </Space>
+                                )}
+                            />
+                        </Table>
 
-						<Pagination className='mt-4' 
-							onChange={onPageChange}
-							defaultCurrent={1} 
-							total={total} />
+                        <Pagination className='mt-4'
+                            onChange={onPageChange}
+                            defaultCurrent={1}
+                            total={total} />
 
-						<div className='flex flex-end mt-2'>
-							<Button className='ml-auto' 
-								icon={<FileAddOutlined />} 
-								type="primary" onClick={handClickNew}>
-								New
-							</Button>     
-						</div>
-					</div>
-				</div>
-				{/* card */}
-			</div>
+                        <div className='flex flex-end mt-2'>
+                            <Button className='ml-auto'
+                                icon={<FileAddOutlined />}
+                                type="primary" onClick={handClickNew}>
+                                New
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                {/* card */}
+            </div>
 
 
-			{/* Modal */}
+            {/* Modal */}
             <Modal
                 open={open}
                 title="USER INFORMATION"
@@ -299,28 +302,28 @@ const AdminUserIndex = ({ auth }: PageProps) => {
                 )}
 
                 <Form.Item
-                    name="lastname"
+                    name="lname"
                     label="Last Name"
-                    validateStatus={errors.lastname ? "error" : ""}
-                    help={errors.lastname ? errors.lastname[0] : ""}
+                    validateStatus={errors.lname ? "error" : ""}
+                    help={errors.lname ? errors.lname[0] : ""}
                 >
                     <Input placeholder="Last Name" />
                 </Form.Item>
 
                 <Form.Item
-                    name="firstname"
+                    name="fname"
                     label="First Name"
-                    validateStatus={errors.firstname ? "error" : ""}
-                    help={errors.firstname ? errors.firstname[0] : ""}
+                    validateStatus={errors.fname ? "error" : ""}
+                    help={errors.fname ? errors.fname[0] : ""}
                 >
                     <Input placeholder="First Name" />
                 </Form.Item>
 
                 <Form.Item
-                    name="middlename"
+                    name="mname"
                     label="Middle Name"
-                    validateStatus={errors.middlename ? "error" : ""}
-                    help={errors.middlename ? errors.middlename[0] : ""}
+                    validateStatus={errors.mname ? "error" : ""}
+                    help={errors.mname ? errors.mname[0] : ""}
                 >
                     <Input placeholder="FiMiddlerst Name" />
                 </Form.Item>
@@ -332,16 +335,6 @@ const AdminUserIndex = ({ auth }: PageProps) => {
                     help={errors.email ? errors.email[0] : ""}
                 >
                     <Input placeholder="Email" />
-                </Form.Item>
-
-				<Form.Item
-                    name="bio"
-                    label="Bio"
-                 
-                    validateStatus={errors.bio ? "error" : ""}
-                    help={errors.bio ? errors.bio[0] : ""}
-                >
-                    <Input.TextArea rows={6} placeholder="Bio" />
                 </Form.Item>
 
                 <div className="flex gap-4">
@@ -380,10 +373,10 @@ const AdminUserIndex = ({ auth }: PageProps) => {
             </Modal>
 
 
-		</>
-	)
+        </>
+    )
 }
 
-AdminUserIndex.layout =  (page:any) => <AdminLayout user={page.props.auth.user}>{page}</AdminLayout>
+AdminUserIndex.layout = (page: any) => <AdminLayout user={page.props.auth.user}>{page}</AdminLayout>
 
 export default AdminUserIndex;

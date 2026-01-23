@@ -18,8 +18,8 @@ class AdminUserController extends Controller
 
     public function getData(Request $req){
 
-        return User::where('username', 'like', $req->lastname . '%')
-            ->where('lastname', 'like', $req->lastname . '%')
+        return User::where('username', 'like', $req->lname . '%')
+            ->where('lname', 'like', $req->lname . '%')
             ->paginate($req->perpage);
     }
 
@@ -31,8 +31,8 @@ class AdminUserController extends Controller
     public function store(Request $req){ 
         $req->validate([
             'username' => ['required', 'string', 'unique:users'],
-            'lastname' => ['required', 'string'],
-            'firstname' => ['required', 'string'],
+            'lname' => ['required', 'string'],
+            'fname' => ['required', 'string'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'string', 'confirmed'],
             'sex' => ['required', 'string'],
@@ -42,10 +42,9 @@ class AdminUserController extends Controller
         User::create([
             'username' => $req->username,
             'password' => Hash::make($req->password),
-            'lastname' => $req->lastname,
-            'firstname' => $req->firstname,
-            'middlename' => $req->middlename,
-            'bio' => $req->bio,
+            'lname' => $req->lname,
+            'fname' => $req->fname,
+            'mname' => $req->mname,
             'email' => $req->email,
             'sex' => strtoupper($req->sex),
             'role' => $req->role,
@@ -61,7 +60,7 @@ class AdminUserController extends Controller
         //return $req;
         $req->validate([
             'username' => ['required', 'string', 'unique:users,username,'. $id . ',id'],
-            'lastname' => ['required', 'string'],
+            'lname' => ['required', 'string'],
             'email' => ['required', 'email', 'unique:users,email,'. $id . ',id'],
             'sex' => ['required', 'string'],
             'role' => ['required', 'string'],
@@ -70,10 +69,9 @@ class AdminUserController extends Controller
         User::where('id', $id)
             ->update([
                 'username' => $req->username,
-                'lastname' => $req->lastname,
-                'firstname' => $req->firstname,
-                'middlename' => $req->middlename,
-                'bio' => $req->bio,
+                'lname' => $req->lname,
+                'fname' => $req->fname,
+                'mname' => $req->mname,
                 'email' => $req->email,
                 'sex' => strtoupper($req->sex),
                 'role' => $req->role,

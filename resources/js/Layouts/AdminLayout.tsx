@@ -243,7 +243,7 @@ export default function AdminLayout(
                                 }}
                             />
                             <div className='ml-auto mr-4 flex items-center gap-4'>
-                                <Link href=''>{user.lastname} {user.firstname[0]}.</Link>
+                                <Link href=''>{user.lname} {user.fname[0]}.</Link>
                                 <Button 
                                     danger 
                                     onClick={handleLogout} 

@@ -1,5 +1,5 @@
 import Authenticated from '@/Layouts/AuthenticatedLayout'
-import { Post, PageProps, User, Status } from '@/types'
+import { PageProps, User, Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
 import { 
@@ -17,6 +17,7 @@ import { Space, Table,
 import React, { KeyboardEvent, useEffect, useState } from 'react'
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { Post } from '@/types/post';
 
 
 const { Column } = Table;
@@ -87,7 +88,7 @@ export default function AuthorTrashIndex(
 						<div>
 							<hr />
 							<div className="font-bold text-2xl">{data.title}</div>
-							<div className='mt-4 ck ck-content relative' dangerouslySetInnerHTML={{ __html: data.description}}></div>
+							<div className='mt-4 ck ck-content relative' dangerouslySetInnerHTML={{ __html: data.description ?? ''}}></div>
 						</div>
 					),
 				onOk() {},

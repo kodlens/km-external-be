@@ -1,5 +1,5 @@
 import Authenticated from '@/Layouts/AuthenticatedLayout'
-import { Post, PageProps, User, Status } from '@/types'
+import { PageProps, User, Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
 import {
@@ -42,6 +42,7 @@ import dayjs from 'dayjs';
 import ArticleView from '@/Components/Post/ArticleView';
 import CardTitle from '@/Components/CardTitle';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { Post } from '@/types/post';
 
 const dateFormat = (item: Date): string => {
   return dayjs(item).format('MMM-DD-YYYY')
@@ -69,7 +70,7 @@ const AdminPostFeaturedIndex = (
   const [id, setId] = useState<number>(0);
   const [open, setOpen] = useState<boolean>(false);
 
-  const createMenuItems = (paramPermissions: string[], data: Post) => {
+  const createMenuItems = (data: Post) => {
 
     const items: MenuProps['items'] = [];
 
@@ -363,8 +364,8 @@ const AdminPostFeaturedIndex = (
               <Column title="Action" key="action"
                 render={(_, data: Post) => (
                   <Space size="small">
-                    <Dropdown  trigger={['click']}
-                               menu={{items: createMenuItems(permissions, data) }} >
+                    <Dropdown trigger={['click']}
+                      menu={{ items: createMenuItems( data) }} >
                       <Button type='primary'>
                         <Space>
                           ...
@@ -433,5 +434,5 @@ const AdminPostFeaturedIndex = (
   )
 }
 
-AdminPostFeaturedIndex.layout = (page:any) => <AdminLayout user={page.props.auth.user}>{page}</AdminLayout>
+AdminPostFeaturedIndex.layout = (page: any) => <AdminLayout user={page.props.auth.user}>{page}</AdminLayout>
 export default AdminPostFeaturedIndex;
