@@ -109,8 +109,8 @@ Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
 
 
 
-    Route::resource('/trashes', App\Http\Controllers\Admin\AdminTrashController::class);
-    Route::get('/get-trashes', [App\Http\Controllers\Admin\AdminTrashController::class, 'getData'])->name('trashes.get-data');
+    Route::resource('/post-trashes', App\Http\Controllers\Admin\AdminTrashController::class);
+    Route::get('/get-post-trashes', [App\Http\Controllers\Admin\AdminTrashController::class, 'getData'])->name('trashes.get-data');
 
     // ARCHIVES CONTORLLER AND LOGICS
     Route::resource('/post-archives', App\Http\Controllers\Admin\AdminPostArchiveController::class);
