@@ -49,7 +49,8 @@ class Post extends Model
         'last_updated_by',
 
         'record_trail',
-        'trash'
+        'trash',
+        'is_archive'
     ];
 
 

@@ -1,4 +1,4 @@
-import { PageProps, User, Status } from '@/types'
+import { Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
 import {
@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 
 import {
-  Card, Space, Table,
+  Space, Table,
   Pagination, Button,
   Form, Input, Select,
   Dropdown,
@@ -17,7 +17,7 @@ import {
 } from 'antd';
 
 
-import React, { KeyboardEvent, useEffect, useState } from 'react'
+import React, { KeyboardEvent, useState } from 'react'
 import axios from 'axios';
 
 
@@ -34,46 +34,35 @@ import ArticleView from '@/Components/Post/ArticleView';
 import AdminLayout from '@/Layouts/AdminLayout';
 import CardTitle from '@/Components/CardTitle';
 import { Post } from '@/types/post';
+import { useQuery } from '@tanstack/react-query';
 
 const dateFormat = (item: Date): string => {
   return dayjs(item).format('MMM-DD-YYYY')
 }
 
-const AdminPostArchiveIndex = (
-  { auth, statuses, permissions }:
-    PageProps) => {
+const AdminPostArchiveIndex = () => {
 
   const { modal } = App.useApp();
-
-  const [form] = Form.useForm();
-
-  const [data, setData] = useState<Post[]>([]);
-
-  const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState(0);
-
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-
-  const [errors, setErrors] = useState<any>({});
 
   const createMenuItems = (data: Post) => {
 
     const items: MenuProps['items'] = [];
 
     items.push({
-      label: 'Draft',
-      key: 'admin.posts-draft',
+      label: 'Unarchive',
+      key: 'admin.posts-unarchived',
       icon: <PaperClipOutlined />,
       onClick: () => {
-        axios.post('/admin/posts-draft/' + data.id).then(res => {
-          if (res.data.status === 'draft') {
-            modal.info({
-              title: 'Draft!',
-              content: 'Successfully draft.'
+        axios.post('/admin/post-unarchive/' + data.id).then(res => {
+          if (res.data.status === 'unarchive') {
+            modal.success({
+              title: 'Unarchived!',
+              content: 'The post/article was successfully unarchived.'
             })
-            loadAsync(search, perPage, page)
+            refetch();
           }
         })
       },
@@ -100,90 +89,25 @@ const AdminPostArchiveIndex = (
         icon: <DeleteOutlined />,
         onClick: () => handleDeleteClick(data.id),
       });
-
-    // Add 'Edit' if the user has edit permission
-    // if (paramPermissions.includes('posts.edit')) {
-
-    // }
-
-    // // Add 'Trash' if the user has trash permission
-    // if (paramPermissions.includes('posts.trash')) {
-    // 	items.push();
-    // }
-
-    // if (paramPermissions.includes('posts.archive')) {
-    // 	items.push();
-    // }
-
-
-    // if (paramPermissions.includes('posts.pending')) {
-    // 	items.push();
-    // }
-
-    // if (paramPermissions.includes('posts.draft')) {
-    // 	items.push();
-    // }
-
-    // if (paramPermissions.includes('posts.published')) {
-    // 	items.push();
-    // }
-
-    // if (paramPermissions.includes('posts.submit-for-publishing')) {
-    // 	items.push(
-    //     );
-    // }
-
-    //open for all
-    //items.push();
-
     return items;
   }
 
-
-  const loadAsync = async (
-    search: string,
-    perPage: number,
-    page: number
-  ) => {
-
-    const params = [
-      `perpage=${perPage}`,
-      `search=${search}`,
-      `page=${page}`,
-      `status=${status}`
-    ].join('&');
-    try {
-      const res = await axios.get<PostResponse>(`/admin/get-post-archives?${params}`);
-      setData(res.data.data)
-      setTotal(res.data.total)
-    } catch (err) {
-
-    }
-  }
-
-  useEffect(() => {
-
-    loadAsync('', perPage, page);
-
-
-  }, [page])
+  const { data, isFetching, refetch } = useQuery({
+      queryKey: ['posts', search, perPage, page],
+      queryFn: async () => {
+          const params = [
+              `perpage=${perPage}`,
+              `search=${search}`,
+              `page=${page}`,
+          ].join('&');
+          const res = await axios.get<PostResponse>(`/admin/get-post-archives?${params}`);
+          return res.data
+      }
+  })
 
   const onPageChange = (index: number, perPage: number) => {
     setPage(index)
     setPerPage(perPage)
-  }
-
-  //truncate display content on table
-  const truncate = (text: string, limit: number) => {
-    if (text.length > 0) {
-      const words = text.split(' ');
-      if (words.length > limit) {
-        return words.slice(0, limit).join(' ') + '...';
-      }
-      return text;
-    } else {
-      return ''
-    }
   }
 
 
@@ -194,36 +118,22 @@ const AdminPostArchiveIndex = (
     router.visit('/admin/posts/' + id + '/edit');
   }
 
-  // const handleTrashClick = (id:number) => {
-  // 	modal.confirm({
-  // 		title: 'Trash?',
-  // 		content: 'Are you sure you want to move to trash this post?',
-  // 		onOk: async ()=>{
-  // 			const res = await axios.post('/admin/posts-trash/' + id);
-  // 			if(res.data.status === 'trashed'){
-  // 				loadAsync(search, perPage, page);
-  // 			}
-  // 		}
-  // 	})
-  // }
-
   const handleDeleteClick = (id: number) => {
     modal.confirm({
       title: 'Delete?',
-      content: 'Are you sure you want to delete this post?',
+      content: 'Are you sure you want to delete this post/article?',
       onOk: async () => {
-        setLoading(true)
+
         const res = await axios.delete('/admin/posts/' + id);
         if (res.data.status === 'deleted') {
-          loadAsync(search, perPage, page);
-          setLoading(false)
+          refetch();
         }
       }
     })
   }
 
   const handSearchClick = () => {
-    loadAsync(search, perPage, page);
+    refetch();
   }
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -250,7 +160,7 @@ const AdminPostArchiveIndex = (
           <CardTitle title="LIST OF ARTICLES" />
           {/* card body */}
           <div className='flex gap-2 mb-2'>
-            <Select
+            {/* <Select
               style={{
                 width: '200px'
               }}
@@ -264,7 +174,7 @@ const AdminPostArchiveIndex = (
                 { label: 'Publish', value: 'publish' },
                 { label: 'Unpublish', value: 'unpublish' },
               ]}
-            />
+            /> */}
 
             <Input placeholder="Search Title"
               onKeyDown={handleKeyDown}
@@ -272,57 +182,21 @@ const AdminPostArchiveIndex = (
             <Button type='primary' onClick={handSearchClick}>SEARCH</Button>
           </div>
 
-          {/* <div className='flex flex-end my-2'>
-						<Button className='ml-auto'
-							icon={<FileAddOutlined />}
-							type="primary" onClick={handClickNew}>
-							NEW
-						</Button>
-					</div> */}
-
           <div>
 
-            <Table dataSource={data}
-              loading={loading}
+            <Table dataSource={data ? data.data : []}
+              loading={isFetching}
               rowKey={(data) => data.id}
               pagination={false}>
 
-              <Column title="Img" dataIndex="featured_image"
-                render={(featured_image) => (
-                  (
-                    <div className="h-[40px] w-[40px]">
-                      <img src={`/storage/featured_images/${featured_image}`}
-                        onError={handleImageError} />
-                    </div>
-                  )
-
-                )} />
-
               <Column title="Id" dataIndex="id" />
               <Column title="Title" dataIndex="title" key="title" />
-              <Column title="Excerpt"
-                dataIndex="excerpt"
-                key="excerpt"
-                render={(excerpt) => (
-                  <span>{excerpt ? truncate(excerpt, 10) : ''}</span>
-                )}
-              />
 
-              {/* <Column title="Author" dataIndex="author" key="author"
-								render={(author:{author:string}) => {
-									return (
-										<>
-											{author?.author}
-										</>
-									)
-								}}
-							/> */}
-
-              <Column title="Publication Date" dataIndex="publication_date" key="publication_date"
-                render={(publication_date) => {
+              <Column title="Publication Date" dataIndex="publish_date" key="publish_date"
+                render={(publish_date) => {
                   return (
                     <>
-                      {publication_date && dateFormat(publication_date)}
+                      {publish_date && dateFormat(publish_date)}
                     </>
                   )
                 }}
@@ -390,7 +264,7 @@ const AdminPostArchiveIndex = (
             <Pagination className='my-10'
               onChange={onPageChange}
               defaultCurrent={1}
-              total={total} />
+              total={data?.total} />
           </div>
         </div>
         {/* card */}

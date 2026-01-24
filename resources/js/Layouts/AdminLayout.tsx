@@ -79,9 +79,9 @@ export default function AdminLayout(
             onClick: () => router.visit('/admin/posts/create'),
           },
           {
-            key: 'admin.posts.trash',
-            label: 'Archive',
-            onClick: () => router.visit('/admin/post-trash'),
+            key: 'admin.posts.archive',
+            label: 'Archives',
+            onClick: () => router.visit('/admin/post-archives'),
           },
 
         ],

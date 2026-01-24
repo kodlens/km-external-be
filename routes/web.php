@@ -90,76 +90,6 @@ Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
     Route::get('/load-quarters', [App\Http\Controllers\Admin\AdminQuarterController::class, 'loadData']);
 
 
-   // Route::resource('/pages', App\Http\Controllers\Admin\AdminPageController::class);
-    //Route::get('/get-pages', [App\Http\Controllers\Admin\AdminPageController::class, 'getData'])->name('admin.pages-get-data');
-
-
-    /** ====================SECTIONS======================== */
-    Route::resource('/page-sections/banners', App\Http\Controllers\Admin\PageSections\AdminBannerController::class)->names('admin.sections.banners');
-    Route::get('/page-sections/get-banners', [App\Http\Controllers\Admin\PageSections\AdminBannerController::class, 'getData'])->name('admin.sections.banners-get-data');
-    Route::post('/page-sections/temp-upload', [App\Http\Controllers\Admin\PageSections\AdminBannerController::class, 'tempUpload'])->name('admin.sections.banners-temp-upload');
-    Route::post('/page-sections/temp-remove/{filename}', [App\Http\Controllers\Admin\PageSections\AdminBannerController::class, 'removeUpload'])->name('admin.sections.banners-temp-remove');
-    Route::post('/page-sections/set-active/{id}', [App\Http\Controllers\Admin\PageSections\AdminBannerController::class, 'setActive'])->name('admin.sections.banners-set-active');
-
-    Route::resource('/page-sections/magazines', App\Http\Controllers\Admin\PageSections\AdminMagazineController::class)->names('admin.sections.magazines');
-    Route::post('/page-sections/magazine/set-featured/{id}', [App\Http\Controllers\Admin\PageSections\AdminMagazineController::class, 'setFeatured'])->name('admin.sections.magazine.set-featured');
-    Route::get('/page-sections/get-magazines', [App\Http\Controllers\Admin\PageSections\AdminMagazineController::class, 'getData'])->name('admin.sections.magazine-get-data');
-    Route::post('/page-sections/temp-upload-cover-magazine', [App\Http\Controllers\Admin\PageSections\AdminMagazineController::class, 'tempUploadCoverMagazine'])->name('admin.sections.magazines.temp-upload-cover-magazine');
-
-    //delete cover means remove the image from the storage and delete the filename from DB
-    Route::post('/page-sections/delete-cover-magazine/{id}/{filename}', [App\Http\Controllers\Admin\PageSections\AdminMagazineController::class, 'deleteCoverMagazine']);
-    //remove cover means remove the image only, not from the DB
-    Route::post('/page-sections/remove-cover-magazine/{filename}', [App\Http\Controllers\Admin\PageSections\AdminMagazineController::class, 'tempRemoveCoverMagazine'])->name('admin.sections.magazines.temp-upload-cover-magazine');
-
-    /* ===================MAGAZINES======================== */
-    Route::post('/page-sections/temp-upload-pdf-magazine', [App\Http\Controllers\Admin\PageSections\AdminMagazineController::class, 'tempUploadPDFMagazine'])->name('admin.sections.magazines.temp-upload-pdf-magazine');
-    Route::post('/page-sections/delete-magazine/{id}/{filename}', [App\Http\Controllers\Admin\PageSections\AdminMagazineController::class, 'deleteMagazine']);
-    Route::post('/page-sections/remove-magazine/{filename}', [App\Http\Controllers\Admin\PageSections\AdminMagazineController::class, 'removeMagazine']);
-
-
-
-    /* ===================DOSTv======================== */
-    Route::resource('/page-sections/dostvs', App\Http\Controllers\Admin\PageSections\AdminDostvController::class)->names('admin.sections.dostvs');
-    //Route::get('/page-sections/get-dostvs', [App\Http\Controllers\Admin\PageSections\AdminDostvController::class, 'getData'])->name('admin.sections.dostv-get-data');
-    Route::get('/page-sections/get-dostvs', [App\Http\Controllers\Admin\PageSections\AdminDostvController::class, 'getData']);
-    Route::post('/page-sections/dostvs/temp-upload-banner', [App\Http\Controllers\Admin\PageSections\AdminDostvController::class, 'tempUploadBanner']);
-    Route::post('/page-sections/dostvs/temp-remove-banner/{fileName}', [App\Http\Controllers\Admin\PageSections\AdminDostvController::class, 'tempremoveBanner']);
-    Route::post('/page-sections/dostvs/delete-dostv-banner/{id}/{fileName}', [App\Http\Controllers\Admin\PageSections\AdminDostvController::class, 'deleteDostvBanner']);
-    Route::post('/page-sections/dostv-set-active/{id}', [App\Http\Controllers\Admin\PageSections\AdminDostvController::class, 'setActive']);
-
-    /* ===================DOSTv Banner======================== */
-    //Route::resource('/page-sections/dostvs', App\Http\Controllers\Admin\PageSections\AdminDostvController::class)->names('admin.sections.dostvs');
-    //Route::get('/page-sections/dostvs/get-dostvs', [App\Http\Controllers\Admin\PageSections\AdminDostvController::class, 'getData']);
-    /* ===================DOSTv Banner======================== */
-
-
-    /* ===================DOSTv Videos======================== */
-    Route::resource('/page-sections/dostv-videos', App\Http\Controllers\Admin\PageSections\AdminDostvVideoController::class);
-    Route::get('/page-sections/get-dostv-videos', [App\Http\Controllers\Admin\PageSections\AdminDostvVideoController::class, 'getData']);
-    Route::get('/page-sections/get-featured-dostv-videos', [App\Http\Controllers\Admin\PageSections\AdminDostvVideoController::class, 'getFeaturedVideos']);
-    Route::post('/page-sections/dostv/set-featured/{id}/{value}', [App\Http\Controllers\Admin\PageSections\AdminDostvVideoController::class, 'setFeatued']);
-
-    /* ===================DOSTv Youtube Videos======================== */
-
-    /* ===================DOSTv Youtube Videos======================== */
-    Route::resource('/page-sections/dostvs/dostvs-featured-videos', App\Http\Controllers\Admin\PageSections\AdminDostvFeaturedVideosController::class);
-    Route::get('/page-sections/dostvs/get-dostvs-featured-videos', [App\Http\Controllers\Admin\PageSections\AdminDostvFeaturedVideosController::class, 'getData']);
-
-
-
-
-    Route::resource('/page-sections/videos', App\Http\Controllers\Admin\PageSections\AdminVideosController::class)->names('admin.page-sections.videos');
-    Route::post('/page-sections/video/set-featured/{id}', [App\Http\Controllers\Admin\PageSections\AdminVideosController::class, 'setFeatured'])->name('admin.page-sections.videos-set-featured');
-    Route::post('/page-sections/video/update-order-no/{id}', [App\Http\Controllers\Admin\PageSections\AdminVideosController::class, 'updateOrderNo']);
-    Route::post('/page-sections/video/set-unfeatured/{id}', [App\Http\Controllers\Admin\PageSections\AdminVideosController::class, 'setUnfeatured']);
-
-    Route::get('/page-sections/get-videos', [App\Http\Controllers\Admin\PageSections\AdminVideosController::class, 'getData'])->name('admin.page-sections.videos-get-data');
-    Route::get('/page-sections/get-featured-videos', [App\Http\Controllers\Admin\PageSections\AdminVideosController::class, 'getFeaturedVideos'])->name('admin.sections.videos-get-featured-data');
-
-
-    /** ====================================SECTIONS===================================== */
-
-
     Route::resource('/posts', App\Http\Controllers\Admin\AdminPostController::class);
     Route::get('/get-posts', [App\Http\Controllers\Admin\AdminPostController::class, 'getData'])->name('admin.posts.getdata');
 
@@ -182,10 +112,11 @@ Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
     Route::resource('/trashes', App\Http\Controllers\Admin\AdminTrashController::class);
     Route::get('/get-trashes', [App\Http\Controllers\Admin\AdminTrashController::class, 'getData'])->name('trashes.get-data');
 
-    Route::resource('/post-archives', App\Http\Controllers\Admin\AdminPostArchiveController::class)->names([
-        'index' => 'posts.archives'
-    ]);
-    Route::get('/get-post-archives', [App\Http\Controllers\Admin\AdminPostArchiveController::class, 'getData'])->name('archives-post-get-data');
+    // ARCHIVES CONTORLLER AND LOGICS
+    Route::resource('/post-archives', App\Http\Controllers\Admin\AdminPostArchiveController::class);
+
+    Route::post('/post-unarchive/{id}', [App\Http\Controllers\Admin\AdminPostArchiveController::class, 'unArchive'])->name('admin.post-archives.get-data');
+    Route::get('/get-post-archives', [App\Http\Controllers\Admin\AdminPostArchiveController::class, 'getData'])->name('admin.post-archives.get-data');
 
 
     Route::resource('/post-featured', App\Http\Controllers\Admin\AdminPostFeaturedController::class);

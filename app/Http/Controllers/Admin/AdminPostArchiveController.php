@@ -8,6 +8,7 @@ use App\Models\Post;
 use Inertia\Inertia;
 use Inertia\Response;
 use Auth;
+use App\Http\Controllers\Helpers\RecordTrail;
 
 class AdminPostArchiveController extends Controller
 {
@@ -19,19 +20,29 @@ class AdminPostArchiveController extends Controller
     public function getData(Request $req){
 
         $sort = explode('.', $req->sort_by);
-        $status = '';
 
-        if($req->status != '' || $req->status != null){
-            $status = $req->status;
+        $data = Post::with(['subjects'])
+            ->where('is_archive', 1);
+
+        if ($req->search != '') {
+            $data->where('title', 'like', '%'. $req->search . '%');
         }
-        $data = Post::with(['category', 'author']);
-        if ($status != '') {
-            $data = $data->where('status', $status);
-        }
-        $data->where('title', 'like', '%'. $req->search . '%')
-            ->where('status', 'archive');
 
         return $data->orderBy('id', 'desc')
             ->paginate($req->perpage);
+    }
+
+    public function unArchive($id){
+        $user = Auth::user();
+        $name = $user->lname. ', ' . $user->fname;
+
+        $data = Post::find($id);
+        $data->is_archive = 0;
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'unarchive', $user->id, $name);
+        $data->save();
+
+        return response()->json([
+            'status' => 'unarchive'
+        ], 200);
     }
 }

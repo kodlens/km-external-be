@@ -49,16 +49,11 @@ import { dateFormat, truncate } from '@/helper/helperFunctions';
 import { useQuery } from '@tanstack/react-query';
 
 
-const AdminPostIndex = (
-  { auth, statuses, permissions }:
-    PageProps) => {
+const AdminPostIndex = () => {
 
   const { modal } = App.useApp();
 
   const [form] = Form.useForm();
-
-  const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState(0);
 
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
@@ -68,10 +63,26 @@ const AdminPostIndex = (
   const [open, setOpen] = useState(false);
   const [id, setId] = useState(0);
 
+
+
+  const { data, isFetching, refetch } = useQuery({
+    queryKey: ['posts', page, perPage],
+    queryFn: async () => {
+      const params = [
+        `perpage=${perPage}`,
+        `search=${search}`,
+        `page=${page}`,
+        `status=${status}`
+      ].join('&');
+
+      const res = await axios.get(`/admin/get-posts?perpage=${perPage}&page=${page}&status=${status}`);
+      return res.data;
+    },
+  });
+
+
   const createMenuItems = (data: Post) => {
-
     const items: MenuProps['items'] = [];
-
     items.push({
       label: 'Edit',
       key: 'admin.posts.edit',
@@ -88,10 +99,10 @@ const AdminPostIndex = (
       icon: <DropboxOutlined />,
       onClick: () => {
         axios.post('/admin/posts-archive/' + data.id).then(res => {
-          if (res.data.status === 'archived') {
-            modal.info({
+          if (res.data.status === 'archive') {
+            modal.success({
               title: 'Archived!',
-              content: 'Successfully archived.'
+              content: 'The post/article was successfully archived.'
             })
             refetch()
           }
@@ -99,10 +110,10 @@ const AdminPostIndex = (
       },
     }, {
       label: 'Draft',
-      key: 'admin.posts-draft',
+      key: 'admin.posts.draft',
       icon: <PaperClipOutlined />,
       onClick: () => {
-        axios.post('/admin/posts.draft/' + data.id).then(res => {
+        axios.post('/admin/posts-draft/' + data.id).then(res => {
           if (res.data.status === 'draft') {
             modal.info({
               title: 'Draft!',
@@ -218,21 +229,6 @@ const AdminPostIndex = (
 
 
 
-  const { data, isFetching, refetch } = useQuery({
-    queryKey: ['posts', page, perPage],
-    queryFn: async () => {
-      const params = [
-        `perpage=${perPage}`,
-        `search=${search}`,
-        `page=${page}`,
-        `status=${status}`
-      ].join('&');
-
-      const res = await axios.get(`/admin/get-posts?perpage=${perPage}&page=${page}&status=${status}`);
-      return res.data;
-    },
-  });
-
 
   const onPageChange = (index: number, perPage: number) => {
     setPage(index)
@@ -249,7 +245,7 @@ const AdminPostIndex = (
   const handleTrashClick = (id: number) => {
     modal.confirm({
       title: 'Trash?',
-      content: 'Are you sure you want to move to trash this post?',
+      content: 'Are you sure you want to move this to trash?',
       onOk: async () => {
         const res = await axios.post('/admin/posts-trash/' + id);
         if (res.data.status === 'trashed') {
@@ -264,11 +260,9 @@ const AdminPostIndex = (
       title: 'Delete?',
       content: 'Are you sure you want to delete this post?',
       onOk: async () => {
-        setLoading(true)
         const res = await axios.delete('/admin/posts/' + id);
         if (res.data.status === 'deleted') {
           refetch();
-          setLoading(false)
         }
       }
     })
@@ -290,8 +284,6 @@ const AdminPostIndex = (
   }
 
   function onFinishSetPublishDate(values: any): void {
-
-    setLoading(true);
     axios.post(`/admin/post-set-publish-date/${values.post_id}`, {
       publication_date: values.publish_date
     })
@@ -319,9 +311,6 @@ const AdminPostIndex = (
         if (error.response && error.response.data.errors) {
           setErrors(error.response.data.errors);
         }
-      })
-      .finally(() => {
-        setLoading(false);
       });
   }
   return (
@@ -373,14 +362,14 @@ const AdminPostIndex = (
           <div>
 
             <Table dataSource={data?.data || []}
-              loading={loading}
+              loading={isFetching}
               rowKey={(data) => data.id}
               pagination={false}>
 
               <Column title="Id" dataIndex="id" />
               <Column title="Title" dataIndex="title" key="title" />
 
-              <Column title="Publication Date" dataIndex="publication_date" key="publication_date"
+              <Column title="Publication Date" dataIndex="publish_date" key="publish_date"
                 render={(publish_date) => {
                   return (
                     <>
@@ -426,29 +415,6 @@ const AdminPostIndex = (
                 )
               }}
               />
-
-              <Column title="Featured" dataIndex="is_featured" key="is_featured" render={(is_featured) => (
-
-                is_featured ? (
-                  <span className='bg-green-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>YES</span>
-
-                ) : (
-                  <span className='bg-red-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>NO</span>
-                )
-
-              )} />
-
-              <Column title="Trash" dataIndex="trash" key="trash" render={(trash) => (
-
-                trash > 0 ? (
-                  <span className='bg-green-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>YES</span>
-
-                ) : (
-                  <span className='bg-red-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>NO</span>
-                )
-
-              )} />
-
 
               <Column title="Action" key="action"
                 render={(_, data: Post) => (

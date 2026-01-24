@@ -35,7 +35,10 @@ class AdminPostController extends Controller
         if($req->status != '' || $req->status != null){
             $status = $req->status;
         }
-        $data = Post::with(['subjects']);
+        $data = Post::with(['subjects'])
+            ->where('trash', 0)
+            ->where('is_archive',  0);
+
         if ($status != '') {
             $data = $data->where('status', $status);
         }
@@ -348,6 +351,9 @@ class AdminPostController extends Controller
 
 
     public function draft($id){
+        $user = Auth::user();
+        $name = $user->lname. ', ' . $user->fname;
+
         $data = Post::find($id);
         $data->status = 'draft';
         $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'draft', $user->id, $name);
@@ -359,8 +365,12 @@ class AdminPostController extends Controller
     }
 
     public function archive($id){
+        $user = Auth::user();
+        $name = $user->lname. ', ' . $user->fname;
         $data = Post::find($id);
-        $data->status = 'archive';
+        $data->is_archive = 1;
+        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'archive', $user->id, $name);
+
         $data->save();
 
         return response()->json([
