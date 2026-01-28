@@ -30,10 +30,15 @@ Route::get('/', function () {
 Route::get('/km/login', [App\Http\Controllers\WelcomePageController::class, 'index'])->name('welcome');
 
 Route::get('/get-subjects', [App\Http\Controllers\OpenController::class, 'getSubjects'])->name('open.subjects');
-Route::get('/get-subject-headings/{subjectId}', [App\Http\Controllers\OpenController::class, 'getSubjectHeadings'])->name('open.subject-headings');
+Route::get('/get-subject-headings/{subjectId}', [App\Http\Controllers\OpenController::class, 'getSubjectHeadingsWithParams'])->name('open.subject-headings-with-params');
+Route::get('/get-subject-headings', [App\Http\Controllers\OpenController::class, 'getSubjectHeadings'])->name('open.subject-headings');
+
 
 
 Route::middleware('auth')->group(function () {
+
+    Route::post('/classify-article', [App\Http\Controllers\ArticleClassifierController::class, 'classify']);
+
 
     Route::post('/posts-comments/{id}', [App\Http\Controllers\PostCommentController::class, 'postCommentStore'])->name('posts.comments-store');
     Route::get('/get-posts-comments/{id}', [App\Http\Controllers\PostCommentController::class, 'getComments'])->name('posts.get-comments');

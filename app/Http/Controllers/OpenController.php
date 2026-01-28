@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Subject;
+use App\Models\SubjectHeading;
 
 class OpenController extends Controller
 {
@@ -12,9 +13,16 @@ class OpenController extends Controller
         return response()->json($subjects);
     }
 
-    public function getSubjectHeadings($subjectId){
+    public function getSubjectHeadingsWithParams($subjectId){
         $subjectHeadings = Subject::find($subjectId)->subject_headings()->where('active', 1)->get();
         return response()->json($subjectHeadings);
+    }
+
+
+    public function getSubjectHeadings(){
+
+        $data = SubjectHeading::where('active', 1)->get();
+        return response()->json($data);
     }
 
 }

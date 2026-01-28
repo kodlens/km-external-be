@@ -24,6 +24,8 @@ import Ckeditor from "@/Components/Ckeditor";
 import SelectSubjects from "@/Components/SelectSubjects";
 import dayjs from "dayjs";
 import { statusDropdownMenu } from "@/helper/statusMenu";
+import OllamaChat from "@/Components/OllamaChat";
+import KmClassifier from "@/Components/KmClassifier";
 
 
 const EncoderPostCreateEdit = ({
@@ -125,24 +127,16 @@ const EncoderPostCreateEdit = ({
     }
   };
 
-
-  /**truncate text and add 3 dots at the end */
-  const truncate = (text: string, limit: number) => {
-    if (text.length > 0) {
-      const words = text.split(" ");
-      if (words.length > limit) {
-        return words.slice(0, limit).join(" ") + "...";
-      }
-      return text;
-    } else {
-      return "";
-    }
-  };
-
-  const handleClickSubmit = (n: number) => {
+  const handleClassification = () => {
     setLoading(true)
+    const content = form.getFieldValue("description");
+    console.log(content);
 
-    form.submit()
+    axios.post("/classify-article", { content:content }).then((res) => {
+      console.log(res.data);
+      setLoading(false)
+
+    })
 
   }
 
@@ -159,9 +153,11 @@ const EncoderPostCreateEdit = ({
         >
           {/* card input */}
           <div className="bg-white p-6 mx-2 md:max-w-7xl w-full" >
+
             <div className="font-bold text-lg pb-2 mb-2 border-b">
               ADD/EDIT POST
             </div>
+
             <Form
               layout="vertical"
               form={form}
@@ -308,11 +304,22 @@ const EncoderPostCreateEdit = ({
               </div>
               {/* flex contaner */}
 
+              <div>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    handleClassification();
+                  }}>
+                    Classify
+                  </Button>
+              </div>
+              {/* <KmClassifier /> */}
+
               <div className="my-6 border-t p-6 bg-gray-50 rounded-md">
                 <div className="font-bold mb-4">Manage Subjects/Subject Headings</div>
                 {errors && errors.subjects ? (
                   <div className="mb-4 text-red-600">{errors.subjects[0]}</div>
-                ) : null}
+                ) : null }
                 <SelectSubjects form={form} />
 
               </div>
@@ -361,6 +368,8 @@ const EncoderPostCreateEdit = ({
           {/* end input card */}
         </div>
         {/* end card container */}
+
+        <OllamaChat />
       </div>
       {/* card container */}
     </>
