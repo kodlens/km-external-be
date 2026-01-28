@@ -51,10 +51,17 @@ html, body {
 @tailwind utilities;
 
 .ck.ck-content {
-    min-height: 300px;
+    overflow: auto;
     border-radius: 15px;
     max-width: none !important;
     @apply prose;
+}
+
+
+.ck-editor__editable_inline {
+    max-height: 1020px;   /* set your limit */
+    min-height: 1020px;   /* optional */
+    overflow-y: auto;
 }
 
 

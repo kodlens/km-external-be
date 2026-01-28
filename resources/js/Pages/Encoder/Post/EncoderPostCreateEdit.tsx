@@ -285,21 +285,23 @@ const EncoderPostCreateEdit = ({
                 <div className="w-full lg:w-2/3">
 
                   {/* EDITOR CK WYSIWYG */}
-                  <Form.Item
-                    label="Body"
-                    name="description"
-                    className="prose-lg !max-w-none"
-                    validateStatus={
-                      errors.description ? "error" : ""
-                    }
-                    help={
-                      errors.description
-                        ? errors.description[0]
-                        : ""
-                    }
-                  >
-                    <Ckeditor post={post || undefined} form={form} ckLicense={ckLicense} />
-                  </Form.Item>
+                  <div className="min-h-[300px] ">
+                    <Form.Item
+                      label="Body"
+                      name="description"
+                      className="prose-lg !max-w-none"
+                      validateStatus={
+                        errors.description ? "error" : ""
+                      }
+                      help={
+                        errors.description
+                          ? errors.description[0]
+                          : ""
+                      }
+                    >
+                      <Ckeditor post={post || undefined} form={form} ckLicense={ckLicense} />
+                    </Form.Item>
+                  </div>
 
                 </div>
 
