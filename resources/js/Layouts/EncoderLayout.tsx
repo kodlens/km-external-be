@@ -14,6 +14,22 @@ import PanelSideBarLogo from '@/Components/PanelSideBarLogo';
 import { ListPlus, LogOut, Newspaper } from 'lucide-react';
 const { Header, Sider, Content } = Layout;
 
+const encoderPalette = {
+  bg: '#F5F7FA',
+  surface: '#FFFFFF',
+  sidebar: '#0F172A',
+  sidebarHover: '#1E293B',
+  sidebarSubtle: '#334155',
+  primary: '#0EA5A4',
+  primaryHover: '#0B8B8A',
+  text: '#0F172A',
+  textMuted: '#64748B',
+  border: '#E2E8F0',
+  danger: '#B91C1C',
+  dangerSoft: '#FEF2F2',
+  dangerBorder: '#FCA5A5',
+};
+
 
 export default function EncoderLayout(
   { user, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
@@ -38,7 +54,7 @@ export default function EncoderLayout(
       {
         key: 'encoder.infos',
         icon: <FormOutlined />,
-        label: 'Infomations',
+        label: 'Informations',
         children: [
           {
             key: 'encoder.infos.index',
@@ -99,19 +115,42 @@ export default function EncoderLayout(
         <Sider trigger={null} collapsible
           breakpoint='md'
           onBreakpoint={(b) => setCollapsed(b)}
-          collapsed={collapsed} width={300} style={{ background: "#084c7f" }}>
+          collapsed={collapsed} width={300} style={{ background: encoderPalette.sidebar }}>
           <PanelSideBarLogo />
           <ConfigProvider theme={{
             token: {
-              colorText: 'white',
-              colorBgBase: '#084c7f',
-            }
+              colorText: '#FFFFFF',
+              colorBgBase: encoderPalette.sidebar,
+              colorPrimary: encoderPalette.primary,
+            },
+            components: {
+              Menu: {
+                darkItemBg: encoderPalette.sidebar,
+                darkSubMenuItemBg: encoderPalette.sidebar,
+                darkItemHoverBg: encoderPalette.sidebarHover,
+                darkItemSelectedBg: encoderPalette.primary,
+                darkItemSelectedColor: '#FFFFFF',
+                darkItemColor: '#CBD5E1',
+                darkItemHoverColor: '#FFFFFF',
+                darkGroupTitleColor: encoderPalette.sidebarSubtle,
+                itemBorderRadius: 10,
+                itemHeight: 42,
+                itemMarginInline: 10,
+                itemMarginBlock: 6,
+                itemPaddingInline: 14,
+                subMenuItemBorderRadius: 8,
+              },
+            },
           }}>
             <Menu
+              theme="dark"
               mode="inline"
+              inlineIndent={18}
               style={{
-                background: "#084c7f",
-                color: 'white',
+                background: encoderPalette.sidebar,
+                color: '#FFFFFF',
+                fontSize: 14,
+                paddingTop: 8,
               }}
               defaultOpenKeys={['encoder.infos']}
               defaultSelectedKeys={[`${route().current()}`]}
@@ -124,7 +163,11 @@ export default function EncoderLayout(
         <Layout>
           <Header
             className='border'
-            style={{ padding: 0, background: 'white' }}
+            style={{
+              padding: 0,
+              background: encoderPalette.surface,
+              borderColor: encoderPalette.border,
+            }}
           >
             <div className='flex items-center'>
               <Button
@@ -135,13 +178,21 @@ export default function EncoderLayout(
                   fontSize: '16px',
                   width: 64,
                   height: 64,
+                  color: encoderPalette.text,
                 }}
               />
 
 
               <div className='ml-auto mr-4 flex items-center gap-4'>
-                <Link href=''>{user.lname} {user.fname[0]}.</Link>
-                 <Button className='' danger onClick={handleLogout}>
+                <Link href='' style={{ color: encoderPalette.textMuted }}>{user.lname} {user.fname[0]}.</Link>
+                 <Button
+                  style={{
+                    borderColor: encoderPalette.dangerBorder,
+                    color: encoderPalette.danger,
+                    background: encoderPalette.dangerSoft,
+                  }}
+                  onClick={handleLogout}
+                >
                   <LogOut size={15} />
                 </Button>
               </div>
@@ -153,7 +204,7 @@ export default function EncoderLayout(
               margin: 0,
               padding: 0,
               height: 'calc(100vh - 64px)',
-              background: "#dce6ec",
+              background: encoderPalette.bg,
               overflow: 'auto',
               borderRadius: 0,
             }}

@@ -14,7 +14,7 @@ import { useQuery } from '@tanstack/react-query'
 import { statusDropdownMenu } from '@/helper/statusMenu'
 import Error404 from '@/Components/Error404'
 import TableInfos from '@/Components/TableInfos'
-import { Search } from 'lucide-react'
+import { ListPlus, Search } from 'lucide-react'
 
 export default function EncoderInfoIndex() {
 
@@ -69,7 +69,7 @@ export default function EncoderInfoIndex() {
 
             <Button
               className='ml-auto'
-              icon={<FileAddOutlined />}
+              icon={<ListPlus size={15} />}
               loading={isFetching}
               type="primary"
               onClick={() => router.visit('/encoder/infos/create')}
@@ -140,7 +140,8 @@ export default function EncoderInfoIndex() {
           {/* ================= ACTION ================= */}
           <div className="flex justify-end mb-4">
             <Button
-              icon={<FileAddOutlined />}
+              loading={isFetching}
+              icon={<ListPlus size={15} />}
               type="primary"
               onClick={() => router.visit('/encoder/infos/create')}
             >
