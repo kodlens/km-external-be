@@ -3,12 +3,9 @@
 import { Head, router } from '@inertiajs/react'
 
 import {
-  FileAddOutlined, DropboxOutlined,
-  DownOutlined,
+  FileAddOutlined,
   DeleteOutlined, EditOutlined,
-  EyeOutlined, UserOutlined,
-  ProjectOutlined, DeliveredProcedureOutlined, PaperClipOutlined,
-  PicRightOutlined
+  ProjectOutlined, PaperClipOutlined,
 } from '@ant-design/icons';
 
 import {

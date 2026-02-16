@@ -77,3 +77,8 @@ html, body {
     border: 1px solid #116135 !important;
     background-color: #116135 !important;
   }
+
+
+  label {
+    font-weight: 600;
+  }
