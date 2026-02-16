@@ -15,7 +15,7 @@ import Error404 from '@/Components/Error404'
 import TableInfos from '@/Components/TableInfos'
 import { ListPlus, Search } from 'lucide-react'
 
-export default function EncoderInfoIndex() {
+export default function PublisherInfoIndex() {
 
 
   const [page, setPage] = useState(1)
@@ -155,7 +155,7 @@ export default function EncoderInfoIndex() {
   )
 }
 
-EncoderInfoIndex.layout = (page: ReactNode) => (
+PublisherInfoIndex.layout = (page: ReactNode) => (
   <EncoderLayout user={(page as any).props.auth.user}>
     {page}
   </EncoderLayout>
