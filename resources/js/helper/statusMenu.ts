@@ -20,7 +20,7 @@ export const statusDropdownMenu = (role:string) => {
     case 'encoder':
       return [
         { value: 'draft', label: 'Draft' },
-        //{ value: 'submit', label: 'Submit for Publishing' }
+        { value: 'submit', label: 'Submit for Review' }
       ]
   }
 

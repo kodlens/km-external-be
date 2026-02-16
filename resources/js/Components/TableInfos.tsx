@@ -1,13 +1,14 @@
 import { dateFormat, formatNumber, truncate } from '@/helper/helperFunctions'
 
 import { router } from '@inertiajs/react'
-import { Table, Dropdown, Button, Pagination, App, MenuProps } from 'antd'
+import { Table, Dropdown, Button, Pagination, App, MenuProps, Space } from 'antd'
 import modal from 'antd/es/modal'
 import Column from 'antd/es/table/Column'
 import axios from 'axios'
-import ArticleView from '@/Components/InfoView'
+import InfoView from '@/Components/InfoView'
 import { Info } from '@/types/info'
 import { menuItems } from '@/helper/menuItems'
+import { EditOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons'
 //import { adminMenuItems } from '@/helper/adminMenuItems'
 
 
@@ -35,17 +36,25 @@ const TableInfos = (
 
   const {notification} = App.useApp();
 
-  const statusStyles: Record<string, string> = {
-    submit: 'bg-blue-100 text-blue-700',
-    publish: 'bg-green-100 text-green-700',
-    draft: 'bg-slate-100 text-slate-700',
-    return: 'bg-red-100 text-red-700',
+  const statusMeta: Record<string, { label: string; className: string }> = {
+    submit: { label: 'For Review', className: 'bg-blue-100 text-blue-800 border border-blue-200' },
+    publish: { label: 'Published', className: 'bg-emerald-100 text-emerald-800 border border-emerald-200' },
+    draft: { label: 'Draft', className: 'bg-slate-100 text-slate-700 border border-slate-200' },
+    return: { label: 'Returned', className: 'bg-rose-100 text-rose-800 border border-rose-200' },
   }
+
+  const lineClampTwoStyle = {
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical' as const,
+    WebkitLineClamp: 2,
+    overflow: 'hidden',
+  }
+
   const handleView = (info: Info) => {
     modal.info({
       width: 1024,
-      title: 'Article Preview',
-      content: <ArticleView info={info} className={''} />,
+      title: 'Information Preview',
+      content: <InfoView info={info} className={''} />,
     })
   }
 
@@ -95,9 +104,10 @@ const TableInfos = (
         {/* TITLE */}
         <Column
           title="Title"
+          width={300}
           dataIndex="title"
           render={(title) => (
-            <div className="font-medium text-slate-900">
+            <div className="font-medium text-slate-900 leading-6" style={lineClampTwoStyle} title={title}>
               {title}
             </div>
           )}
@@ -106,12 +116,13 @@ const TableInfos = (
         {/* SUMMARY */}
         <Column
           title="Information"
+          width={300}
           render={(_, info: Info) => (
             <div className="space-y-2">
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-600 leading-6" style={lineClampTwoStyle} title={info.description_text ?? ''}>
                 {info.description_text
-                  ? truncate(info.description_text, 14)
-                  : '—'}
+                  ? truncate(info.description_text, 10)
+                  : '-'}
               </p>
 
               <div className="flex items-center gap-2 text-xs">
@@ -148,7 +159,7 @@ const TableInfos = (
             <span className="text-sm text-slate-700">
               {info.publish_date
                 ? dateFormat(info.publish_date.toString())
-                : '—'}
+                : '-'}
             </span>
           )}
         />
@@ -156,13 +167,11 @@ const TableInfos = (
         {/* STATUS */}
         <Column
           title="Status"
+          width={200}
           dataIndex="status"
           render={(status: string) => (
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyles[status] ?? 'bg-slate-100'
-                }`}
-            >
-              {status.toUpperCase()}
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusMeta[status]?.className ?? 'bg-slate-100 text-slate-700 border border-slate-200'}`}>
+              {statusMeta[status]?.label ?? status.toUpperCase()}
             </span>
           )}
         />
@@ -171,66 +180,82 @@ const TableInfos = (
         <Column
           title="Action"
           render={(_, info: Info) => (
-            <Dropdown
-              trigger={['click']}
-              menu={{
-                items: menuItems({
-                  info,
-                  prefix: routePrefix,
-                  handleEditClick: showEdit ? () =>
-                    router.visit(`/${routePrefix}/infos/${info.id}/edit`)
-                  : undefined,
-                  handleTrashClick: showTrash ? async () => {
-                    modal.confirm({
-                      title: 'Move to Trash?',
-                      content: 'This article will be moved to trash.',
-                      onOk: async () => {
-                        await axios.post(`/${routePrefix}/article-trash/${info.id}`)
-                        refetch()
-                      },
-                    })
-                  } : undefined,
-                  handleView: showView ? () => handleView(info) : undefined,
-                  handlePublish: showPublish ? async () => {
-                    await axios.post(`/${routePrefix}/article-publish/${info.id}`).then(() => {
-                       notification.success({
-                        message: 'Article has been published.',
+            <Space size={4}>
+              {showView ? (
+                <Button size="small" icon={<EyeOutlined />} onClick={() => handleView(info)}>
+                  View
+                </Button>
+              ) : null}
+
+              {!showView && showEdit ? (
+                <Button
+                  size="small"
+                  icon={<EditOutlined />}
+                  onClick={() => router.visit(`/${routePrefix}/infos/${info.id}/edit`)}
+                >
+                  Edit
+                </Button>
+              ) : null}
+
+              <Dropdown
+                trigger={['click']}
+                menu={{
+                  items: menuItems({
+                    info,
+                    prefix: routePrefix,
+                    handleEditClick: showEdit ? () =>
+                      router.visit(`/${routePrefix}/infos/${info.id}/edit`)
+                    : undefined,
+                    handleTrashClick: showTrash ? async () => {
+                      modal.confirm({
+                        title: 'Move to Trash?',
+                        content: 'This information will be moved to trash.',
+                        onOk: async () => {
+                          await axios.post(`/${routePrefix}/info-trash/${info.id}`)
+                          refetch()
+                        },
                       })
-                      refetch()
-                    })
-                  } : undefined,
-                  handleDraft: showDraft ? async () => {
-                    await axios.post(`/${routePrefix}/article-draft/${info.id}`).then(() => {
-                       notification.success({
-                        message: 'Article has been returned to draft.',
-                      })
-                      refetch()
-                    })
-                  } : undefined,
-                  handleDelete: showDelete ? () => {
-                    modal.confirm({
-                      title: 'Delete Article?',
-                      content: 'This article will be permanently deleted.',
-                      onOk: async () => {
-                        await axios.delete(`/${routePrefix}/articles/${info.id}`)
+                    } : undefined,
+                    handleView: showView ? () => handleView(info) : undefined,
+                    handlePublish: showPublish ? async () => {
+                      await axios.post(`/${routePrefix}/info-publish/${info.id}`).then(() => {
+                        notification.success({
+                          message: 'Information has been published.',
+                        })
                         refetch()
-                      },
-                    })
-                  } : undefined
-                }) as MenuProps['items'],
-              }}
-            >
-              <Button size="small" type="text">
-                •••
-              </Button>
-            </Dropdown>
+                      })
+                    } : undefined,
+                    handleDraft: showDraft ? async () => {
+                      await axios.post(`/${routePrefix}/info-draft/${info.id}`).then(() => {
+                        notification.success({
+                          message: 'Information has been returned to draft.',
+                        })
+                        refetch()
+                      })
+                    } : undefined,
+                    handleDelete: showDelete ? () => {
+                      modal.confirm({
+                        title: 'Delete Information?',
+                        content: 'This information will be permanently deleted.',
+                        onOk: async () => {
+                          await axios.delete(`/${routePrefix}/infos/${info.id}`)
+                          refetch()
+                        },
+                      })
+                    } : undefined
+                  }) as MenuProps['items'],
+                }}
+              >
+                <Button size="small" type="text" icon={<MoreOutlined />} aria-label="More actions" />
+              </Dropdown>
+            </Space>
           )}
         />
 
       </Table>
 
       {/* ================= PAGINATION ================= */}
-      <div className="mt-6 mb-4 flex justify-between">
+      <div className="mt-6 mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Pagination
           size="small"
           current={page}
@@ -251,3 +276,4 @@ const TableInfos = (
 }
 
 export default TableInfos
+

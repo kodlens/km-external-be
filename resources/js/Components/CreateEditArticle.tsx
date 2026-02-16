@@ -123,7 +123,6 @@ const getData = () => {
         { name: "source_url", value: info.source_url },
         { name: "agency", value: info.agency },
         { name: "region", value: info.region },
-        { name: "regional_office", value: info.regional_office },
         { name: "author_name", value: info.author_name },
         { name: "is_publish", value: info.is_publish },
         { name: "tags", value: info.tags ? info.tags?.split(',') : [] },

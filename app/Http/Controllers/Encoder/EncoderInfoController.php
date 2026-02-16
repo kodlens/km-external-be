@@ -35,7 +35,7 @@ class EncoderInfoController extends InfoController
         $status = '';
 
         $user = Auth::user()->load('role');
-        $data = Post::query()->where('trash', 0);
+        $data = Info::query()->where('trash', 0);
 
         if ($req->status != '' || $req->status != null) {
             $data->where('status', $req->status);
@@ -80,7 +80,7 @@ class EncoderInfoController extends InfoController
 
         $info = Info::with(['subjects'])->find($id);
 
-          return Inertia::render('Encoder/Post/EncoderPostCreateEdit', [
+          return Inertia::render('Encoder/Info/EncoderPostCreateEdit', [
             'id' => $id,
             'ckLicense' => $CK_LICENSE,
             'info' => $info,
