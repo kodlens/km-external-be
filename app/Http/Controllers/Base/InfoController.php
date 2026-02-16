@@ -24,11 +24,7 @@ class InfoController extends Controller
     {
         $req->validate([
             'title' => ['required', new ValidateTitle(0)],
-            'author' => ['string', 'nullable'],
             'description' => ['required'],
-            'category' => ['required'],
-            'section' => ['required'],
-            //'publish_date' => ['required'],
         ], [
             'description.required' => 'Description is required.',
         ]);
@@ -71,26 +67,23 @@ class InfoController extends Controller
                 $user = Auth::user();
                 $name = $user->lname . ',' . $user->fname;
 
-                $data = Article::create([
+                $data = Info::create([
                     'title' => $req->title,
                     'alias' => Str::slug($req->title),
                     'description' => $modifiedHtml,
                     'description_text' => $content,
-                    'section_id' => $req->section,
-                    'category_id' => $req->category,
-                    'author' => $req->author,
-                    'encoded_by_id' => $user->id,
+                    'author_name' => $req->author_name ? $req->author_name : null,
+                    'encoded_by' => $user->id,
                     'encoded_at' => now(),
                     'region' => $req->region,
                     'agency' => $req->agency,
-                    //'regional_office' => $req->regional_office, //remove for the meantime as discussed last meeting
                     'tags' => $tagsString,
                     'source_url' => $req->source_url,
                     'status' => $req->status,
                     'publish_date' => $dateFormated,
                     'is_publish' => 0,
-                    'is_ojt' => $user->role === 'encoder' ? $user->is_ojt : 0,
-                    'is_press_release' => $req->is_press_release ? 1 : 0,
+                    // 'is_ojt' => $user->role === 'encoder' ? $user->is_ojt : 0,
+                    //'is_press_release' => $req->is_press_release ? 1 : 0,
                     'record_trail' => (new RecordTrail())
                         ->recordTrail('', 'insert', $user->id, $name),
                 ]);
@@ -116,10 +109,6 @@ class InfoController extends Controller
         $req->validate([
             'title' => ['required', 'unique:articles,title,' . $id . ',id'],
             'description' => ['required', 'string'],
-            'author' => ['string', 'nullable'],
-            'category' => ['required'],
-            'section' => ['required'],
-            //'publish_date' => ['required'],
         ]);
 
 
@@ -158,40 +147,24 @@ class InfoController extends Controller
         $data->alias = Str::slug($req->title);
         $data->description = $modifiedHtml;
         $data->description_text = $content;
-        $data->section_id = $req->section;
-        $data->category_id = $req->category;
-        $data->author = $req->author;
-        $data->modified_by_id = $user->id;
-        $data->modified_at = now();
+
+        $data->author_name = $req->author_name ? $req->author_name : null;
+        $data->last_updated_by = $user->id;
+        $data->last_updated_at = now();
         $data->agency = $req->agency ? $req->agency : null;
         $data->region = $req->region ? $req->region : null;
-        //$data->regional_office = $req->regional_office ? $req->regional_office : null; ////remove for the meantime as discussed last meeting
         $data->source_url = $req->source_url;
         $data->status = $req->status;
         $data->publish_date = $dateFormated;
         $data->tags = $tagsString;
 
-        if($user->role === 'encoder'){
-            $data->is_ojt = $user->is_ojt;
-        }
+        // if($user->role === 'encoder'){
+        //     $data->is_ojt = $user->is_ojt;
+        // }
 
-        $data->is_press_release = $req->is_press_release ? 1 : 0;
+        //$data->is_press_release = $req->is_press_release ? 1 : 0;
         $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'update', $user->id, $name);
         $data->save();
-
-        // $info = Information::where('article_id', $id)
-        //     ->update([
-        //         'title' => $req->title,
-        //         'description' => $modifiedHtml,
-        //         'alias' => Str::slug($req->title),
-        //         'agency_code' => 'DOST-STII',
-        //         'tags' => $tagsString,
-        //         'source' => 'scienceph',
-        //         'source_url' => 'https://www.science.ph',
-        //         'content_type' => 'blog',
-        //         'region' => $req->region,
-        //         'is_publish' => 0,
-        //     ]);
 
         return response()->json([
             'status' => 'updated'
@@ -207,7 +180,7 @@ class InfoController extends Controller
     {
         $user = Auth::user();
 
-        $data = Article::find($id);
+        $data = Info::find($id);
 
         if (! $data->description) {
             return response()->json([

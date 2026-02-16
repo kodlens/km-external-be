@@ -40,7 +40,10 @@ class Info extends Model
         //'submittcategoryed_date',
 
         'encoded_by',
+        'encoded_at',
+
         'last_updated_by',
+        'last_update_at',
 
         'record_trail',
         'trash',
