@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query'
 import { statusDropdownMenu } from '@/helper/statusMenu'
 import Error404 from '@/Components/Error404'
 import TableInfos from '@/Components/TableInfos'
+import { Search } from 'lucide-react'
 
 export default function EncoderInfoIndex() {
 
@@ -69,6 +70,7 @@ export default function EncoderInfoIndex() {
             <Button
               className='ml-auto'
               icon={<FileAddOutlined />}
+              loading={isFetching}
               type="primary"
               onClick={() => router.visit('/encoder/infos/create')}
             >
@@ -104,24 +106,17 @@ export default function EncoderInfoIndex() {
               allowClear
             />
 
-            <Button className="ml-auto" type="primary" onClick={()=> refetch()}>
+            <Button className="ml-auto"
+              icon={<Search size={15} />}
+              type="primary"
+              loading={isFetching}
+              onClick={()=> refetch()}>
               Search
             </Button>
           </div>
 
 
           <div className='overflow-auto'>
-            {/* <TableEncoderArticle
-              data={data}
-              isFetching={isFetching}
-              refetch={refetch}
-              page={page}
-              paginationPageChange={(p)=>{
-                setPage(p)
-              }}
-              editUrl={`/encoder/articles`}
-              trashUrl='/encoder/article-trash' /> */}
-
               <TableInfos
                 routePrefix='encoder'
                 data={data}

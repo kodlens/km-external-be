@@ -30,18 +30,18 @@ class EncoderInfoController extends InfoController
 
     public function getData(Request $req)
     {
-
         $sort = explode('.', $req->sort_by);
-        $status = '';
 
-        $user = Auth::user()->load('role');
-        $data = Info::query()->where('trash', 0);
+        $user = Auth::user();
+
+        $data = Info::query()->where('trash', 0)
+            ->where('encoded_by', $user->id);
 
         if ($req->status != '' || $req->status != null) {
             $data->where('status', $req->status);
         }
 
-        $data->where('title', 'like', '%'.$req->search.'%');
+        $data->where('title', 'like', '%'.$req->title.'%');
 
         return $data
             ->orderBy('id', 'desc')

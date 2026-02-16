@@ -11,7 +11,7 @@ import {
 
 import { Button, ConfigProvider, Layout, Menu, MenuProps } from 'antd';
 import PanelSideBarLogo from '@/Components/PanelSideBarLogo';
-import { LogOut } from 'lucide-react';
+import { ListPlus, LogOut, Newspaper } from 'lucide-react';
 const { Header, Sider, Content } = Layout;
 
 
@@ -43,11 +43,13 @@ export default function EncoderLayout(
           {
             key: 'encoder.infos.index',
             label: 'Articles',
+            icon: <Newspaper size={15} />,
             onClick: () => router.visit('/encoder/infos'),
           },
           {
             key: 'encoder.infos.create',
             label: 'New Post/Article',
+            icon: <ListPlus size={15} />,
             onClick: () => router.visit('/encoder/infos/create'),
           },
 
