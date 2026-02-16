@@ -52,12 +52,10 @@ const EncoderPostCreateEdit = ({
               auth={auth}
               info={info}
               ckLicense={ckLicense}
-
               uri="/encoder/articles"
               authors={authors}
               agencies={agencies}
               regions={regions}
-
               tags={tags}
           />
           {/* end input card */}

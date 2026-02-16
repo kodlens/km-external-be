@@ -5,6 +5,7 @@ import {
   Alignment,
   Autoformat,
   Bold,
+  BalloonToolbar,
   //CKBox,
   Code,
   Italic,
@@ -61,13 +62,19 @@ import {
 } from "ckeditor5";
 
 import "ckeditor5/ckeditor5.css";
-import { Info } from '@/types/info';
 import { FormInstance } from 'antd';
+import { Info } from "@/types/info";
 
 
 const Ckeditor = ({ post, form, ckLicense }: { post?: Info, form: FormInstance, ckLicense: string }) => {
   return (
     <>
+      <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-3 py-2 mb-2">
+        <svg className="h-5 w-5" fill="red" viewBox="0 0 20 20">
+          <path d="M9 9h2v6H9V9zm0-4h2v2H9V5z" />
+        </svg>
+        Please download the image before attaching it to Editor.
+      </div>
       <CKEditor
         data={ post?.description ?? ''}
         editor={ClassicEditor}
@@ -144,7 +151,17 @@ const Ckeditor = ({ post, form, ckLicense }: { post?: Info, form: FormInstance, 
               "outdent",
               "indent",
             ],
+
           },
+          balloonToolbar: [
+            'bold',
+            'italic',
+            'underline',
+            'strikethrough',
+            'link',
+            'highlight',
+            'removeFormat'
+          ],
 
           heading: {
             options: [
@@ -223,11 +240,13 @@ const Ckeditor = ({ post, form, ckLicense }: { post?: Info, form: FormInstance, 
           },
 
           plugins: [
+
             Alignment,
             Autoformat,
             AutoImage,
             AutoLink,
             BlockQuote,
+            BalloonToolbar,
             Bold,
             CloudServices,
             Code,

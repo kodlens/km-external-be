@@ -1,6 +1,6 @@
 import { statusDropdownMenu } from '@/helper/statusMenu';
 import { PageProps, User } from '@/types';
-import { Form, Input, Flex, Select, DatePicker, Button, ConfigProvider, FormInstance, App } from 'antd';
+import { Form, Input, Flex, Select, DatePicker, Button, ConfigProvider, FormInstance, App, AutoComplete } from 'antd';
 
 import { ProjectOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 
@@ -14,6 +14,8 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { SelectAgency } from './SelectAgency';
+import AgencyAutoComplete from './AgencyAutoComplete';
 
 
 export interface CreateEditProps {
@@ -233,6 +235,8 @@ const CreateEditArticle = ({
                 <Input placeholder="Source" />
               </Form.Item>
 
+              {/* <AgencyAutoComplete agencies={agencies} /> */}
+
               <Form.Item
                 name="agency"
                 label="Agency"
@@ -240,9 +244,9 @@ const CreateEditArticle = ({
                 validateStatus={errors.agency ? "error" : ""}
                 help={errors.agency ? errors.agency[0] : ""}
               >
-                <Input placeholder="Agency" />
+                {/* <Select options={agencies ? agencies.map(item => ({ value: item.code, label: item.code })) : [] }  allowClear/> */}
+                <AgencyAutoComplete agencies={agencies} />
               </Form.Item>
-
 
             </Flex>
 
