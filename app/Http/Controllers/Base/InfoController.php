@@ -22,6 +22,8 @@ class InfoController extends Controller
     //
     public function store(Request $req)
     {
+
+        //return $req;
         $req->validate([
             'title' => ['required', new ValidateTitle(0)],
             'description' => ['required'],

@@ -113,26 +113,25 @@ const CreateEditArticle = ({
 
   }
 
-
-  const getData = () => {
+const getData = () => {
     try {
       form.setFields([
         { name: "title", value: info.title },
         { name: "slug", value: info.alias },
         { name: "description", value: info.description },
-        { name: "excerpt", value: info.excerpt },
-        { name: "status", value: info.status },
+        { name: "status", value: info.status ? info.status : 'draft' },
         { name: "source_url", value: info.source_url },
         { name: "agency", value: info.agency },
+        { name: "region", value: info.region },
+        { name: "regional_office", value: info.regional_office },
         { name: "author_name", value: info.author_name },
         { name: "is_publish", value: info.is_publish },
-        { name: "subjects", value: info.subjects },
+        { name: "tags", value: info.tags ? info.tags?.split(',') : [] },
         { name: "publish_date", value: info.publish_date ? dayjs(info.publish_date) : null },
       ]);
 
     } catch (err) { }
   };
-
 
   return (
 
@@ -150,8 +149,10 @@ const CreateEditArticle = ({
         is_publish: 0,
         source_url: '',
         agency: '',
+        region: null,
         author_name: '',
         publish_date: null,
+        tags: null
       }}
     >
 
@@ -259,14 +260,45 @@ const CreateEditArticle = ({
 
       </Flex>
 
+
+      <Flex gap={`middle`}>
+
+        <Form.Item
+          name="region"
+          label="Select Region"
+          className="w-full"
+          validateStatus={errors.region ? "error" : ""}
+          help={errors.region ? errors.region[0] : ""}
+        >
+          <Select options={regions ? regions.map(item => ({ value: item.name, label: item.name })) : [] }  allowClear/>
+        </Form.Item>
+
+        <Form.Item
+          name="publish_date"
+          label="Publish Date"
+          className="w-full"
+          validateStatus={errors.publish_date ? "error" : ""}
+          help={errors.publish_date ? errors.publish_date[0] : ""}
+        >
+          <DatePicker className="w-full" placeholder="Publish Date" />
+        </Form.Item>
+
+      </Flex>
+
       <Form.Item
-        name="publish_date"
-        label="Publish Date"
+        name="tags"
+        label="Tags"
         className="w-full"
-        validateStatus={errors.publish_date ? "error" : ""}
-        help={errors.publish_date ? errors.publish_date[0] : ""}
+        validateStatus={errors.tags ? "error" : ""}
+        help={errors.tags ? errors.tags[0] : ""}
       >
-        <DatePicker className="w-full" placeholder="Publish Date" />
+        <Select
+          loading={loading}
+          mode="tags"
+          style={{ width: '100%' }}
+          placeholder="Tags Mode"
+          options={tags.map(item => ({ value: item, label: item }))}
+        />
       </Form.Item>
 
       <div>

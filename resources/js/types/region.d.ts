@@ -1,4 +1,7 @@
 export interface Region {
-  region?:string
+  name?:string
   id?:number
+  description?:string
+  order_no?:number
+  active?:number | boolean
 }
