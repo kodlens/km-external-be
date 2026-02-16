@@ -1,17 +1,17 @@
 import { useState, PropsWithChildren, ReactNode } from 'react';
-import { Link, router, useForm, usePage } from '@inertiajs/react';
-import { PageProps, User } from '@/types';
+import { Link, router, useForm } from '@inertiajs/react';
+import { User } from '@/types';
 
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  CreditCardOutlined,
-  HomeOutlined, DeleteOutlined,
+  HomeOutlined,
   FormOutlined, UserOutlined, LockOutlined
 } from '@ant-design/icons';
 
 import { Button, ConfigProvider, Layout, Menu, MenuProps } from 'antd';
 import PanelSideBarLogo from '@/Components/PanelSideBarLogo';
+import { LogOut } from 'lucide-react';
 const { Header, Sider, Content } = Layout;
 
 
@@ -19,10 +19,6 @@ export default function EncoderLayout(
   { user, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
 
   const { post } = useForm();
-
-  //destruct object permissions
-  const { permissions } = usePage<PageProps>().props;
-
   const [collapsed, setCollapsed] = useState(false);
 
   const handleLogout = () => {
@@ -34,7 +30,7 @@ export default function EncoderLayout(
     //dynamic rendering is disabled for the meantime :(
     const items: MenuItem[] = [];
     items.push({
-        key: 'encoder.dashboard',
+        key: 'encoder.dashboard.index',
         icon: <HomeOutlined />,
         label: 'Dashboard',
         onClick: () => router.visit('/encoder/dashboard')
@@ -42,16 +38,16 @@ export default function EncoderLayout(
       {
         key: 'encoder.infos',
         icon: <FormOutlined />,
-        label: 'Posts',
+        label: 'Infomations',
         children: [
           {
             key: 'encoder.infos.index',
-            label: 'Info',
+            label: 'Articles',
             onClick: () => router.visit('/encoder/infos'),
           },
           {
             key: 'encoder.infos.create',
-            label: 'New Info',
+            label: 'New Post/Article',
             onClick: () => router.visit('/encoder/infos/create'),
           },
 
@@ -74,7 +70,7 @@ export default function EncoderLayout(
         type: 'divider'
       },
       {
-        key: 'encoder.my-account.index',
+        key: 'my-account.index',
         icon: <UserOutlined />,
         label: 'My Account',
         onClick: () => router.visit('/my-account')
@@ -99,11 +95,14 @@ export default function EncoderLayout(
     <>
       <Layout>
         <Sider trigger={null} collapsible
+          breakpoint='md'
+          onBreakpoint={(b) => setCollapsed(b)}
           collapsed={collapsed} width={300} style={{ background: "#084c7f" }}>
           <PanelSideBarLogo />
           <ConfigProvider theme={{
             token: {
-              colorText: 'white'
+              colorText: 'white',
+              colorBgBase: '#084c7f',
             }
           }}>
             <Menu
@@ -118,7 +117,6 @@ export default function EncoderLayout(
                 navigationItems()
               }
             />
-
           </ConfigProvider>
         </Sider>
         <Layout>
@@ -141,7 +139,9 @@ export default function EncoderLayout(
 
               <div className='ml-auto mr-4 flex items-center gap-4'>
                 <Link href=''>{user.lname} {user.fname[0]}.</Link>
-                <Button className='' onClick={handleLogout}>Logout</Button>
+                 <Button className='' danger onClick={handleLogout}>
+                  <LogOut size={15} />
+                </Button>
               </div>
 
             </div>
