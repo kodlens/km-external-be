@@ -147,7 +147,7 @@ const getData = () => {
         description: "",
         status: 'draft',
         is_publish: 0,
-        source_url: '',
+        source_url: 'https://website.com',
         agency: '',
         region: null,
         author_name: '',
