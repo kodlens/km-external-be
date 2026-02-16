@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ConfigProvider, App as AntApp} from 'antd';
-import React, { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';

@@ -80,3 +80,7 @@ Notes
     Roles (Publisher, Encoder,)
     (adviser, student, writer, desgner, editor)
 
+
+Note for dev only
+
+    inertia.defaultExtension set to .tsx

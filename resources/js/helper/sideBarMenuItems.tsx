@@ -66,8 +66,10 @@ const menuByRole: Record<SidebarRole, SidebarConfig> = {
       ...accountItems,
     ],
   },
+
+
   publisher: {
-    defaultOpenKeys: [],
+    defaultOpenKeys: ['publisher.infos'],
     items: [
       {
         key: 'publisher.dashboard.index',
@@ -75,7 +77,6 @@ const menuByRole: Record<SidebarRole, SidebarConfig> = {
         label: 'Dashboard',
         onClick: () => router.visit('/publisher/dashboard'),
       },
-      { type: 'divider' },
       {
         key: 'publisher.infos',
         icon: <FormOutlined />,
@@ -83,16 +84,16 @@ const menuByRole: Record<SidebarRole, SidebarConfig> = {
         onClick: () => router.visit('/publisher/infos'),
         children: [
           {
-            key: 'encoder.infos.index',
+            key: 'publisher.infos.index',
             label: 'Information',
             icon: <Newspaper size={15} />,
-            onClick: () => router.visit('/encoder/infos'),
+            onClick: () => router.visit('/publisher/infos'),
           },
           {
-            key: 'encoder.infos.create',
+            key: 'publisher.infos.create',
             label: 'New Information',
             icon: <ListPlus size={15} />,
-            onClick: () => router.visit('/encoder/infos/create'),
+            onClick: () => router.visit('/publisher/infos/create'),
           },
         ],
       },
@@ -100,6 +101,8 @@ const menuByRole: Record<SidebarRole, SidebarConfig> = {
       ...accountItems,
     ],
   },
+
+
   admin: {
     defaultOpenKeys: ['admin.infos'],
     items: [
@@ -161,7 +164,9 @@ const menuByRole: Record<SidebarRole, SidebarConfig> = {
 }
 
 export const getSidebarMenuConfig = (role?: string): SidebarConfig => {
+
   const normalizedRole = (role ?? '').toLowerCase() as SidebarRole
+
   if (!menuByRole[normalizedRole]) {
     return { items: [], defaultOpenKeys: [] }
   }
@@ -185,8 +190,14 @@ export const getSidebarSelectedKeys = (role?: string, currentRoute?: string | nu
     }
   }
 
-  if (normalizedRole === 'publisher' && currentRoute.startsWith('publisher.infos')) {
-    return ['publisher.posts.index']
+
+  if (normalizedRole === 'publisher') {
+    if (currentRoute === 'publisher.infos.create') {
+      return ['publisher.infos.create']
+    }
+    if (currentRoute.startsWith('publisher.infos')) {
+      return ['publisher.infos.index']
+    }
   }
 
   if (normalizedRole === 'admin') {

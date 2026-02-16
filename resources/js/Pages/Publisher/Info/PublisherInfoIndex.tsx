@@ -7,13 +7,13 @@ import {
 } from 'antd'
 import {  ReactNode, useState } from 'react'
 import axios from 'axios'
-import EncoderLayout from '@/Layouts/SideBarLayout'
 import { useQuery } from '@tanstack/react-query'
 
 import { statusDropdownMenu } from '@/helper/statusMenu'
 import Error404 from '@/Components/Error404'
 import TableInfos from '@/Components/TableInfos'
 import { ListPlus, Search } from 'lucide-react'
+import SideBarLayout from '@/Layouts/SideBarLayout'
 
 export default function PublisherInfoIndex() {
 
@@ -37,7 +37,7 @@ export default function PublisherInfoIndex() {
         `status=${status}`,
       ].join('&')
 
-      const res = await axios.get(`/encoder/get-infos?${params}`)
+      const res = await axios.get(`/publisher/get-infos?${params}`)
       return res.data
     },
     refetchOnWindowFocus: false,
@@ -117,7 +117,7 @@ export default function PublisherInfoIndex() {
 
           <div className='overflow-auto'>
               <TableInfos
-                routePrefix='encoder'
+                routePrefix='publisher'
                 data={data}
                 isFetching={isFetching}
                 refetch={refetch}
@@ -156,7 +156,7 @@ export default function PublisherInfoIndex() {
 }
 
 PublisherInfoIndex.layout = (page: ReactNode) => (
-  <EncoderLayout user={(page as any).props.auth.user}>
+  <SideBarLayout user={(page as any).props.auth.user}>
     {page}
-  </EncoderLayout>
+  </SideBarLayout>
 )

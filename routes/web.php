@@ -154,16 +154,17 @@ Route::prefix('publisher')->middleware('auth', 'publisher')->group(function () {
 
     Route::get('/dashboard', [App\Http\Controllers\Publisher\PublisherDashboardController::class, 'index'])->name('publisher.dashboard.index');
 
-    Route::get('/posts', [App\Http\Controllers\Publisher\PublisherPostController::class, 'index'])->name('publisher.posts.index');
-    Route::patch('/posts/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'update'])->name('publisher.posts.update');;
+    Route::get('/infos', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'index'])->name('publisher.infos.index');
+    Route::get('/infos/create', [App\Http\Controllers\Encoder\PublisherInfoController::class, 'create'])->name('publisher.infos.create');
+    Route::patch('/infos/{id}', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'update'])->name('publisher.infos.update');;
 
-    Route::get('/posts-form-view/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'formView'])->name('publisher.posts.form-view');
-    Route::get('/get-posts', [App\Http\Controllers\Publisher\PublisherPostController::class, 'getData'])->name('publisher.posts.get-data');
+    Route::get('/infos-form-view/{id}', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'formView'])->name('publisher.infos.form-view');
+    Route::get('/get-infos', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'getData'])->name('publisher.infos.get-data');
 
 
-    Route::post('/posts-publish/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'postPublish'])->name('publisher.posts.publish');
-    Route::post('/posts-unpublish/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'postUnpublish'])->name('publisher.posts.unpublish');
-    Route::post('/posts-return-to-encoder/{id}', [App\Http\Controllers\Publisher\PublisherPostController::class, 'postReturnToEncoder'])->name('publisher.posts.return-to-encoder');
+    Route::post('/info-publish/{id}', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'postPublish'])->name('publisher.info.publish');
+    Route::post('/info-unpublish/{id}', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'postUnpublish'])->name('publisher.info.unpublish');
+    Route::post('/info-return-to-encoder/{id}', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'postReturnToEncoder'])->name('publisher.info.return-to-encoder');
 
     // Route::get('/post-publish', [App\Http\Controllers\Publisher\PublisherPostPublishController::class, 'index']);
     // Route::get('/get-post-publish', [App\Http\Controllers\Publisher\PublisherPostPublishController::class, 'getData'])->name('author.post-publish-get-data');
