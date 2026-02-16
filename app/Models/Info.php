@@ -16,18 +16,18 @@ class Info extends Model
         'description_text',
 
         'alias',
-        'url',
-        'agency_code',
-        'thumbnail',
+        // 'url',
+        // 'agency_code',
+        // 'thumbnail',
 
         'tags',
         'status',
-        'source',
+        // 'source',
         'source_url',
-        'content_type',
+        //'content_type',
         'region',
         'agency',
-        'regional_office',
+        //'regional_office',
 
         'is_publish',
         'publish_date',
@@ -37,7 +37,7 @@ class Info extends Model
         'author_name',
         'subject_headings',
         'publisher_name',
-        'submittcategoryed_date',
+        //'submittcategoryed_date',
 
         'encoded_by',
         'last_updated_by',

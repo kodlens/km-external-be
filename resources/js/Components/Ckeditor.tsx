@@ -71,7 +71,7 @@ const Ckeditor = ({ post, form, ckLicense }: { post?: Info, form: FormInstance, 
       <CKEditor
         data={ post?.description ?? ''}
         editor={ClassicEditor}
-        onChange={(event, editor) => {
+        onChange={(_, editor) => {
           const data = editor.getData();
           //setEditorData(data);
           form.setFieldsValue({

@@ -29,13 +29,6 @@ public function getSections() {
 
 
 
-/*************  ✨ Windsurf Command ⭐  *************/
-    /**
-     * Get the list of regional offices
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-/*******  e15ad8db-d389-4066-9407-a31965f5be53  *******/
     public function getRegionalOffices(){
         $data = RegionalOffice::where('active', 1)
         ->orderBy('order_no', 'asc')
@@ -46,7 +39,7 @@ public function getSections() {
 
      public function getAgencies(){
         //$data = Agency::where('active', 1)->get();
-        $data = Article::distinct()
+        $data = Info::distinct()
             ->select('agency')
             ->whereNotNull('agency')       // remove null
             ->where('agency', '!=', '')    // remove empty strings
@@ -57,7 +50,7 @@ public function getSections() {
     }
 
     public function getAuthorsAutocomplete(){
-            $data = Article::distinct('author')
+            $data = Info::distinct('author')
             ->select('author')
             ->orderBy('author', 'asc')
             ->get();
