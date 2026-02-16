@@ -3,7 +3,6 @@ import { Head } from "@inertiajs/react";
 
 
 import { CreateEditProps } from "@/types";
-import EncoderLayout from "@/Layouts/SideBarLayout";
 import CreateEditArticle from "@/Components/CreateEditArticle";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 

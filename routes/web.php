@@ -191,17 +191,17 @@ Route::prefix('encoder')->middleware('auth', 'encoder')->group(function () {
     //Route::resource('/posts', App\Http\Controllers\Encoder\EncoderPostController::class);
     Route::get('/get-infos', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'getData'])->name('encoder.infos.get-data');
 
-    Route::post('/posts-trash/{id}', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'trash'])->name('encoder.posts.trash');
+    Route::post('/info-trash/{id}', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'trash'])->name('encoder.posts.trash');
     //   Route::post('/temp-upload', [App\Http\Controllers\Author\AuthorPostController::class, 'tempUpload'])->name('posts.temp-upload');
     //   Route::post('/temp-remove/{filename}', [App\Http\Controllers\Author\AuthorPostController::class, 'removeUpload'])->name('posts.temp-remove');
     //   Route::post('/image-remove/{id}/{filename}', [App\Http\Controllers\Author\AuthorPostController::class, 'imageRemove'])->name('posts.image-remove');
 
     //   Route::post('/posts-published/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'postPublished'])->name('posts.published');
     //   Route::post('/posts-archived/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'postArchived'])->name('posts.archived');
-        Route::post('/posts-draft/{id}', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'postDraft'])->name('encoder.posts.draft');
+    Route::post('/info-draft/{id}', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'draft'])->name('encoder.posts.draft');
     //   Route::post('/posts-pending/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'postPending'])->name('posts.pending');
 
-    Route::post('/posts-submit-for-publishing/{id}', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'postSubmitForPublishing'])->name('posts.submit-for-publishing');
+    Route::post('/info-submit-for-review/{id}', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'submit'])->name('posts.submit-for-publishing');
 
   //   //Route::get('/get-posts-comments/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'getComments'])->name('posts.get-comments');
 
