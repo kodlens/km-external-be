@@ -105,10 +105,8 @@ class InfoController extends Controller
 
     public function update(Request $req, $id){
 
-        //return $req;
-
         $req->validate([
-            'title' => ['required', 'unique:articles,title,' . $id . ',id'],
+            'title' => ['required', 'unique:infos,title,' . $id . ',id'],
             'description' => ['required', 'string'],
         ]);
 
@@ -143,7 +141,7 @@ class InfoController extends Controller
         $name = $user->lname . ',' . $user->fname;
 
         //update data in table articles
-        $data = Article::find($id);
+        $data = Info::find($id);
         $data->title = $req->title;
         $data->alias = Str::slug($req->title);
         $data->description = $modifiedHtml;
@@ -203,7 +201,7 @@ class InfoController extends Controller
         $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'delete', $user->id, $name);
         $data->save();
 
-        Article::destroy($id);
+        Info::destroy($id);
 
 
         return response()->json([
@@ -217,7 +215,7 @@ class InfoController extends Controller
     public function trash($id)
     {
         $user = Auth::user();
-        $data = Article::find($id);
+        $data = Info::find($id);
         $data->status = 'trash';
         $data->trash = 1;
         $name = $user->lname . ',' . $user->fname;
@@ -242,7 +240,7 @@ class InfoController extends Controller
                 // Database operations here
                 $user = Auth::user();
 
-                $data = Article::find($id);
+                $data = Info::find($id);
                 $data->status = 'publish'; //submit-for-publishing (static)
                 $data->record_trail = $data->record_trail . 'publish|('.$user->id.')' . $user->lname . ', ' . $user->fname . '|' . date('Y-m-d H:i:s') . ';';
                 $data->save();
@@ -283,7 +281,7 @@ class InfoController extends Controller
         try {
             DB::transaction(function () use ($id) {
                 $user = Auth::user();
-                $data = Article::find($id);
+                $data = Info::find($id);
                 $data->status = 'draft';
                 $data->trash = 0;
                 $data->record_trail = $data->record_trail . 'draft|('.$user->id.')' . $user->lname . ', ' . $user->fname . '|' . date('Y-m-d H:i:s') . ';';

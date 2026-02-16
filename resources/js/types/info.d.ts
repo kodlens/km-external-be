@@ -14,8 +14,8 @@ export interface Info  {
 
 
     thumbnail?: string;
-    tags?: string[];
-    status?: string;
+    tags: string;
+    status: string;
 
     source_key?: string;
     source_url?: string;

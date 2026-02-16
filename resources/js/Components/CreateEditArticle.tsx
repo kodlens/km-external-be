@@ -10,7 +10,7 @@ import { Info } from '@/types/info';
 import { Author } from '@/types/author';
 import { Agency } from '@/types/agency';
 import { Region } from '@/types/region';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -113,6 +113,11 @@ const CreateEditArticle = ({
 
   }
 
+  useEffect(() => {
+    if (id > 0) {
+      getData();
+    }
+  }, []);
 const getData = () => {
     try {
       form.setFields([
@@ -125,7 +130,7 @@ const getData = () => {
         { name: "region", value: info.region },
         { name: "author_name", value: info.author_name },
         { name: "is_publish", value: info.is_publish },
-        { name: "tags", value: info.tags ? info.tags?.split(',') : [] },
+        { name: "tags", value: info.tags ? info.tags.split(',') : []},
         { name: "publish_date", value: info.publish_date ? dayjs(info.publish_date) : null },
       ]);
 

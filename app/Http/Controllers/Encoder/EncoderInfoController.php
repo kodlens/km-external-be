@@ -80,7 +80,7 @@ class EncoderInfoController extends InfoController
 
         $info = Info::with(['subjects'])->find($id);
 
-          return Inertia::render('Encoder/Info/EncoderPostCreateEdit', [
+          return Inertia::render('Encoder/Info/EncoderInfoCreateEdit', [
             'id' => $id,
             'ckLicense' => $CK_LICENSE,
             'info' => $info,
@@ -146,99 +146,5 @@ class EncoderInfoController extends InfoController
         ], 200);
     }
 
-    /** IMAGE HANDLING */
-    /* ================= */
-    public function tempUpload(Request $req)
-    {
-        // return $req;
-        $req->validate([
-            'featured_image' => ['required', 'mimes:jpg,jpeg,png', 'max:1024'],
-        ], [
-            'featured_image.max' => 'The upload image must not be greater than 1MB in size',
-        ]);
-        $file = $req->featured_image;
-        $fileGenerated = md5($file->getClientOriginalName().time());
-        $imageName = $fileGenerated.'.'.$file->getClientOriginalExtension();
-        $imagePath = $file->storeAs('public/temp', $imageName);
-        $n = explode('/', $imagePath);
 
-        return $n[2];
-    }
-
-    public function removeUpload($fileName)
-    {
-
-        if (Storage::exists('public/temp/'.$fileName)) {
-            Storage::delete('public/temp/'.$fileName);
-
-            return response()->json([
-                'status' => 'temp_deleted',
-            ], 200);
-        }
-
-        // this will remove the image from featured_image
-        if (Storage::exists('public/featured_images/'.$fileName)) {
-            Storage::delete('public/featured_images/'.$fileName);
-
-            Post::where('featured_image', $fileName)
-                ->update([
-                    'featured_image' => null,
-                ]);
-
-            return response()->json([
-                'status' => 'removed',
-            ], 200);
-        }
-
-        return response()->json([
-            'status' => 'temp_error',
-        ], 200);
-    }
-
-    public function postDraft($id)
-    {
-        $user = Auth::user();
-        $data = Post::find($id);
-        $data->status = 'draft'; // submit-for-publishing (static)
-        $data->trash = 0; // be sure to set 0 the trash if draft
-        $name = $user->lname . ',' . $user->fname;
-        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'draft', $user->id, $name);
-        $data->save();
-
-        return response()->json([
-            'status' => 'draft',
-        ], 200);
-    }
-
-    public function postArchived($id)
-    {
-        $user = Auth::user();
-        $name = $user->lname . ',' . $user->fname;
-
-        $data = Post::find($id);
-        // $data->status_id = 3; //submit-for-publishing (static)
-        $data->status = 'archive'; // submit-for-publishing (static)
-        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'archive', $user->id, $name);
-        $data->save();
-
-        return response()->json([
-            'status' => 'archive',
-        ], 200);
-    }
-
-    public function postSubmitForPublishing($id)
-    {
-        $user = Auth::user();
-        $name = $user->lname . ',' . $user->fname;
-
-        $data = Post::find($id);
-        $data->status = 'submit'; // submit-for-publishing (static)
-        // $data->status_id = 7; //submit-for-publishing (static)
-        $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'submit', $user->id, $name);
-        $data->save();
-
-        return response()->json([
-            'status' => 'submit-for-publishing',
-        ], 200);
-    }
 }
