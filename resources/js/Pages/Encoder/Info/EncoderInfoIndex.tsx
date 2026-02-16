@@ -132,6 +132,8 @@ export default function EncoderInfoIndex() {
                 showDraft={false}
                 showView={true}
                 showTrash={false}
+                showReturn={false}
+                showSubmit={true}
               />
 
           </div>

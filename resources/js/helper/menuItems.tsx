@@ -1,7 +1,7 @@
 
 import { Info } from "@/types/info";
 import { DeleteOutlined, EditOutlined, GlobalOutlined, StopOutlined } from "@ant-design/icons";
-import { Eye } from "lucide-react";
+import { CornerDownLeft, Eye, SendHorizontal } from "lucide-react";
 
 export const menuItems = (
   {
@@ -11,6 +11,8 @@ export const menuItems = (
     handlePublish,
     handleDraft,
     handleDelete,
+    handleReturn,
+    handleSubmit,
     info,
     prefix
   }:
@@ -20,7 +22,9 @@ export const menuItems = (
     handleView?: () => void,
     handlePublish?: () => void,
     handleDraft?: () => void,
-    handleDelete?: () => void
+    handleDelete?: () => void,
+    handleReturn?: () => void,
+    handleSubmit?: () => void,
     info?: Info,
     prefix: string
   }
@@ -67,6 +71,28 @@ export const menuItems = (
     })
   }
 
+  if(handleReturn){
+    items.push(
+      {
+      label: 'Return',
+      key: `${prefix}.infos.delete`,
+      disabled: info?.status === 'publish',
+      icon: <CornerDownLeft size={15}/>,
+      onClick: () => handleReturn()
+    })
+  }
+
+  if(handleSubmit){
+    items.push(
+      {
+      label: 'Submit',
+      key: `${prefix}.infos.delete`,
+      disabled: info?.status === 'submit',
+      icon: <SendHorizontal size={15}/>,
+      onClick: () => handleSubmit()
+    })
+  }
+
   if(handleView){
     items.push({
       label: 'View',
@@ -75,7 +101,6 @@ export const menuItems = (
       onClick: () => handleView()
     })
   }
-
 
   if(handleDelete){
     items.push(

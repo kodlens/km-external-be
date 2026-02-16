@@ -128,10 +128,12 @@ export default function PublisherInfoIndex() {
                 page={page}
                 showDelete={false}
                 showEdit={true}
-                showPublish={false}
+                showPublish={true}
                 showDraft={false}
                 showView={true}
-                showTrash={false}
+                showTrash={true}
+                showReturn={false}
+                showSubmit={false}
               />
 
           </div>

@@ -25,12 +25,14 @@ type Props = {
   showPublish?: boolean
   showDraft?: boolean
   showView?: boolean
+  showReturn?: boolean
+  showSubmit?: boolean
   extraActions?: (info: Info) => MenuProps['items']
 
 }
 const TableInfos = (
   { routePrefix, data, isFetching, refetch, page, paginationPageChange,
-    showEdit, showTrash, showView, showPublish, showDraft, showDelete
+    showEdit, showTrash, showView, showPublish, showDraft, showDelete, showReturn, showSubmit
 }: Props) => {
 
   const {notification, modal} = App.useApp();
@@ -241,7 +243,27 @@ const TableInfos = (
                           refetch()
                         },
                       })
-                    } : undefined
+                    } : undefined,
+                    handleReturn: showReturn ? () => {
+                      modal.confirm({
+                        title: 'Return Information?',
+                        content: 'This information will be return to encoder.',
+                        onOk: async () => {
+                          await axios.post(`/${routePrefix}/info-return/${info.id}`)
+                          refetch()
+                        },
+                      })
+                    } : undefined,
+                    handleSubmit: showSubmit ? () => {
+                      modal.confirm({
+                        title: 'Submit Information?',
+                        content: 'This information will be submitted for review.',
+                        onOk: async () => {
+                          await axios.post(`/${routePrefix}/info-submit/${info.id}`)
+                          refetch()
+                        },
+                      })
+                    } : undefined,
                   }) as MenuProps['items'],
                 }}
               >
