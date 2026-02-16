@@ -2,7 +2,6 @@ import { dateFormat, formatNumber, truncate } from '@/helper/helperFunctions'
 
 import { router } from '@inertiajs/react'
 import { Table, Dropdown, Button, Pagination, App, MenuProps, Space } from 'antd'
-import modal from 'antd/es/modal'
 import Column from 'antd/es/table/Column'
 import axios from 'axios'
 import InfoView from '@/Components/InfoView'
@@ -34,7 +33,7 @@ const TableInfos = (
     showEdit, showTrash, showView, showPublish, showDraft, showDelete
 }: Props) => {
 
-  const {notification} = App.useApp();
+  const {notification, modal} = App.useApp();
 
   const statusMeta: Record<string, { label: string; className: string }> = {
     submit: { label: 'For Review', className: 'bg-blue-100 text-blue-800 border border-blue-200' },

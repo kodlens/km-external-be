@@ -81,7 +81,6 @@ const menuByRole: Record<SidebarRole, SidebarConfig> = {
         key: 'publisher.infos',
         icon: <FormOutlined />,
         label: 'Informations',
-        onClick: () => router.visit('/publisher/infos'),
         children: [
           {
             key: 'publisher.infos.index',
