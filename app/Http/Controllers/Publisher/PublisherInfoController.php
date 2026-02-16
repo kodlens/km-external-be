@@ -11,9 +11,7 @@ use App\Rules\ValidateTitle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Helpers\FilterDom;
 use App\Http\Controllers\Helpers\RecordTrail;
 use App\Http\Controllers\Base\InfoController;
@@ -79,7 +77,7 @@ class PublisherInfoController extends InfoController
 
         $info = Info::with(['subjects'])->find($id);
 
-          return Inertia::render('Publisher/Info/PublisherPostCreateEdit', [
+          return Inertia::render('Publisher/Info/PublisherInfoCreateEdit', [
             'id' => $id,
             'ckLicense' => $CK_LICENSE,
             'info' => $info,
@@ -130,7 +128,7 @@ class PublisherInfoController extends InfoController
 
     /** ======================================
      * This is soft trash/soft delete function
-*/
+    */
     public function trash($id)
     {
         $user = Auth::user();

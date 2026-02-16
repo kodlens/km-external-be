@@ -10,7 +10,9 @@ export default function EncoderDashboard() {
     <>
       <Head title="Dashboard" />
 
-      Dashboard
+       <div className="py-6 px-4 sm:px-6 lg:px-8 space-y-6">
+        Encoder Dashboard
+      </div>
 
     </>
   );
