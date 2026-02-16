@@ -34,8 +34,13 @@ class PublisherInfoController extends InfoController
 
         $data = Info::query()->where('trash', 0);
 
-        if ($req->status != '' || $req->status != null) {
+        // if ($req->status != '' || $req->status != null) {
+        //     $data->where('status', $req->status);
+        // }
+        if (!empty($req->status)) {
             $data->where('status', $req->status);
+        } else {
+            $data->whereIn('status', ['publish', 'submit', 'unpublish']);
         }
 
         $data->where('title', 'like', '%'.$req->title.'%');

@@ -8,6 +8,7 @@ import InfoView from '@/Components/InfoView'
 import { Info } from '@/types/info'
 import { menuItems } from '@/helper/menuItems'
 import { EditOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons'
+import { Ellipsis } from 'lucide-react'
 //import { adminMenuItems } from '@/helper/adminMenuItems'
 
 
@@ -182,21 +183,6 @@ const TableInfos = (
           title="Action"
           render={(_, info: Info) => (
             <Space size={4}>
-              {showView ? (
-                <Button size="small" icon={<EyeOutlined />} onClick={() => handleView(info)}>
-                  View
-                </Button>
-              ) : null}
-
-              {!showView && showEdit ? (
-                <Button
-                  size="small"
-                  icon={<EditOutlined />}
-                  onClick={() => router.visit(`/${routePrefix}/infos/${info.id}/edit`)}
-                >
-                  Edit
-                </Button>
-              ) : null}
 
               <Dropdown
                 trigger={['click']}
@@ -267,7 +253,7 @@ const TableInfos = (
                   }) as MenuProps['items'],
                 }}
               >
-                <Button size="small" type="text" icon={<MoreOutlined />} aria-label="More actions" />
+                <Button icon={<Ellipsis size={15}/>} aria-label="More actions" />
               </Dropdown>
             </Space>
           )}
