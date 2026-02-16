@@ -11,11 +11,11 @@ export const statusDropdownMenu = (role:string) => {
       ]
     case 'publisher':
       return [
-        { value: 'draft', label: 'Draft' },
+        //{ value: 'draft', label: 'Draft' },
         { value: 'publish', label: 'Publish' },
-        //{ value: 'unpublish', label: 'Unpublish' },
+        { value: 'unpublish', label: 'Unpublish' },
         { value: 'return', label: 'Return' },
-        { value: 'submit', label: 'Submit for Review' }
+        //{ value: 'submit', label: 'Submit for Review' }
       ]
     case 'encoder':
       return [

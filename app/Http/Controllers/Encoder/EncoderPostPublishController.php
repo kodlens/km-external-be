@@ -24,8 +24,13 @@ class EncoderPostPublishController extends Controller
         $user = Auth::user()->load('role');
 
         $data = Post::with(['category', 'author']);
-        if ($status != '') {
-            $data->where('status', $status);
+        // if ($status != '') {
+        //     $data->where('status', $status);
+        // }
+        if (!empty($req->status)) {
+            $data->where('status', $req->status);
+        } else {
+            $data->whereIn('status', ['draft', 'submit', 'return']);
         }
         $data->where('title', 'like', '%'. $req->search . '%');
 
