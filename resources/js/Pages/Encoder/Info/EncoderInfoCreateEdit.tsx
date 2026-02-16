@@ -3,8 +3,8 @@ import { Head } from "@inertiajs/react";
 
 
 import { CreateEditProps } from "@/types";
-import EncoderLayout from "@/Layouts/EncoderLayout";
 import CreateEditArticle from "@/Components/CreateEditArticle";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 
 const EncoderInfoCreateEdit = ({
@@ -61,7 +61,7 @@ const EncoderInfoCreateEdit = ({
 export default EncoderInfoCreateEdit;
 
 EncoderInfoCreateEdit.layout = (page: ReactNode) => (
-  <EncoderLayout user={(page as any).props.auth.user}>
+  <AuthenticatedLayout user={(page as any).props.auth.user}>
     {page}
-  </EncoderLayout>
+  </AuthenticatedLayout>
 );

@@ -1,19 +1,18 @@
 import { PropsWithChildren, ReactNode } from 'react';
 
 import { Layout } from 'antd';
-import AdminLayout from './AdminLayout';
-import PublisherLayout from './PublisherLayout';
-import EncoderLayout from './EncoderLayout';
+
 import { User } from '@/types';
+import SideBarLayout from './SideBarLayout';
 
 export default function AuthenticatedLayout(
-  { user, header, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
+  { user, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
 
   return (
 
     <>
       <Layout>
-        {user.role.toLowerCase() === 'admin' && (
+        {/* {user.role.toLowerCase() === 'admin' && (
           <AdminLayout user={user} children={children}></AdminLayout>
         )}
 
@@ -22,7 +21,8 @@ export default function AuthenticatedLayout(
         )}
         {user.role.toLowerCase() === 'publisher' && (
           <PublisherLayout user={user} children={children}></PublisherLayout>
-        )}
+        )} */}
+        <SideBarLayout user={user} children={children}></SideBarLayout>
 
       </Layout>
     </>

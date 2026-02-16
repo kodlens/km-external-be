@@ -1,17 +1,16 @@
 import { useState, PropsWithChildren, ReactNode } from 'react';
-import { Link, router, useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { User } from '@/types';
 
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  HomeOutlined,
-  FormOutlined, UserOutlined, LockOutlined
 } from '@ant-design/icons';
 
-import { Button, ConfigProvider, Layout, Menu, MenuProps } from 'antd';
+import { Button, ConfigProvider, Layout, Menu } from 'antd';
 import PanelSideBarLogo from '@/Components/PanelSideBarLogo';
-import { ListPlus, LogOut, Newspaper } from 'lucide-react';
+import { LogOut } from 'lucide-react';
+import { getSidebarMenuConfig, getSidebarSelectedKeys } from '@/helper/sideBarMenuItems';
 const { Header, Sider, Content } = Layout;
 
 const encoderPalette = {
@@ -41,72 +40,8 @@ export default function EncoderLayout(
     post(route('logout'));
   }
 
-  type MenuItem = Required<MenuProps>['items'][number];
-  const navigationItems = () => {
-    //dynamic rendering is disabled for the meantime :(
-    const items: MenuItem[] = [];
-    items.push({
-        key: 'encoder.dashboard.index',
-        icon: <HomeOutlined />,
-        label: 'Dashboard',
-        onClick: () => router.visit('/encoder/dashboard')
-      },
-      {
-        key: 'encoder.infos',
-        icon: <FormOutlined />,
-        label: 'Informations',
-        children: [
-          {
-            key: 'encoder.infos.index',
-            label: 'Articles',
-            icon: <Newspaper size={15} />,
-            onClick: () => router.visit('/encoder/infos'),
-          },
-          {
-            key: 'encoder.infos.create',
-            label: 'New Post/Article',
-            icon: <ListPlus size={15} />,
-            onClick: () => router.visit('/encoder/infos/create'),
-          },
-
-        ],
-      },
-      // {
-      //     key: 'posts.publish',
-      //     icon: <CreditCardOutlined />,
-      //     label: 'Published',
-      //     onClick: ()=> router.visit('/encoder/post-publish')
-      // },
-      // {
-      //     key: 'trashes.index',
-      //     icon: <DeleteOutlined />,
-      //     label: 'Trashes',
-      //     onClick: ()=> router.visit('/encoder/post-trashes')
-
-      // },
-      {
-        type: 'divider'
-      },
-      {
-        key: 'my-account.index',
-        icon: <UserOutlined />,
-        label: 'My Account',
-        onClick: () => router.visit('/my-account')
-
-      },
-      {
-        key: 'change-password.index',
-        icon: <LockOutlined />,
-        label: 'Change Password',
-        onClick: () => router.visit('/change-password')
-
-      },
-    );
-
-
-    return items;
-  }
-
+  const sidebarConfig = getSidebarMenuConfig(user.role)
+  const selectedKeys = getSidebarSelectedKeys(user.role, route().current() as string | null)
 
   return (
 
@@ -152,11 +87,9 @@ export default function EncoderLayout(
                 fontSize: 14,
                 paddingTop: 8,
               }}
-              defaultOpenKeys={['encoder.infos']}
-              defaultSelectedKeys={[`${route().current()}`]}
-              items={
-                navigationItems()
-              }
+              defaultOpenKeys={sidebarConfig.defaultOpenKeys}
+              selectedKeys={selectedKeys}
+              items={sidebarConfig.items}
             />
           </ConfigProvider>
         </Sider>
@@ -184,7 +117,7 @@ export default function EncoderLayout(
 
 
               <div className='ml-auto mr-4 flex items-center gap-4'>
-                <Link href='' style={{ color: encoderPalette.textMuted }}>{user.lname} {user.fname[0]}.</Link>
+                <Link href='' style={{ color: encoderPalette.textMuted }}>{user.lname} {user.fname ? user.fname[0] : ''}.</Link>
                  <Button
                   style={{
                     borderColor: encoderPalette.dangerBorder,

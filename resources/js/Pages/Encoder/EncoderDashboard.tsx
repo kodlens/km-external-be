@@ -2,7 +2,7 @@ import ArticleByQuarterCard from "@/Components/Reports/ArticleByQuarterCard";
 import ArticlesByStatusChart from "@/Components/Reports/ArticleByStatusChart";
 import PublicationTimelinessTable from "@/Components/Reports/PublicationTimelinessTable";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
-import EncoderLayout from "@/Layouts/EncoderLayout";
+import EncoderLayout from "@/Layouts/SideBarLayout";
 import { PageProps } from "@/types";
 import { Head } from "@inertiajs/react";
 import { PropsWithChildren, ReactNode } from "react";

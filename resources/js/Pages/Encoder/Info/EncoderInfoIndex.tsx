@@ -7,13 +7,13 @@ import {
 } from 'antd'
 import {  ReactNode, useState } from 'react'
 import axios from 'axios'
-import EncoderLayout from '@/Layouts/EncoderLayout'
 import { useQuery } from '@tanstack/react-query'
 
 import { statusDropdownMenu } from '@/helper/statusMenu'
 import Error404 from '@/Components/Error404'
 import TableInfos from '@/Components/TableInfos'
 import { ListPlus, Search } from 'lucide-react'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 
 export default function EncoderInfoIndex() {
 
@@ -156,7 +156,7 @@ export default function EncoderInfoIndex() {
 }
 
 EncoderInfoIndex.layout = (page: ReactNode) => (
-  <EncoderLayout user={(page as any).props.auth.user}>
+  <AuthenticatedLayout user={(page as any).props.auth.user}>
     {page}
-  </EncoderLayout>
+  </AuthenticatedLayout>
 )

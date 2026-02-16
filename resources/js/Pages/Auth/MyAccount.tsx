@@ -2,7 +2,7 @@ import { App, Button, Form, Input, Select } from "antd";
 import { useEffect, useState } from "react";
 import { SaveOutlined } from "@ant-design/icons";
 import { PageProps } from "@/types";
-import AuthorLayout from "@/Layouts/EncoderLayout";
+import AuthorLayout from "@/Layouts/SideBarLayout";
 import { Head, router } from "@inertiajs/react";
 import axios from "axios";
 

@@ -7,7 +7,7 @@ import {
 } from 'antd'
 import {  ReactNode, useState } from 'react'
 import axios from 'axios'
-import EncoderLayout from '@/Layouts/EncoderLayout'
+import EncoderLayout from '@/Layouts/SideBarLayout'
 import { useQuery } from '@tanstack/react-query'
 
 import { statusDropdownMenu } from '@/helper/statusMenu'

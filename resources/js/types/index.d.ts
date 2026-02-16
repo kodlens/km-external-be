@@ -1,15 +1,14 @@
 export interface User {
 	  data(data: any): unknown;
-    id: number;
-    username: string,
-    sex: string,
-    name: string;
-    lname: string;
-    fname: string;
-    mname: string;
-    email: string;
-    email_verified_at: string;
-    active: boolean;
+    id?: number;
+    username?: string;
+    sex?: string;
+    lname?: string;
+    fname?: string;
+    mname?: string;
+    email?: string;
+    email_verified_at?: string;
+    active?: boolean;
 	  role: string;
 }
 
@@ -22,13 +21,10 @@ export interface Encoder extends User {
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
-    auth: {
-        user: User;
-        csrf_token: string;
+    auth?: {
+        user?: User;
+        csrf_token?: string;
     };
-    categories?: string[];
-    permissions?: string[];
-    statuses?:Status[]
 };
 
 

@@ -1,6 +1,6 @@
 
 import { PageProps } from "@/types";
-import AuthorLayout from "@/Layouts/EncoderLayout";
+import AuthorLayout from "@/Layouts/SideBarLayout";
 import { Head } from "@inertiajs/react";
 import ChangePassword from "../Auth/ChangePassword";
 
