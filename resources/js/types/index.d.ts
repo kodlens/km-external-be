@@ -38,3 +38,18 @@ export interface PaginateResponse {
     total: number;
 
 }
+
+export interface CreateEditProps {
+  id: number,
+  auth: PageProps,
+  info: Info,
+  ckLicense: string,
+  sections: Section[],
+  categories: Category[],
+  authors: AuthorApi,
+  agencies: Agency[],
+  regions: Region[],
+  regionalOffices: RegionalOffice[],
+  tags: string[],
+  uri: string
+}

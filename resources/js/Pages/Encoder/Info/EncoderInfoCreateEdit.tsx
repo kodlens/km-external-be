@@ -2,42 +2,25 @@ import { ReactNode } from "react";
 import { Head } from "@inertiajs/react";
 
 
-
-import { PageProps } from "@/types";
-
+import { CreateEditProps } from "@/types";
 import EncoderLayout from "@/Layouts/EncoderLayout";
-import OllamaChat from "@/Components/OllamaChat";
-import { Info } from "@/types/info";
-import CreateEditArticles from "@/Components/CreateEditArticle";
-import { Author } from "@/types/author";
-import { Agency } from "@/types/agency";
-import { Region } from "@/types/region";
+import CreateEditArticle from "@/Components/CreateEditArticle";
 
 
-
-const EncoderPostCreateEdit = ({
+const EncoderInfoCreateEdit = ({
   id,
   auth,
   info,
+  ckLicense,
   authors,
   agencies,
   regions,
-  ckLicense,
   tags
-}: {
-  id: number,
-  auth: PageProps,
-  info: Info,
-  ckLicense: string
-  authors: Author[],
-  agencies: Agency[],
-  regions: Region[],
-  tags: string[]
-}) => {
+}: CreateEditProps) => {
 
   return (
     <>
-      <Head title="Article" />
+      <Head title="Add/Edit Article" />
 
       {/* card container */}
       <div className="">
@@ -47,7 +30,13 @@ const EncoderPostCreateEdit = ({
 					lg:flex-row"
         >
           {/* card input */}
-          <CreateEditArticles
+          <div className="bg-white p-6 mx-2 md:max-w-7xl w-full" >
+
+            <div className="font-bold text-lg pb-2 mb-2 border-b">
+              ADD/EDIT POST
+            </div>
+
+            <CreateEditArticle
               id={id}
               auth={auth}
               info={info}
@@ -57,21 +46,21 @@ const EncoderPostCreateEdit = ({
               agencies={agencies}
               regions={regions}
               tags={tags}
-          />
+            />
+
+          </div>
           {/* end input card */}
         </div>
         {/* end card container */}
-
-        <OllamaChat />
       </div>
       {/* card container */}
     </>
   );
 }
 
-export default EncoderPostCreateEdit;
+export default EncoderInfoCreateEdit;
 
-EncoderPostCreateEdit.layout = (page: ReactNode) => (
+EncoderInfoCreateEdit.layout = (page: ReactNode) => (
   <EncoderLayout user={(page as any).props.auth.user}>
     {page}
   </EncoderLayout>

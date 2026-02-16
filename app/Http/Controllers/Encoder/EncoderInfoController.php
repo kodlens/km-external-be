@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Encoder;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
+use App\Models\Info;
 
 use App\Models\User;
 use App\Rules\ValidateSlug;
@@ -25,7 +25,7 @@ class EncoderInfoController extends InfoController
 
     public function index()
     {
-        return Inertia::render('Encoder/Post/EncoderPostIndex');
+        return Inertia::render('Encoder/Info/EncoderInfoIndex');
     }
 
     public function getData(Request $req)
@@ -57,7 +57,7 @@ class EncoderInfoController extends InfoController
         $regions = $fetcher->getRegions();
         $authors = $fetcher->getAuthorsAutocomplete();
 
-        return Inertia::render('Encoder/Post/EncoderPostCreateEdit', [
+        return Inertia::render('Encoder/Info/EncoderInfoCreateEdit', [
             'id' => 0,
             'ckLicense' => $CK_LICENSE,
             'info' => null,
@@ -72,13 +72,23 @@ class EncoderInfoController extends InfoController
     public function edit($id)
     {
         $CK_LICENSE = env('CK_EDITOR_LICENSE_KEY');
+        $fetcher = new Fetcher();
+        $tags = $fetcher->getTags();
+        $agencies = $fetcher->getAgencies();
+        $regions = $fetcher->getRegions();
+        $authors = $fetcher->getAuthorsAutocomplete();
 
-        $post = Post::with(['subjects'])->find($id);
+        $info = Info::with(['subjects'])->find($id);
 
-        return Inertia::render('Encoder/Post/EncoderPostCreateEdit', [
+          return Inertia::render('Encoder/Post/EncoderPostCreateEdit', [
             'id' => $id,
             'ckLicense' => $CK_LICENSE,
-            'post' => $post]);
+            'info' => $info,
+            'tags' => $tags,
+            'agencies' => $agencies,
+            'regions' => $regions,
+            'authors' => $authors
+        ]);
     }
 
 
@@ -89,7 +99,7 @@ class EncoderInfoController extends InfoController
     {
         $user = Auth::user();
 
-        $data = Post::find($id);
+        $data = Info::find($id);
 
         if (! $data->description) {
             return response()->json([

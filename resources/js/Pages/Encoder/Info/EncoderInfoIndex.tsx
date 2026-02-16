@@ -1,5 +1,5 @@
 
-import { PageProps, User, Status } from '@/types'
+
 import { Head, router } from '@inertiajs/react'
 
 import {
@@ -38,20 +38,15 @@ interface Option {
   value: string;
 }
 
-
-import dayjs from 'dayjs';
-import { AnyObject } from 'antd/es/_util/type';
-import ArticleView from '@/Components/Post/ArticleView';
 import EncoderLayout from '@/Layouts/EncoderLayout';
 import { dateFormat, truncate } from '@/helper/helperFunctions';
-import { Post } from '@/types/info';
+
 import { useQuery } from '@tanstack/react-query';
+import { Info } from '@/types/info';
 
 
 
-export default function EncoderPostIndex(
-  { auth, permissions }:
-    PageProps) {
+export default function EncoderInfoIndex() {
 
   const { modal } = App.useApp();
 
@@ -60,7 +55,7 @@ export default function EncoderPostIndex(
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
 
-  const createMenuItems = (post: Post) => {
+  const createMenuItems = (post: Info) => {
 
     const items: MenuProps['items'] = [];
 
@@ -149,7 +144,7 @@ export default function EncoderPostIndex(
 
 
   const handClickNew = () => {
-    router.visit('/encoder/posts/create');
+    router.visit('/encoder/infos/create');
   }
   const handleEditClick = (id: number) => {
     router.visit('/encoder/posts/' + id + '/edit');
@@ -246,7 +241,7 @@ export default function EncoderPostIndex(
 
             <Table dataSource={data?.data}
               loading={isFetching}
-              rowKey={(data: Post) => data.id}
+              rowKey={(data: Info) => data.id}
               pagination={false}>
 
               <Column title="Id" dataIndex="id" />
@@ -312,7 +307,7 @@ export default function EncoderPostIndex(
               />
 
               <Column title="Action" key="action"
-                render={(_, data: Post) => (
+                render={(_, data: Info) => (
                   <Space size="small">
                     <Dropdown trigger={['click']} menu={{ items: createMenuItems(data) }} >
                       <Space>
@@ -341,7 +336,7 @@ export default function EncoderPostIndex(
 }
 
 
-EncoderPostIndex.layout = (page: ReactNode) => (
+EncoderInfoIndex.layout = (page: ReactNode) => (
   <EncoderLayout user={(page as any).props.auth.user}>
     {page}
   </EncoderLayout>

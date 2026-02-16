@@ -8,34 +8,14 @@ use App\Models\RegionalOffice;
 
 class Fetcher {
 
-public function getSections() {
-        $data = Section::where('active', 1)->get();
-        return $data;
-    }
-
-    public function getCategories(){
-        $data = Category::where('active', 1)->get();
-        //return response()->json($data);
-        return $data;
-    }
 
     public function getRegions(){
         $data = Region::where('active', 1)
         ->orderBy('order_no', 'asc')
         ->get();
         return $data;
-
     }
 
-
-
-    public function getRegionalOffices(){
-        $data = RegionalOffice::where('active', 1)
-        ->orderBy('order_no', 'asc')
-        ->get();
-        return $data;
-
-    }
 
      public function getAgencies(){
         //$data = Agency::where('active', 1)->get();
@@ -50,9 +30,10 @@ public function getSections() {
     }
 
     public function getAuthorsAutocomplete(){
-            $data = Info::distinct('author')
-            ->select('author')
-            ->orderBy('author', 'asc')
+            $data = Info::distinct('author_name')
+            ->whereNotNull('author_name')
+            ->select('author_name')
+            ->orderBy('author_name', 'asc')
             ->get();
 
         return $data;
@@ -61,7 +42,7 @@ public function getSections() {
 
 
     public function getTags(){
-        $data = Article::distinct('tags')
+        $data = Info::distinct('tags')
             ->select('tags')
             ->orderBy('tags', 'asc')
             ->get();

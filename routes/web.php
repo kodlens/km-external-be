@@ -180,16 +180,16 @@ Route::prefix('encoder')->middleware('auth', 'encoder')->group(function () {
 
     Route::get('/dashboard', [App\Http\Controllers\Encoder\EncoderDashboardController::class, 'index'])->name('encoder.dashboard.index');
 
-    Route::get('/posts', [App\Http\Controllers\Encoder\EncoderPostController::class, 'index'])->name('encoder.post.index');
-    Route::get('/posts/create', [App\Http\Controllers\Encoder\EncoderPostController::class, 'create'])->name('encoder.post.create');
-    Route::post('/posts', [App\Http\Controllers\Encoder\EncoderPostController::class, 'store'])->name('encoder.post.store');
-    Route::get('/posts/{id}/edit', [App\Http\Controllers\Encoder\EncoderPostController::class, 'edit'])->name('encoder.post.edit');
-    Route::patch('/posts/{id}', [App\Http\Controllers\Encoder\EncoderPostController::class, 'update'])->name('encoder.post.update');
+    Route::get('/infos', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'index'])->name('encoder.infos');
+    Route::get('/infos/create', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'create'])->name('encoder.infos.create');
+    Route::post('/infos', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'store'])->name('encoder.infos.store');
+    Route::get('/infos/{id}/edit', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'edit'])->name('encoder.infos.edit');
+    Route::patch('/infos/{id}', [App\Http\Controllers\Encoder\EncoderInfoController::class, 'update'])->name('encoder.infos.update');
     //Route::get('/posts/{id}', [App\Http\Controllers\Author\AuthorPostController::class, 'show'])->name('author.post-show');
-    Route::delete('/posts/{id}', [App\Http\Controllers\Encoder\EncoderPostController::class, 'destroy'])->name('encoder.post.destroy');
+    Route::delete('/infos/{id}', [App\Http\Controllers\Encoder\EncoderPostController::class, 'destroy'])->name('encoder.infos.destroy');
 
     //Route::resource('/posts', App\Http\Controllers\Encoder\EncoderPostController::class);
-    Route::get('/get-posts', [App\Http\Controllers\Encoder\EncoderPostController::class, 'getData'])->name('encoder.post.get-data');
+    Route::get('/get-infos', [App\Http\Controllers\Encoder\EncoderPostController::class, 'getData'])->name('encoder.infos.get-data');
 
     Route::post('/posts-trash/{id}', [App\Http\Controllers\Encoder\EncoderPostController::class, 'trash'])->name('encoder.posts.trash');
     //   Route::post('/temp-upload', [App\Http\Controllers\Author\AuthorPostController::class, 'tempUpload'])->name('posts.temp-upload');

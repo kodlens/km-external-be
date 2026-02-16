@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Base;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\Article;
+use App\Models\Info;
 use App\Models\User;
 use App\Rules\ValidateSlug;
 use App\Rules\ValidateTitle;
