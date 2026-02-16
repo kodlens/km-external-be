@@ -185,7 +185,7 @@ export const getSidebarSelectedKeys = (role?: string, currentRoute?: string | nu
     }
   }
 
-  if (normalizedRole === 'publisher' && currentRoute.startsWith('publisher.posts')) {
+  if (normalizedRole === 'publisher' && currentRoute.startsWith('publisher.infos')) {
     return ['publisher.posts.index']
   }
 
