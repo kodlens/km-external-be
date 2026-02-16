@@ -1,4 +1,7 @@
-export interface Info {
+import { User } from ".";
+import { InfoSubjectHeading } from ".";
+
+export interface Info  {
     data(data: any): unknown;
     id: number;
     source_id?: number;
@@ -8,17 +11,19 @@ export interface Info {
     description_text?: string;
     alias?: string;
     subjects: InfoSubjectHeading[]
-    url?: string;
-    agency_code?: string;
+
+
     thumbnail?: string;
     tags?: string[];
     status?: string;
-    source?: string;
+
+    source_key?: string;
     source_url?: string;
     content_type?: string;
+
     region?: string;
     agency?: string;
-    regional_office?: string;
+
     is_publish?: string;
     publish_date?: string | Date;
     material_type?: string;
@@ -26,7 +31,14 @@ export interface Info {
     author_name?: string;
     subject_headings?: string;
     publisher_name?: string;
-    submittcategoryed_date?: string;
+
+    encoded_by?:number
+    encoded_by_name?:User
+    encoded_at?:string | Date
+    last_updated_by?:number
+    last_updated_by_name?:User
+    last_updated_at?:string | Date
+
     record_trail?: string;
     trash?: string | number;
 }

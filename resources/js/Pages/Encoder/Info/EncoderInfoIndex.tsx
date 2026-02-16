@@ -1,340 +1,167 @@
-
-
 import { Head, router } from '@inertiajs/react'
-
+import { FileAddOutlined } from '@ant-design/icons'
 import {
-  FileAddOutlined,
-  DeleteOutlined, EditOutlined,
-  ProjectOutlined, PaperClipOutlined,
-} from '@ant-design/icons';
+  Button,
+  Input,
+  Select,
 
-import {
-  Card, Space, Table,
-  Pagination, Button,
-  Input, Select,
-  Dropdown,
-  MenuProps,
-  App
-} from 'antd';
+} from 'antd'
+import {  ReactNode, useState } from 'react'
+import axios from 'axios'
+import EncoderLayout from '@/Layouts/EncoderLayout'
+import { useQuery } from '@tanstack/react-query'
 
-
-import React, { KeyboardEvent, ReactNode, useState } from 'react'
-import axios from 'axios';
-
-
-const { Column } = Table;
-
-interface PostResponse {
-  data: any[]
-  //data: Post[];
-  total: number;
-}
-
-interface Option {
-  label: string;
-  value: string;
-}
-
-import EncoderLayout from '@/Layouts/EncoderLayout';
-import { dateFormat, truncate } from '@/helper/helperFunctions';
-
-import { useQuery } from '@tanstack/react-query';
-import { Info } from '@/types/info';
-
-
+import { statusDropdownMenu } from '@/helper/statusMenu'
+import Error404 from '@/Components/Error404'
+import TableInfos from '@/Components/TableInfos'
 
 export default function EncoderInfoIndex() {
 
-  const { modal } = App.useApp();
 
-  const [status, setStatus] = useState('');
-  const [perPage, setPerPage] = useState(10);
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1)
+  const perPage = 10
 
-  const createMenuItems = (post: Info) => {
+  const [search, setSearch] = useState('')
+  const [status, setStatus] = useState('')
 
-    const items: MenuProps['items'] = [];
-
-    if (post.status === 'draft' || post.status === 'return') { //published (7)
-      items.push(
-        {
-          key: 'posts.submit-for-publishing',
-          icon: <ProjectOutlined />,
-          label: 'Submit for Publishing',
-          onClick: () => {
-
-            axios.post('/encoder/posts-submit-for-publishing/' + post.id).then(res => {
-              if (res.data.status === 'submit-for-publishing') {
-                modal.success({
-                  title: 'Submitted!',
-                  content: 'Successfully submitted.'
-                })
-
-                refetch()
-              }
-            })
-          },
-        },
-        {
-          label: 'Edit',
-          key: '2',
-          icon: <EditOutlined />,
-          onClick: () => handleEditClick(post.id),
-        },
-        {
-          label: 'Draft',
-          key: '1',
-          icon: <PaperClipOutlined />,
-          onClick: () => {
-
-            axios.post('/encoder/posts-draft/' + post.id).then(res => {
-              if (res.data.status === 'draft') {
-                modal.success({
-                  title: 'Draft!',
-                  content: 'Successfully draft.'
-                })
-                refetch()
-
-              }
-            })
-          },
-        },
-        {
-          label: 'Trash',
-          key: '3',
-          icon: <DeleteOutlined />,
-          onClick: () => handleTrashClick(post.id)
-        },
-      );
-    }
-
-    return items;
-  }
 
 
   const { data, isFetching, error, refetch } = useQuery({
-    queryKey: ['posts', { perPage, page }],
+    queryKey: ['infos', { perPage, page, status }],
     queryFn: async () => {
       const params = [
         `perpage=${perPage}`,
-        `search=${search}`,
+        `title=${search ? search : ''}`,
+        `status=${status ? status : ''}`,
         `page=${page}`,
-        `status=${status}`
-      ].join('&');
-      const res = await axios.get(`/encoder/get-posts?${params}`);
+        `status=${status}`,
+      ].join('&')
+
+      const res = await axios.get(`/encoder/get-infos?${params}`)
       return res.data
     },
     refetchOnWindowFocus: false,
   })
 
-  const onPageChange = (index: number) => {
-    setPage(index)
+  if (error) {
+    return <Error404 error={error} />
   }
 
-
-  const handleStatusChange = (value: string) => {
-    setStatus(value)
-    //loadAsync(search, perPage, page)
-  }
-
-
-
-  const handClickNew = () => {
-    router.visit('/encoder/infos/create');
-  }
-  const handleEditClick = (id: number) => {
-    router.visit('/encoder/posts/' + id + '/edit');
-  }
-  const handleTrashClick = (id: number) => {
-
-    modal.confirm({
-      title: 'Trash?',
-      content: 'Are you sure you want to move to trash this post?',
-      onOk: async () => {
-        const res = await axios.post('/encoder/posts-trash/' + id);
-        if (res.data.status === 'trashed') {
-          refetch()
-        }
-      }
-    })
-  }
-  const handleSoftDelete = (id: number) => {
-    modal.confirm({
-      title: 'Delete?',
-      content: 'Are you sure you want to delete this post?',
-      onOk: async () => {
-        const res = await axios.post('/author/posts-soft-delete/' + id);
-        if (res.data.status === 'soft_deteled') {
-          refetch()
-        }
-      }
-    })
-  }
-
-  const handSearchClick = () => {
-    refetch()
-  }
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter')
-      handSearchClick()
-  }
-
-  /**handle error image */
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = '/img/no-img.png';
-  }
 
   return (
-
     <>
-      <Head title="Post/Articles"></Head>
+      <Head title="Information" />
 
-      <div className='flex w-full justify-center items-center'>
-        {/* card */}
-        <div className='p-6 w-[1320px] overflow-auto mx-2 bg-white shadow-sm rounded-md
-					sm:w-[740px]
-					md:w-[1300px]'>
-          {/* card header */}
-          <div className="font-bold text-lg mb-4">LIST OF POST/ARTICLES</div>
+      <div className="flex justify-center px-4">
+        <div className="w-full max-w-[1300px] bg-white rounded-lg shadow-sm border border-slate-200 p-6">
 
-          {/* card body */}
+          {/* ================= HEADER ================= */}
+          <div className="mb-6 flex items-center">
+            <div>
+              <h1 className="text-2xl font-semibold text-slate-900">
+                Informations
+              </h1>
+              <p className="text-sm text-slate-500">
+                Manage, review, and publish science & technology informations
+              </p>
+            </div>
 
-          <div className='flex gap-2 mb-2'>
-            <Select
-              onChange={handleStatusChange}
-              style={{
-                width: '200px'
-              }}
+            <Button
+              className='ml-auto'
+              icon={<FileAddOutlined />}
+              type="primary"
+              onClick={() => router.visit('/encoder/infos/create')}
+            >
+              New Article
+            </Button>
 
-              defaultValue=""
-              options={[
-                { label: 'All', value: '' },
-                { label: 'Draft', value: 'draft' },
-                { label: 'Submit for Publishing', value: 'submit' }
-              ]}
-            />
-
-            <Input placeholder="Search Title"
-              onKeyDown={handleKeyDown}
-              value={search} onChange={(e) => setSearch(e.target.value)} />
-            <Button type='primary' onClick={handSearchClick}>SEARCH</Button>
           </div>
 
-          {/* {
-						permissions.includes('posts.create') && (
+          {/* ================= FILTERS ================= */}
+          <div className="flex flex-col md:flex-row gap-3 mb-5 bg-slate-50 p-4 rounded-lg border border-slate-200">
 
-					)} */}
-          <div className='flex flex-end my-2'>
-            <Button className='ml-auto'
-              icon={<FileAddOutlined />}
-              type="primary" onClick={handClickNew}>
-              NEW
+            <Select
+              className="w-[180px]"
+              value={status}
+              onChange={(v) =>
+                setStatus(v)
+              }
+              options={statusDropdownMenu('encoder')}
+
+            />
+
+            <Input
+              placeholder="Search by article title"
+              className="w-full"
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              onKeyDown={(e)=>{
+                if(e.key === 'Enter')
+                  refetch()
+              }}
+              allowClear
+            />
+
+            <Button className="ml-auto" type="primary" onClick={()=> refetch()}>
+              Search
             </Button>
           </div>
 
-          <div>
 
-            <Table dataSource={data?.data}
-              loading={isFetching}
-              rowKey={(data: Info) => data.id}
-              pagination={false}>
-
-              <Column title="Id" dataIndex="id" />
-              <Column title="Title" dataIndex="title" key="title" />
-              <Column title="Description"
-                dataIndex="description_text"
-                key="description_text"
-                render={(description_text) => (
-                  <span>{description_text ? truncate(description_text, 20) : ''}</span>
-                )}
-              />
-
-              <Column title="Publication Date"
-                dataIndex="publish_date"
-                key="publish_date"
-                render={(publish_date) => (
-                  <>
-                    {publish_date && dateFormat(publish_date)}
-                  </>
-                )}
-              />
-
-              <Column title="Status" dataIndex="status" key="status" render={(status) => (
-
-                <div>
-                  {status === 'submit' && (
-                    <div className='bg-green-300 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
-                      SUBMIT FOR PUBLISHING
-                    </div>
-                  )}
-                  {status === 'publish' && (
-                    <div className='bg-green-200 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
-                      PUBLISHED
-                    </div>
-                  )}
-
-                  {status === 'draft' && (
-                    <div className='bg-orange-200 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
-                      DRAFT
-                    </div>
-                  )}
-                  {status === 'return' && (
-                    <div className='bg-red-200 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
-                      RETURN TO AUTHOR
-                    </div>
-                  )}
-
-                </div>
-
-              )}
-              />
-
-              <Column
-                title="Date Created"
-                dataIndex="created_at"
-                key="created_at"
-                render={(created_at) => (
-                  <>
-                    {created_at &&
-                      dateFormat(created_at)}
-                  </>
-                )}
-              />
-
-              <Column title="Action" key="action"
-                render={(_, data: Info) => (
-                  <Space size="small">
-                    <Dropdown trigger={['click']} menu={{ items: createMenuItems(data) }} >
-                      <Space>
-                        <Button variant='outlined'>...</Button>
-                      </Space>
-                    </Dropdown>
-                  </Space>
-                )}
-              />
-            </Table>
-
-            <Pagination className='mt-4'
-              onChange={(i) => {
-                onPageChange(i)
+          <div className='overflow-auto'>
+            {/* <TableEncoderArticle
+              data={data}
+              isFetching={isFetching}
+              refetch={refetch}
+              page={page}
+              paginationPageChange={(p)=>{
+                setPage(p)
               }}
-              defaultCurrent={1}
-              total={data?.total} />
+              editUrl={`/encoder/articles`}
+              trashUrl='/encoder/article-trash' /> */}
+
+              <TableInfos
+                routePrefix='encoder'
+                data={data}
+                isFetching={isFetching}
+                refetch={refetch}
+                paginationPageChange={(v) => {
+                  console.log(v);
+                  setPage(v)
+                }}
+                page={page}
+                showDelete={false}
+                showEdit={true}
+                showPublish={false}
+                showDraft={false}
+                showView={true}
+                showTrash={false}
+              />
+
           </div>
+
+          {/* ================= ACTION ================= */}
+          <div className="flex justify-end mb-4">
+            <Button
+              icon={<FileAddOutlined />}
+              type="primary"
+              onClick={() => router.visit('/encoder/infos/create')}
+            >
+              New Article
+            </Button>
+          </div>
+
+
         </div>
-        {/* card */}
-
       </div>
-
     </>
   )
 }
-
 
 EncoderInfoIndex.layout = (page: ReactNode) => (
   <EncoderLayout user={(page as any).props.auth.user}>
     {page}
   </EncoderLayout>
-);
+)
