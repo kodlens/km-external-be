@@ -7,7 +7,13 @@
         "strict": true,
         "isolatedModules": true,
         "target": "ESNext",
-        "skipLibCheck": true, //added because of SinglePickerPanelProps error during build ts -> 
+        "skipLibCheck": true, //added because of SinglePickerPanelProps error during build ts ->
+
+         /* 🔥 FORCE UNUSED CHECKS */
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+
+
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "noEmit": true,

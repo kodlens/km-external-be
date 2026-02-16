@@ -44,7 +44,7 @@ import { AnyObject } from 'antd/es/_util/type';
 import ArticleView from '@/Components/Post/ArticleView';
 import EncoderLayout from '@/Layouts/EncoderLayout';
 import { dateFormat, truncate } from '@/helper/helperFunctions';
-import { Post } from '@/types/post';
+import { Post } from '@/types/info';
 import { useQuery } from '@tanstack/react-query';
 
 

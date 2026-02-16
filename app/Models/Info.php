@@ -8,20 +8,42 @@ class Info extends Model
 {
     //
     protected $fillable = [
-        'article_id',
-        'content_type',
-        'slug',
+        'source_id',
         'title',
-        'content',
-        'clean_content',
+        'excerpt',
+
+        'description',
+        'description_text',
+
+        'alias',
         'url',
+        'agency_code',
+        'thumbnail',
+
+        'tags',
+        'status',
         'source',
+        'source_url',
+        'content_type',
+        'region',
         'agency',
         'regional_office',
+
         'is_publish',
+        'publish_date',
         'material_type',
-        'author',
+
+        'catalog_date',
+        'author_name',
+        'subject_headings',
         'publisher_name',
-        'category'
+        'submittcategoryed_date',
+
+        'encoded_by',
+        'last_updated_by',
+
+        'record_trail',
+        'trash',
+        'is_archive'
     ];
 }

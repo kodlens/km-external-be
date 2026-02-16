@@ -5,9 +5,9 @@ import { Head, router } from '@inertiajs/react'
 import { MinusSquareOutlined, EnterOutlined,
 	EyeOutlined } from '@ant-design/icons';
 
-import { Space, Table, 
-    Pagination, Button, 
-    Input,  
+import { Space, Table,
+    Pagination, Button,
+    Input,
 	Dropdown,
 	MenuProps,
 	App} from 'antd';
@@ -33,14 +33,14 @@ interface Option {
 
 import dayjs from 'dayjs';
 import ArticleView from '@/Components/Post/ArticleView';
-import { Post } from '@/types/post';
+import { Post } from '@/types/info';
 
 const dateFormat = (item:Date):string=> {
 	return dayjs(item).format('MMM-DD-YYYY')
 }
 
 export default function PublisherPostUnpublishIndex(
-	{  auth, permissions } : 
+	{  auth, permissions } :
 	PageProps) {
 
 	const { modal } = App.useApp();
@@ -134,10 +134,10 @@ export default function PublisherPostUnpublishIndex(
 	}
 
     useEffect(()=>{
-		
+
 		loadAsync('', perPage, page);
 
-	
+
     },[perPage, page])
 
     const onPageChange = (index:number, perPage:number) => {
@@ -157,7 +157,7 @@ export default function PublisherPostUnpublishIndex(
 			return ''
 		}
 	}
-	
+
 	const handSearchClick = () => {
 		loadAsync(search, perPage, page);
 	}
@@ -187,8 +187,8 @@ export default function PublisherPostUnpublishIndex(
 					{/* card body */}
 
 					<div className='flex gap-2 mb-2'>
-						
-						<Input placeholder="Search Title" 
+
+						<Input placeholder="Search Title"
 							onKeyDown={handleKeyDown}
 							value={search} onChange={ (e) => setSearch(e.target.value)}/>
 						<Button type='primary' onClick={handSearchClick}>SEARCH</Button>
@@ -197,14 +197,14 @@ export default function PublisherPostUnpublishIndex(
 					{/* {
 						permissions.includes('posts.create') && (
 							<div className='flex flex-end my-2'>
-								<Button className='ml-auto' 
-									icon={<FileAddOutlined />} 
+								<Button className='ml-auto'
+									icon={<FileAddOutlined />}
 									type="primary" onClick={handClickNew}>
 									NEW
-								</Button>     
+								</Button>
 							</div>
 						)} */}
-					
+
 					<div>
 
 						<Table dataSource={data}
@@ -220,19 +220,19 @@ export default function PublisherPostUnpublishIndex(
                             					onError={ handleImageError } />
 										</div>
 									)
-									
+
 								)} />
 
 							<Column title="Id" dataIndex="id"/>
 							<Column title="Title" dataIndex="title" key="title"/>
-							<Column title="Excerpt" 
+							<Column title="Excerpt"
 								dataIndex="excerpt"
 								key="excerpt"
 								render={(excerpt) => (
 									<span>{ excerpt ? truncate(excerpt, 10) : '' }</span>
-								)} 
+								)}
 							/>
-							
+
 							{/* <Column title="Author" dataIndex="author" key="author"
 								render={(author:{author:string}) => {
 									return (
@@ -252,14 +252,14 @@ export default function PublisherPostUnpublishIndex(
 									)
 								}}
 							/>
-						
+
 							<Column title="Status" dataIndex="status" key="status" render={ (status) => (
 								<div>
 									{status === 'submit' && (
 										<div className='bg-green-300 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
 											SUMIT FOR PUBLISHING
 										</div>
-									
+
 									)}
 									{status === 'publish' && (
 										<div className='bg-green-200 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
@@ -282,39 +282,39 @@ export default function PublisherPostUnpublishIndex(
 								</div>
 								)}
 							/>
-							
+
 							<Column title="Featured" dataIndex="is_featured" key="is_featured" render={(is_featured)=>(
-								
+
 								is_featured ? (
 									<span className='bg-green-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>YES</span>
-									
+
 								) : (
 									<span className='bg-red-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>NO</span>
 								)
-								
+
 							)}/>
-							<Column title="Action" key="action" 
+							<Column title="Action" key="action"
 								render={(_, data: Post) => (
 									<Space size="small">
 										<Dropdown.Button menu={{items: createMenuItems(data) }} type='primary'>
 											Options
 										</Dropdown.Button>
-											
+
 									</Space>
 								)}
 							/>
 						</Table>
 
-						<Pagination className='my-10' 
+						<Pagination className='my-10'
 							onChange={onPageChange}
-							defaultCurrent={1} 
+							defaultCurrent={1}
 							total={total} />
-						
-						
+
+
 					</div>
 				</div>
 				{/* card */}
-				
+
 			</div>
 
 		</>

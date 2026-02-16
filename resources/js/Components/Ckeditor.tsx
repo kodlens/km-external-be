@@ -61,11 +61,11 @@ import {
 } from "ckeditor5";
 
 import "ckeditor5/ckeditor5.css";
-import { Post } from '@/types/post';
+import { Info } from '@/types/info';
 import { FormInstance } from 'antd';
 
 
-const Ckeditor = ({ post, form, ckLicense }: { post?: Post, form: FormInstance, ckLicense: string }) => {
+const Ckeditor = ({ post, form, ckLicense }: { post?: Info, form: FormInstance, ckLicense: string }) => {
   return (
     <>
       <CKEditor

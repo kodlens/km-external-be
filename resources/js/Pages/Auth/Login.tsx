@@ -49,7 +49,7 @@ export default function Login() {
           {/* Heading */}
           <div className="text-center mb-6">
             <Title level={3} className="!mb-1">
-              Welcome Back
+              STII-KM PANEL
             </Title>
             <Text type="secondary">
               Sign in to continue to your account

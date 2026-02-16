@@ -6,7 +6,7 @@ export default function ApplicationLogo({className=''}) {
             <div className="flex gap-2 `${className}">
                 <div className="">
                     <Link href="/">
-                        <img src="/img/app-logo-black.png" alt="dost-stii logo" />
+                        <img src="/img/app-logo-black-update.png" alt="dost-stii logo" />
                     </Link>
                 </div>
             </div>

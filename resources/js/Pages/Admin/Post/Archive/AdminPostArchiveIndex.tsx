@@ -33,7 +33,7 @@ import dayjs from 'dayjs';
 import ArticleView from '@/Components/Post/ArticleView';
 import AdminLayout from '@/Layouts/AdminLayout';
 import CardTitle from '@/Components/CardTitle';
-import { Post } from '@/types/post';
+import { Post } from '@/types/info';
 import { useQuery } from '@tanstack/react-query';
 
 const dateFormat = (item: Date): string => {

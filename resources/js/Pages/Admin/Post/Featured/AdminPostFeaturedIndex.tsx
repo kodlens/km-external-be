@@ -42,7 +42,7 @@ import dayjs from 'dayjs';
 import ArticleView from '@/Components/Post/ArticleView';
 import CardTitle from '@/Components/CardTitle';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Post } from '@/types/post';
+import { Post } from '@/types/info';
 
 const dateFormat = (item: Date): string => {
   return dayjs(item).format('MMM-DD-YYYY')

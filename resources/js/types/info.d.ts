@@ -1,4 +1,4 @@
-export interface Post {
+export interface Info {
     data(data: any): unknown;
     id: number;
     source_id?: number;

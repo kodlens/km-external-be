@@ -2,13 +2,13 @@ import Authenticated from '@/Layouts/AuthenticatedLayout'
 import { PageProps, User, Status } from '@/types'
 import { Head, router } from '@inertiajs/react'
 
-import { 
+import {
 	EyeOutlined,
 } from '@ant-design/icons';
 
-import { Space, Table, 
-    Pagination, Button, 
-    Form, Input,   
+import { Space, Table,
+    Pagination, Button,
+    Form, Input,
 	Dropdown,
 	MenuProps,
 	App} from 'antd';
@@ -18,7 +18,7 @@ import React, { KeyboardEvent, useEffect, useState } from 'react'
 import axios from 'axios';
 import dayjs from 'dayjs';
 import ArticleView from '@/Components/Post/ArticleView';
-import { Post } from '@/types/post';
+import { Post } from '@/types/info';
 
 
 const { Column } = Table;
@@ -35,7 +35,7 @@ const dateFormat = (item:Date):string=> {
 }
 
 export default function AuthorTrashIndex(
-	{  auth, statuses, permissions } : 
+	{  auth, statuses, permissions } :
 	PageProps) {
 
 	const { modal } = App.useApp();
@@ -50,7 +50,7 @@ export default function AuthorTrashIndex(
 	const [perPage, setPerPage] = useState(5);
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
-    
+
     const [errors, setErrors] = useState<any>({});
 
 	const createMenuItems = (post:Post) => {
@@ -100,10 +100,10 @@ export default function AuthorTrashIndex(
 	}
 
     useEffect(()=>{
-		
+
 		loadAsync('', perPage, page);
 
-	
+
     },[perPage, page])
 
 
@@ -127,7 +127,7 @@ export default function AuthorTrashIndex(
 			return ''
 		}
 	}
-	
+
 
 	const handSearchClick = () => {
 		loadAsync(search, perPage, page);
@@ -158,13 +158,13 @@ export default function AuthorTrashIndex(
 					{/* card body */}
 
 					<div className='flex gap-2 mb-2'>
-						
-						<Input placeholder="Search Title" 
+
+						<Input placeholder="Search Title"
 							onKeyDown={handleKeyDown}
 							value={search} onChange={ (e) => setSearch(e.target.value)}/>
 						<Button type='primary' onClick={handSearchClick}>SEARCH</Button>
 					</div>
-					
+
 					<div>
 
 						<Table dataSource={data}
@@ -180,19 +180,19 @@ export default function AuthorTrashIndex(
                             					onError={ handleImageError } />
 										</div>
 									)
-									
+
 								)} />
 
 							<Column title="Id" dataIndex="id"/>
 							<Column title="Title" dataIndex="title" key="title"/>
-							<Column title="Excerpt" 
+							<Column title="Excerpt"
 								dataIndex="excerpt"
 								key="excerpt"
 								render={(excerpt) => (
 									<span>{ excerpt ? truncate(excerpt, 10) : '' }</span>
-								)} 
+								)}
 							/>
-							
+
 							{/* <Column title="Author" dataIndex="author" key="author"
 								render={(author:{author:string}) => {
 									return (
@@ -212,14 +212,14 @@ export default function AuthorTrashIndex(
 									)
 								}}
 							/>
-						
+
 							<Column title="Status" dataIndex="status" key="status" render={ (status) => (
 								<div>
 									{status === 'submit' && (
 										<div className='bg-green-300 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
 											SUMIT FOR PUBLISHING
 										</div>
-									
+
 									)}
 									{status === 'publish' && (
 										<div className='bg-green-200 font-bold text-center text-[10px] px-2 py-1 rounded-full'>
@@ -242,40 +242,40 @@ export default function AuthorTrashIndex(
 								</div>
 								)}
 							/>
-							
+
 							<Column title="Featured" dataIndex="is_featured" key="is_featured" render={(is_featured)=>(
-								
+
 								is_featured ? (
 									<span className='bg-green-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>YES</span>
-									
+
 								) : (
 									<span className='bg-red-600 font-bold text-white text-[10px] px-2 py-1 rounded-full'>NO</span>
 								)
-								
+
 							)}/>
-							<Column title="Action" key="action" 
+							<Column title="Action" key="action"
 								render={(_, data: Post) => (
 									<Space size="small">
 										<Dropdown.Button menu={{items: createMenuItems(data) }} type='primary'>
 											Options
 										</Dropdown.Button>
-											
+
 									</Space>
 								)}
 							/>
 						</Table>
 
-						<Pagination className='my-10' 
+						<Pagination className='my-10'
 							onChange={onPageChange}
-							defaultCurrent={1} 
+							defaultCurrent={1}
 							pageSize={5}
 							total={total} />
-						
-						
+
+
 					</div>
 				</div>
 				{/* card */}
-				
+
 			</div>
 
 		</Authenticated>

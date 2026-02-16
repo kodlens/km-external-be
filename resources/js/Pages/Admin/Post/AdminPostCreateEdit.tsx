@@ -17,7 +17,7 @@ import {
 import { PageProps, User } from "@/types";
 import axios from "axios";
 
-import { Post } from "@/types/post";
+import { Post } from "@/types/info";
 import Ckeditor from "@/Components/Ckeditor";
 import SelectSubjects from "@/Components/SelectSubjects";
 import dayjs from "dayjs";

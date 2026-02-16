@@ -42,7 +42,7 @@ interface Option {
 
 import dayjs from 'dayjs';
 import { AnyObject } from 'antd/es/_util/type';
-import { Post } from '@/types/post';
+import { Post } from '@/types/info';
 
 const dateFormat = (item: Date): string => {
   return dayjs(item).format('MMM-DD-YYYY')

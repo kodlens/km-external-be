@@ -32,7 +32,7 @@ import { QueryClient, useQuery } from "@tanstack/react-query";
 import { dateFormat, handleImageError, truncate } from "@/helper/helperFunctions";
 import ModalUpdatePublishDate, { ModalUpdatePublishDateHandle } from "@/Components/ModalUpdatePublishDate";
 import { PageProps } from "@/types";
-import { Post } from "@/types/post";
+import { Post } from "@/types/info";
 
 
 const { Column } = Table;
