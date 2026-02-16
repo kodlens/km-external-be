@@ -21,8 +21,8 @@ export interface Encoder extends User {
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
-    auth?: {
-        user?: User;
+    auth: {
+        user: User;
         csrf_token?: string;
     };
 };

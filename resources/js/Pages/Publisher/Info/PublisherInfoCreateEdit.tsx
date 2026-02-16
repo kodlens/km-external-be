@@ -20,7 +20,7 @@ const PublisherInfoCreateEdit = ({
 
   return (
     <>
-      <Head title="Add/Edit Article" />
+      <Head title="Add/Edit Information" />
 
       {/* card container */}
       <div className="">

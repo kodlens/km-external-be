@@ -4,7 +4,7 @@ import { Head } from "@inertiajs/react";
 
 import { CreateEditProps } from "@/types";
 import CreateEditArticle from "@/Components/CreateEditArticle";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import SideBarLayout from "@/Layouts/SideBarLayout";
 
 
 const EncoderInfoCreateEdit = ({
@@ -61,7 +61,7 @@ const EncoderInfoCreateEdit = ({
 export default EncoderInfoCreateEdit;
 
 EncoderInfoCreateEdit.layout = (page: ReactNode) => (
-  <AuthenticatedLayout user={(page as any).props.auth.user}>
+  <SideBarLayout user={(page as any).props.auth.user}>
     {page}
-  </AuthenticatedLayout>
+  </SideBarLayout>
 );

@@ -155,7 +155,7 @@ Route::prefix('publisher')->middleware('auth', 'publisher')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Publisher\PublisherDashboardController::class, 'index'])->name('publisher.dashboard.index');
 
     Route::get('/infos', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'index'])->name('publisher.infos.index');
-    Route::get('/infos/create', [App\Http\Controllers\Encoder\PublisherInfoController::class, 'create'])->name('publisher.infos.create');
+    Route::get('/infos/create', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'create'])->name('publisher.infos.create');
     Route::patch('/infos/{id}', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'update'])->name('publisher.infos.update');;
 
     Route::get('/infos-form-view/{id}', [App\Http\Controllers\Publisher\PublisherInfoController::class, 'formView'])->name('publisher.infos.form-view');

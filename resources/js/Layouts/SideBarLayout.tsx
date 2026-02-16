@@ -30,7 +30,7 @@ const encoderPalette = {
 };
 
 
-export default function EncoderLayout(
+export default function SideBarLayout(
   { user, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
 
   const { post } = useForm();

@@ -13,7 +13,7 @@ import { statusDropdownMenu } from '@/helper/statusMenu'
 import Error404 from '@/Components/Error404'
 import TableInfos from '@/Components/TableInfos'
 import { ListPlus, Search } from 'lucide-react'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import SideBarLayout from '@/Layouts/SideBarLayout'
 
 export default function EncoderInfoIndex() {
 
@@ -156,7 +156,7 @@ export default function EncoderInfoIndex() {
 }
 
 EncoderInfoIndex.layout = (page: ReactNode) => (
-  <AuthenticatedLayout user={(page as any).props.auth.user}>
+  <SideBarLayout user={(page as any).props.auth.user}>
     {page}
-  </AuthenticatedLayout>
+  </SideBarLayout>
 )
