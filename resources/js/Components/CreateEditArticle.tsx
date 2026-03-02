@@ -1,6 +1,6 @@
 import { statusDropdownMenu } from '@/helper/statusMenu';
 import { PageProps, User } from '@/types';
-import { Form, Input, Flex, Select, DatePicker, Button, ConfigProvider,  App } from 'antd';
+import { Form, Input, Flex, Select, DatePicker, Button, ConfigProvider,  App, notification } from 'antd';
 
 import { ProjectOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 
@@ -16,6 +16,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import AgencyAutoComplete from './AgencyAutoComplete';
 import AuthorAutoComplete from './AuthorAutocomplete';
+import OllamaChat from './OllamaChat';
 
 
 export interface CreateEditProps {
@@ -103,13 +104,26 @@ const CreateEditArticle = ({
   const handleClassification = () => {
     setLoading(true)
     const content = form.getFieldValue("description");
-    console.log(content);
+
+    if(content === undefined || content.trim() === "") {
+      notification.error({
+        message: "Empty Content",
+        description: "Description is empty. Please provide content for classification.",
+        duration: 5,
+      });
+      setLoading(false);
+      return;
+    }
+
 
     axios.post("/classify-article", { content: content }).then((res) => {
       console.log(res.data);
       setLoading(false)
 
-    })
+    }).catch((err) => {
+      message.error(`Classification failed: ${err.message}`);
+      setLoading(false);
+    });
 
   }
 
@@ -327,6 +341,8 @@ const getData = () => {
       </div>
 
       <hr />
+
+      {/* <OllamaChat /> */}
 
       <div className="flex mb-4 mt-6">
         <ConfigProvider

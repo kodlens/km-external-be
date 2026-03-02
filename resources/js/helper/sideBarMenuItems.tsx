@@ -200,9 +200,20 @@ export const getSidebarSelectedKeys = (role?: string, currentRoute?: string | nu
   }
 
   if (normalizedRole === 'admin') {
-    const segments = currentRoute.split('.')
-    if (segments.length > 2) {
-      return [segments.slice(0, -1).join('.')]
+    // const segments = currentRoute.split('.')
+    // if (segments.length > 2) {
+    //   return [segments.slice(0, -1).join('.')]
+    // }
+    console.log(currentRoute);
+
+    if (currentRoute === 'admin.dashboard.index') {
+      return ['admin.dashboard']
+    }
+    if (currentRoute === 'admin.infos.create') {
+      return ['admin.infos.create']
+    }
+    if (currentRoute.startsWith('admin.infos')) {
+      return ['admin.infos.index']
     }
   }
 

@@ -27,12 +27,13 @@ class ArticleClassifierController extends Controller
         $headings = DB::table('subject_headings')->get();
 
         $shIds = $headings->pluck('id')->toArray();
-        $shLabels = $headings->pluck('label')->toArray();
+        $shLabels = $headings->pluck('subject_heading')->toArray();
 
         $subjectList = collect($shIds)
             ->zip($shLabels)
             ->map(fn ($v) => "{$v[0]}:{$v[1]}")
             ->implode(' | ');
+
 
         $prompt = <<<PROMPT
             You are a strict classification engine, not a chatbot.
@@ -56,17 +57,19 @@ class ArticleClassifierController extends Controller
             \"\"\"{$content}\"\"\"
 
             OUTPUT:
-            Return ONLY valid JSON array. Do not explain
+            Return ONLY valid JSON array and follow this format {id: <id>, score: <score>, analysis: <analysis>}. Do not explain
         PROMPT;
 
-        return $prompt;
+        //return $prompt;
+
+        define('API_OLLAMA', env('AI_API'));
 
         $ollama = Http::timeout(120)->post(
-            'http://192.168.40.48:11434/api/generate',
+            API_OLLAMA . '/generate',
             [
                 'model' => $model,
                 'prompt' => $prompt,
-                'stream' => false,
+                'stream' => false, // 👈 change this
                 'options' => ['temperature' => 0.2],
             ]
         );
@@ -77,7 +80,6 @@ class ArticleClassifierController extends Controller
 
         $raw = trim($ollama->json('response'));
 
-        return $raw;
 
         try {
             $parsed = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
@@ -93,6 +95,12 @@ class ArticleClassifierController extends Controller
             ->take($topK)
             ->values();
 
+        return response()->json([
+            'results' => $results,
+            'raw' => $raw,
+            'parsed' => $parsed,
+        ]);
+
         // foreach ($results as $res) {
         //     DB::table('info_subject_headings')->insert([
         //         'info_id' => $request->info_id,
@@ -103,8 +111,5 @@ class ArticleClassifierController extends Controller
         //     ]);
         // }
 
-        return response()->json([
-            'results' => $results,
-        ]);
     }
 }
