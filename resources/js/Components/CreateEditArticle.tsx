@@ -16,6 +16,7 @@ import dayjs from 'dayjs';
 import AgencyAutoComplete from './AgencyAutoComplete';
 import AuthorAutoComplete from './AuthorAutocomplete';
 import Classifier from './Classifier';
+import OllamaChat from './OllamaChat';
 
 
 export interface CreateEditProps {

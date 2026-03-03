@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import type { Key } from 'react';
 import ModalSubjectHeadings from './ModalSubjectHeadings';
+import { BrushCleaning } from 'lucide-react';
 
 
 type PageProps = {
@@ -12,17 +13,16 @@ type PageProps = {
 }
 
 type ClassifierProps = {
-  id: number,
+  id?: number,
   subject_heading_id: number,
   subject_heading?: string,
   score: number,
   analysis: string
 }
-
 const Classifier = ( { form, errors } : PageProps) => {
 
   const [loading, setLoading] = useState<boolean>(false);
-  const { message, notification } = App.useApp();
+  const { notification } = App.useApp();
   const [data, setData] = useState<ClassifierProps[]>([]);
   const [newData, setNewData] = useState<ClassifierProps[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
@@ -103,13 +103,10 @@ const Classifier = ( { form, errors } : PageProps) => {
   }, [selectedRowKeys]);
 
   useEffect(() => {
-    //console.log('newData updated:', newData);
+    console.log('newData updated:', newData);
   }, [newData]);
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const handleClickModal = () => {
-    setModalOpen(true);
-  }
+
 
   return (
     <>
@@ -122,7 +119,8 @@ const Classifier = ( { form, errors } : PageProps) => {
         Classify Information
       </Button>
 
-      <Form.Item name="subjects"
+      <Form.Item
+        //name="subjects"
         className="mt-4"
         validateStatus={errors.subjects ? "error" : ""}
         help={errors.subjects ? errors.subjects[0] : ""}>
@@ -170,7 +168,40 @@ const Classifier = ( { form, errors } : PageProps) => {
         )}
       </Form.Item>
 
-      <ModalSubjectHeadings  />
+      <div className='flex gap-2'>
+        <ModalSubjectHeadings onSelectSubjectHeading={(record) => {
+
+          const existsInData = newData.find(item => item.id === record.id);
+          if(existsInData) {
+            notification.warning({
+              message: "Already Exists",
+              description: "This subject heading is already in the classification results.",
+              duration: 5,
+              placement: 'bottomRight'
+            });
+            return;
+          }
+
+          const newSelected = [...newData, {
+            id: record.id,
+            subject_heading_id: record.id,
+            subject_heading: record.subject_heading,
+            score: 1,
+            analysis: "Manually added"
+          }];
+          setNewData(newSelected);
+          //setSelectedRowKeys(newSelected.map(item => item.subject_heading_id));
+        }} />
+
+        <Button danger icon={<BrushCleaning size={15} />}
+          onClick={()=>{
+
+          }}
+        >
+          Remove
+        </Button>
+
+      </div>
 
     </>
   )
