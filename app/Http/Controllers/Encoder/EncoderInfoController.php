@@ -35,6 +35,7 @@ class EncoderInfoController extends InfoController
         $user = Auth::user();
 
         $data = Info::query()->where('trash', 0)
+            ->with(['subjects'])
             ->where('encoded_by', $user->id);
 
         if ($req->status != '' || $req->status != null) {

@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Helpers\FilterDom;
 use App\Http\Controllers\Helpers\RecordTrail;
 use App\Models\Information;
+use App\Models\InfoSubjectHeading;
+
 
 
 class InfoController extends Controller
@@ -22,14 +24,17 @@ class InfoController extends Controller
     //
     public function store(Request $req)
     {
-        //return $req;
+
         $req->validate([
             'title' => ['required', new ValidateTitle(0)],
             'description' => ['required'],
+            'subjects' => ['required', 'array', 'min:1'],
+            'subjects.*.id' => ['required', 'exists:subject_headings,id'],
         ], [
+            'subjects.required' => 'At least one subject heading must be selected.',
             'description.required' => 'Description is required.',
         ]);
-
+        //return $req;
         try {
 
             DB::transaction(function () use ($req) {
@@ -89,6 +94,16 @@ class InfoController extends Controller
                         ->recordTrail('', 'insert', $user->id, $name),
                 ]);
 
+                foreach($req->subjects as $key => $subject){
+                    $subjects[] = [
+                        'info_id' => $data->id,
+                        'subject_heading_id' => $subject['id'],
+                        'score' => $subject['score'],
+                        'analysis' => $subject['analysis']
+                    ];
+                }
+                InfoSubjectHeading::insert($subjects);
+
             });
 
             return response()->json([
@@ -105,12 +120,17 @@ class InfoController extends Controller
 
     public function update(Request $req, $id){
 
+
         $req->validate([
             'title' => ['required', 'unique:infos,title,' . $id . ',id'],
             'description' => ['required', 'string'],
+            'subjects' => ['required', 'array', 'min:1'],
+            'subjects.*.id' => ['required', 'exists:subject_headings,id'],
+        ],[
+            'subejcts.required' => 'At least one subject heading must be selected.',
         ]);
 
-
+        //return $req;
         $filterDom = new FilterDom();
         $modifiedHtml = $filterDom->filterDOM($req->description);
 
@@ -164,6 +184,18 @@ class InfoController extends Controller
         //$data->is_press_release = $req->is_press_release ? 1 : 0;
         $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'update', $user->id, $name);
         $data->save();
+
+
+
+        foreach($req->subjects as $key => $subject){
+            $subjects[] = [
+                'info_id' => $data->id,
+                'subject_heading_id' => $subject['id'],
+                'score' => $subject['score'],
+                'analysis' => $subject['analysis']
+            ];
+        }
+        InfoSubjectHeading::insert($subjects);
 
         return response()->json([
             'status' => 'updated'

@@ -1,11 +1,10 @@
 import { statusDropdownMenu } from '@/helper/statusMenu';
 import { PageProps, User } from '@/types';
-import { Form, Input, Flex, Select, DatePicker, Button, ConfigProvider,  App, notification } from 'antd';
+import { Form, Input, Flex, Select, DatePicker, Button, ConfigProvider, App } from 'antd';
 
 import { ProjectOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 
 import Ckeditor from './Ckeditor';
-import SelectSubjects from './SelectSubjects';
 import { Info } from '@/types/info';
 import { Author } from '@/types/author';
 import { Agency } from '@/types/agency';
@@ -16,7 +15,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import AgencyAutoComplete from './AgencyAutoComplete';
 import AuthorAutoComplete from './AuthorAutocomplete';
-import OllamaChat from './OllamaChat';
+import Classifier from './Classifier';
 
 
 export interface CreateEditProps {
@@ -46,7 +45,7 @@ const CreateEditArticle = ({
 }: CreateEditProps) => {
 
   const [form] = Form.useForm();
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const { message, modal } = App.useApp();
 
@@ -101,38 +100,15 @@ const CreateEditArticle = ({
     }
   };
 
-  const handleClassification = () => {
-    setLoading(true)
-    const content = form.getFieldValue("description");
 
-    if(content === undefined || content.trim() === "") {
-      notification.error({
-        message: "Empty Content",
-        description: "Description is empty. Please provide content for classification.",
-        duration: 5,
-      });
-      setLoading(false);
-      return;
-    }
-
-
-    axios.post("/classify-article", { content: content }).then((res) => {
-      console.log(res.data);
-      setLoading(false)
-
-    }).catch((err) => {
-      message.error(`Classification failed: ${err.message}`);
-      setLoading(false);
-    });
-
-  }
 
   useEffect(() => {
     if (id > 0) {
       getData();
     }
   }, []);
-const getData = () => {
+
+  const getData = () => {
     try {
       form.setFields([
         { name: "title", value: info.title },
@@ -143,10 +119,13 @@ const getData = () => {
         { name: "agency", value: info.agency },
         { name: "region", value: info.region },
         { name: "author_name", value: info.author_name },
+        { name: "subjects", value: info.subjects ? info.subjects : [] },
         { name: "is_publish", value: info.is_publish },
         { name: "tags", value: info.tags ? info.tags.split(',') : []},
         { name: "publish_date", value: info.publish_date ? dayjs(info.publish_date) : null },
       ]);
+
+      console.log('subjects in getData:', info.subjects);
 
     } catch (err) { }
   };
@@ -320,25 +299,19 @@ const getData = () => {
       </Form.Item>
 
       <div>
-        <Button
-          type="primary"
-          loading={loading}
-          onClick={() => {
-            handleClassification();
-          }}>
-          Classify Information
-        </Button>
+        <Classifier form={form} errors={errors} />
       </div>
+
       {/* <KmClassifier /> */}
 
-      <div className="my-6 border-t p-6 bg-gray-50 rounded-md">
+      {/* <div className="my-6 border-t p-6 bg-gray-50 rounded-md">
         <div className="font-bold mb-4">Manage Subjects/Subject Headings</div>
         {errors && errors.subjects ? (
           <div className="mb-4 text-red-600">{errors.subjects[0]}</div>
         ) : null}
         <SelectSubjects form={form} />
 
-      </div>
+      </div> */}
 
       <hr />
 
