@@ -19,10 +19,18 @@ class OpenController extends Controller
     }
 
 
-    public function getSubjectHeadings(){
+    public function getSubjectHeadings(Request $req){
 
-        $data = SubjectHeading::where('active', 1)->get();
-        return response()->json($data);
+        if($req->has('search') && $req->search != ''){
+            $data = SubjectHeading::where('active', 1)
+            ->where('subject_heading', 'like', '%'.$req->search.'%')
+            ->get();
+            return response()->json($data);
+        } else {
+
+            $data = SubjectHeading::where('active', 1)->get();
+            return response()->json($data);
+        }
     }
 
 }

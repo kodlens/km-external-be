@@ -39,7 +39,7 @@ class ArticleClassifierController extends Controller
             You are a strict classification engine, not a chatbot.
 
             TASK:
-            Select up to {$topK} MOST RELEVANT SubjectHeadings.
+            Select up to {$topK} MOST RELEVANT SubjectHeadings from the article given below.
 
             RULES (MUST FOLLOW):
             - Choose ONLY from the provided SubjectHeadings.
@@ -57,9 +57,10 @@ class ArticleClassifierController extends Controller
             \"\"\"{$content}\"\"\"
 
             OUTPUT:
-            Return ONLY valid JSON array and follow this format {id: <id>, score: <score>, analysis: <analysis>}. Do not explain
+            Return ONLY valid JSON array and follow this format {id: <id>, score: <score>, analysis: <you analysis why this is relevant>}. Do not explain or add any text outside the JSON array.
         PROMPT;
 
+        //return response()->json(['prompt' => $prompt]);
         //return $prompt;
 
         define('API_OLLAMA', env('AI_API'));
@@ -91,12 +92,12 @@ class ArticleClassifierController extends Controller
         $now = Carbon::now();
 
         $results = collect($parsed)
-            ->filter(fn ($r) => ($r['score'] ?? 0) > 0.5)
+            ->filter(fn ($r) => ($r['score'] ?? 0) > 0.2)
             ->take($topK)
             ->values();
 
         return response()->json([
-            'results' => $results,
+            'results' => \json_decode($results),
             'raw' => $raw,
             'parsed' => $parsed,
         ]);

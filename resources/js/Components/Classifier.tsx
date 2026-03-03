@@ -3,6 +3,7 @@ import { App, Button, Form, FormInstance, Table } from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import type { Key } from 'react';
+import ModalSubjectHeadings from './ModalSubjectHeadings';
 
 
 type PageProps = {
@@ -12,7 +13,8 @@ type PageProps = {
 
 type ClassifierProps = {
   id: number,
-  subjectHeading?: string,
+  subject_heading_id: number,
+  subject_heading?: string,
   score: number,
   analysis: string
 }
@@ -41,12 +43,20 @@ const Classifier = ( { form, errors } : PageProps) => {
     }
 
     axios.post("/classify-article", { content: content }).then((res) => {
-      setData(res.data.parsed);
+      if (res.data.results.length === 0) {
+        notification.info({
+          message: "No Relevant Subject Headings",
+          description: "The AI did not find any relevant subject headings for this article.",
+          duration: 5,
+        });
+      }
+      setData(res.data.results);
       setSelectedRowKeys([]);
       setLoading(false)
 
     }).catch((err) => {
-      message.error(`Classification failed: ${err.message}`);
+      //message.error(`Classification failed: ${err.message}`);
+      console.log(err);
       setLoading(false);
     });
   }
@@ -64,19 +74,23 @@ const Classifier = ( { form, errors } : PageProps) => {
     if (data.length > 0) {
       const matchedHeadings = data.map(item => {
         const matched = subjectHeadings.find(heading => heading.id === item.id);
-        return matched ? { ...item, subjectHeading: matched.subject_heading } : item;
+        console.log('matched', matched);
+
+        return matched ? { ...item, subject_heading: matched?.subject_heading } : item;
       });
       setNewData(matchedHeadings);
+    } else {
+      setNewData([]);
     }
   }, [data]);
 
 
   useEffect(() => {
     if (selectedRowKeys.length > 0) {
-      const selectedHeadings = newData.filter(item => selectedRowKeys.includes(item.id));
+      const selectedHeadings = newData.filter(item => selectedRowKeys.includes(item.subject_heading_id));
       form.setFieldValue("subjects", selectedHeadings.map(item => { return {
-        id: item.id,
-        subject_heading: item.subjectHeading,
+        subject_heading_id: item.subject_heading_id,
+        subject_heading: item.subject_heading,
         score: item.score,
         analysis: item.analysis
       } }));
@@ -84,9 +98,18 @@ const Classifier = ( { form, errors } : PageProps) => {
       form.setFieldValue("subjects", []);
     }
 
-    console.log('update selectedRowKeys:', form.getFieldValue("subjects"));
+    //console.log('update selectedRowKeys:', form.getFieldValue("subjects"));
 
   }, [selectedRowKeys]);
+
+  useEffect(() => {
+    //console.log('newData updated:', newData);
+  }, [newData]);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleClickModal = () => {
+    setModalOpen(true);
+  }
 
   return (
     <>
@@ -126,8 +149,8 @@ const Classifier = ( { form, errors } : PageProps) => {
                 },
                 {
                   title: "Subject Heading",
-                  dataIndex: "subjectHeading",
-                  key: "subjectHeading",
+                  dataIndex: "subject_heading",
+                  key: "subject_heading",
                   width: 120,
                 },
                 {
@@ -146,6 +169,8 @@ const Classifier = ( { form, errors } : PageProps) => {
           </div>
         )}
       </Form.Item>
+
+      <ModalSubjectHeadings  />
 
     </>
   )

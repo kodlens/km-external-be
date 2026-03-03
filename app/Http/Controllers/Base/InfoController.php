@@ -29,7 +29,7 @@ class InfoController extends Controller
             'title' => ['required', new ValidateTitle(0)],
             'description' => ['required'],
             'subjects' => ['required', 'array', 'min:1'],
-            'subjects.*.id' => ['required', 'exists:subject_headings,id'],
+            //'subjects.*.id' => ['required', 'exists:subject_headings,id'],
         ], [
             'subjects.required' => 'At least one subject heading must be selected.',
             'description.required' => 'Description is required.',
@@ -120,12 +120,11 @@ class InfoController extends Controller
 
     public function update(Request $req, $id){
 
-
         $req->validate([
             'title' => ['required', 'unique:infos,title,' . $id . ',id'],
             'description' => ['required', 'string'],
             'subjects' => ['required', 'array', 'min:1'],
-            'subjects.*.id' => ['required', 'exists:subject_headings,id'],
+            //'subjects.*.id' => ['required', 'exists:subject_headings,id'],
         ],[
             'subejcts.required' => 'At least one subject heading must be selected.',
         ]);
@@ -185,16 +184,16 @@ class InfoController extends Controller
         $data->record_trail = (new RecordTrail())->recordTrail($data->record_trail, 'update', $user->id, $name);
         $data->save();
 
-
-
         foreach($req->subjects as $key => $subject){
             $subjects[] = [
-                'info_id' => $data->id,
-                'subject_heading_id' => $subject['id'],
+                'info_id' => $id,
+                'subject_heading_id' => $subject['subject_heading_id'],
                 'score' => $subject['score'],
                 'analysis' => $subject['analysis']
             ];
         }
+
+        InfoSubjectHeading::where('info_id', $id)->delete();
         InfoSubjectHeading::insert($subjects);
 
         return response()->json([

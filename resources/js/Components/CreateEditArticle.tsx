@@ -125,10 +125,13 @@ const CreateEditArticle = ({
         { name: "publish_date", value: info.publish_date ? dayjs(info.publish_date) : null },
       ]);
 
-      console.log('subjects in getData:', info.subjects);
 
     } catch (err) { }
   };
+
+  useEffect(() => {
+      console.log('subjects in getData:', form.getFieldsValue(true));
+    }, [form]);
 
   return (
 
@@ -298,7 +301,7 @@ const CreateEditArticle = ({
         />
       </Form.Item>
 
-      <div>
+      <div className='mb-4'>
         <Classifier form={form} errors={errors} />
       </div>
 

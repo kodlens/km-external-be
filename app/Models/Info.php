@@ -54,6 +54,6 @@ class Info extends Model
         return $this->hasMany(InfoSubjectHeading::class, 'info_id', 'id')
           ->join('subject_headings', 'info_subject_headings.subject_heading_id', '=', 'subject_headings.id')
           ->join('subjects', 'subject_headings.subject_id', '=', 'subjects.id')
-          ->select('info_subject_headings.*', 'subject_heading', 'subject', 'subject_id');
+          ->select('info_subject_headings.*', 'subject_heading', 'subject', 'subject_id' );
     }
 }
